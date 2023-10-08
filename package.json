@@ -1,0 +1,22 @@
+{
+  "name": "journal",
+  "version": "1.0.0",
+  "description": "A journaling App",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "author": "Walexero",
+  "license": "ISC",
+  "devDependencies": {
+    "@parcel/transformer-inline-string": "^2.9.3",
+    "parcel": "^2.9.3"
+  },
+  "dependencies": {
+    "@parcel/transformer-svg": "^2.9.3",
+    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
+    "uuid": "^9.0.1"
+  }
+}
