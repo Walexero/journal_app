@@ -5,6 +5,7 @@ import tableComponentView from "./views/tableComponentView.js";
 import sidebarComponentView from "./views/sidebarComponentView.js";
 import journalInfoComponentView from "./views/journalInfoComponentView.js";
 import { componentGlobalState } from "./views/componentView/componentGlobalState.js";
+import "core-js/stable";
 
 const pass = () => {};
 
