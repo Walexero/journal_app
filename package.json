@@ -19,5 +19,8 @@
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "uuid": "^9.0.1"
+  },
+  "@parcel/transformer-css": {
+    "errorRecovery": true
   }
 }
