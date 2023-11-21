@@ -28,7 +28,9 @@ export let state = {
   tagsColor: TAGS_COLORS.colors,
 };
 
-const pass = () => {};
+export let token = {}
+
+const pass = () => { };
 
 export const updateJournalInfo = (payload) => {
   if (payload?.name?.length >= 0) {
@@ -372,9 +374,9 @@ export const updateTableItem = function (payload) {
         propertyToUpdate.text = updateValue.value;
         propertyToUpdate.checkbox
           ? (propertyToUpdate.checkbox =
-              payload.modelProperty.checkedProperty.checkbox) &&
-            (propertyToUpdate.checked =
-              payload.modelProperty.checkedProperty.checked)
+            payload.modelProperty.checkedProperty.checkbox) &&
+          (propertyToUpdate.checked =
+            payload.modelProperty.checkedProperty.checked)
           : pass();
       }
 
@@ -456,6 +458,11 @@ const getPersistedData = () => {
   const stateFromDb = localStorage.getItem("userJournal");
   return JSON.parse(stateFromDb);
 };
+
+export const loadToken = () => {
+  const storedToken = localStorage.getItem("token")
+  if (storedToken) token = JSON.parse(storedToken)
+}
 
 const init = function () {
   const dataLoadedFromDb = getPersistedData();

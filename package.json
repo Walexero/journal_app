@@ -22,5 +22,6 @@
   },
   "@parcel/transformer-css": {
     "errorRecovery": true
-  }
+  },
+  "main": "index.js"
 }

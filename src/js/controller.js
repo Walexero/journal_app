@@ -5,9 +5,10 @@ import tableComponentView from "./views/tableComponentView.js";
 import sidebarComponentView from "./views/sidebarComponentView.js";
 import journalInfoComponentView from "./views/journalInfoComponentView.js";
 import { componentGlobalState } from "./views/componentView/componentGlobalState.js";
+import Login from "./views/loginView/login.js";
 import "core-js/stable";
 
-const pass = () => {};
+const pass = () => { };
 
 const controlGetJournalName = function () {
   return model.state.name;
@@ -206,69 +207,79 @@ const controlDuplicateTableItem = function (payload, updateUI = true) {
     : pass();
 };
 
+const controlLogin = function () { }
+
 const init = function () {
-  const infoControllers = {
-    controlGetJournalName,
-    controlUpdateJournalInfo,
-  };
+  model.loadToken()
+  if (model.token.value) {
 
-  const tableControllers = {
-    controlAddNewTable,
-    controlGetTableHeads,
-    controlGetTable,
-    controlGetJournalName,
-    controlSetCurrentTable,
-  };
 
-  const tableItemControllers = {
-    controlAddTableItem,
-    controlDeleteTableItem,
-    controlUpdateTableItem,
-    controlGetTableItem,
-    controlGetTableItemWithMaxTags,
-    controlDuplicateTableItem,
-  };
+    const infoControllers = {
+      controlGetJournalName,
+      controlUpdateJournalInfo,
+    };
 
-  const optionControllers = {
-    controlRenameOption,
-    controlDuplicateOption,
-    controlDeleteOption,
-  };
+    const tableControllers = {
+      controlAddNewTable,
+      controlGetTableHeads,
+      controlGetTable,
+      controlGetJournalName,
+      controlSetCurrentTable,
+    };
 
-  const componentControllers = {
-    tableControllers,
-    tableItemControllers,
-    optionControllers,
-  };
+    const tableItemControllers = {
+      controlAddTableItem,
+      controlDeleteTableItem,
+      controlUpdateTableItem,
+      controlGetTableItem,
+      controlGetTableItemWithMaxTags,
+      controlDuplicateTableItem,
+    };
 
-  const [tableHeads, currentTable] = [
-    controlGetTableHeads(),
-    model.getCurrentTable(),
-  ];
+    const optionControllers = {
+      controlRenameOption,
+      controlDuplicateOption,
+      controlDeleteOption,
+    };
 
-  contentContainerListener.activateListener();
+    const componentControllers = {
+      tableControllers,
+      tableItemControllers,
+      optionControllers,
+    };
 
-  sidebarComponentView.init(controlAddSideBar);
+    const [tableHeads, currentTable] = [
+      controlGetTableHeads(),
+      model.getCurrentTable(),
+    ];
 
-  journalInfoComponentView.init(controlAddJournalInfo);
+    contentContainerListener.activateListener();
 
-  tableComponentView.init(
-    controlAddTable,
-    controlSetCurrentTable,
-    tableHeads,
-    currentTable
-  );
+    sidebarComponentView.init(controlAddSideBar);
 
-  sidebarComponentView.addComponentHandlers(componentControllers);
-  journalInfoComponentView.addComponentHandlers(infoControllers);
-  tableComponentView.addComponentHandlers(componentControllers);
-  //componentGlobalState inherits all controller methods all components have
-  componentGlobalState.eventHandlers = {
-    infoControllers,
-    tableControllers,
-    tableItemControllers,
-    optionControllers,
-    componentControllers,
-  };
+    journalInfoComponentView.init(controlAddJournalInfo);
+
+    tableComponentView.init(
+      controlAddTable,
+      controlSetCurrentTable,
+      tableHeads,
+      currentTable
+    );
+
+    sidebarComponentView.addComponentHandlers(componentControllers);
+    journalInfoComponentView.addComponentHandlers(infoControllers);
+    tableComponentView.addComponentHandlers(componentControllers);
+    //componentGlobalState inherits all controller methods all components have
+    componentGlobalState.eventHandlers = {
+      infoControllers,
+      tableControllers,
+      tableItemControllers,
+      optionControllers,
+      componentControllers,
+    };
+  }
+  if (!model.token.value) {
+    Login.addEventListeners(controlLogin)
+  }
 };
 init();

@@ -1,3 +1,5 @@
+export const BASE_API_URL = "http://0.0.0.0:9008/api/"
+const subModelEndpoints = ["grateful-for", "happenings", "action-items", "intentions"];
 export const USER = "Strapchay Proj";
 export const DEFAULT_JOURNAL_DESC = `
 Document your life - daily happenings, special occasions,

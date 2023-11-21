@@ -9,6 +9,10 @@ class ComponentOptionsView {
     return template.content.firstChild;
   }
 
+  createHTMLElement(html) {
+    return this._convertHTMLStringToElement(html)
+  }
+
   _componentRender(componentObj) {
     const container = document.querySelector(componentObj.container);
     const componentContainer = document.querySelector(
@@ -48,8 +52,7 @@ class ComponentOptionsView {
       .querySelector(".overlay-content-fill")
       .setAttribute(
         "style",
-        `width: ${componentObj.width + "px"}; height: ${
-          overlayCount > 1 ? componentObj.height : "0px"
+        `width: ${componentObj.width + "px"}; height: ${overlayCount > 1 ? componentObj.height : "0px"
         }`
       );
 

@@ -1,7 +1,7 @@
 import { LOCALE_TIME } from "./config.js";
 import icons from "url:../icons.svg";
 
-const pass = () => {};
+const pass = () => { };
 
 export const timeout = function (s, fn, param = undefined) {
   return new Promise(function (resolve) {
@@ -150,3 +150,29 @@ export const svgMarkup = (classList, fragId) => {
     </div>
   `;
 };
+
+
+export const delegateMatchTarget = (ev, className) => {
+  //on selects based on thee classlist and not with closest
+  if (ev.target.classList.contains(className)) return true
+}
+
+export const delegateMatch = (ev, className, optional = undefined) => {
+  if (ev.target.classList.contains(className) || ev.target.closest(`.${className}`))
+    return true
+
+  if (optional && ev.target.nodeName.toLowerCase() === optional) return true;
+}
+
+export const delegateMatchId = (ev, id, optional = undefined) => {
+  if (ev.target.id === id || ev.target.closest(`#${id}`)) return true
+}
+
+export const delegateMatchChild = (ev, className) => {
+  if (ev.target.querySelector(`.${className}`)) return true
+}
+
+export const delegateConditional = (ev, className, optional = undefined) => {
+  const condition = ev.key === "Escape" || ev.type === "click"
+  if (condition) return delegateMatch(ev, className, optional)
+}
