@@ -296,10 +296,14 @@ const init = function () {
     ];
 
     //create module objects
-    contentContainerListener = importContentContainerListener();
+    // contentContainerListener = importContentContainerListener();
+    contentContainerListener = importContentContainerListener.object = importContentContainerListener.import()
+
     journalInfoComponentView = importJournalInfoComponentView()
     sidebarComponentView = importSideBarComponentView();
-    tableComponentView = importTableComponentView()
+    // tableComponentView = importTableComponentView()
+
+    // tableComponentView = importTableComponentView.object = importTableComponentView.import()
 
     contentContainerListener.init(journalInfoComponentView, tableComponentView)
     // contentContainerListener.activateListener();

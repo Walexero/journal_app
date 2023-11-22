@@ -316,4 +316,8 @@ class TableComponentView {
   }
 }
 
-export const importTableComponentView = (() => new TableComponentView());
+// export const importTableComponentView = (() => new TableComponentView());
+export const importTableComponentView = {
+  import: (() => new TableComponentView()),
+  object: null
+};

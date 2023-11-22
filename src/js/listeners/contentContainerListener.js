@@ -33,4 +33,7 @@ class ContentContainerListener {
 }
 
 
-export const importContentContainerListener = (() => new ContentContainerListener());
+export const importContentContainerListener = {
+  import: (() => new ContentContainerListener()),
+  object: null
+};
