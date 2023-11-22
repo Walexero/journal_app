@@ -1,10 +1,11 @@
-import tableBodyContainerListener from "./listeners/tableBodyContainerListener";
+// import tableBodyContainerListener from "./listeners/tableBodyContainerListener";
+import { importTableBodyContainerListener } from "./listeners/tableBodyContainerListener.js";
 
 class Signals {
   _subscribers = [];
   _eventsToListenFor = ["click"];
   _listeners = [
-    { listenerType: "tablebody", listener: tableBodyContainerListener },
+    { listenerType: "tablebody", listener: importTableBodyContainerListener() },
   ];
 
   observe(e, source) {

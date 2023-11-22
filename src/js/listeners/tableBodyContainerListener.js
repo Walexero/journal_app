@@ -23,11 +23,11 @@ class TableBodyContainerListener {
       signals.observe(e, "tablebody");
   }
 
-  _subscribers() {}
+  _subscribers() { }
 
   activate(element) {
     this.activateListener(element);
   }
 }
 
-export default new TableBodyContainerListener();
+export const importTableBodyContainerListener = (() => new TableBodyContainerListener());

@@ -3,16 +3,25 @@ import icons from "url:../icons.svg";
 
 const pass = () => { };
 
-export const timeout = function (s, fn, param = undefined) {
-  return new Promise(function (resolve) {
-    setTimeout(function () {
-      console.log(fn);
+// export const timeout = function (s, fn, param = undefined) {
+//   return new Promise(function (resolve) {
+//     setTimeout(function () {
+//       // console.log(fn);
 
-      //condition to resolve on
-      param ? resolve(fn(param), s * 1000) : resolve(fn(), s * 1000);
-    });
-  });
-};
+//       //condition to resolve on
+//       param ? resolve(fn(param), s * 1000) : resolve(fn(), s * 1000);
+//     });
+//   });
+// };
+
+export const timeout = (sec, actionType, fn = undefined) => {
+  return new Promise((_, reject) => {
+    setTimeout(() => {
+      const error = new Error(`Could not ${actionType} at this moment, Please try again later!`)
+      reject(fn ? fn() && error : error)
+    }, sec * 1000)
+  })
+}
 
 export const timeoutWithoutPromise = (s, fn) => {
   setTimeout(() => fn(), s * 1000);
@@ -40,6 +49,12 @@ export const getMaxDuplicateNum = (val, state) => {
   );
   return maxNum;
 };
+
+export const selector = (identifier, nodeObj = undefined) => {
+  if (nodeObj) return nodeObj.querySelector(identifier)
+
+  if (!nodeObj) return document.querySelector(identifier)
+}
 
 export const occurences = (val, state) => {
   const occurrence = state.tables.reduce(

@@ -164,16 +164,21 @@ body{
     display: flex;
     justify-content: center;
     overflow-y:scroll ;
+    z-index: 100;
+}
+
+.form-container-above{
+    position: absolute;
 }
 
 .form-container form{
     display: flex;
     flex-direction: column;
     gap: 1.6rem;
-    padding-bottom: 6rem;
+    /* padding-bottom: 6rem; */
 }
 
-.create-form-container,.login-form-container{
+.create-form-container,.login-form-container,.reset-form-container{
     padding: 0 2rem;
 }
 
@@ -192,6 +197,10 @@ body{
 
 .form-heading{
     text-align: center;
+}
+
+.form-content{
+    padding-bottom: 6rem;
 }
 
 .form-content-info{
@@ -246,4 +255,88 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.login-overlay-bkg{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: gray;
+    opacity: 0.4;
+}
+
+.alert{
+    width: 20rem;
+    min-height: 4rem;
+    height: auto;
+    border-radius: 0.2rem;
+    background-color: #4b4b4b;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    position: absolute;
+    z-index: 100;
+    top: 5%;
+    left: 43%;
+}
+  
+.alert-msg{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #ededed;
+  font-size: 1.2rem;
+}
+
+.alert-success{
+  background-color: #1aff1a;
+}
+
+.alert-error{
+  background-color: #660000;
+}
+
+.alert-icon{
+  width: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+  
+  .alert-success-icon,.alert-error-icon{
+    height: 50%;
+  }
+    
+  .form-field-error{
+    border-bottom: 3px solid #660000 !important;
+  }
+
+  .custom-loader {
+    width:50px;
+    height:50px;
+    --c:radial-gradient(farthest-side,#112237 92%,#0000);
+    background: 
+      var(--c) 50% 0,
+      var(--c) 50% 100%,
+      var(--c) 100% 50%,
+      var(--c) 0    50%;
+    background-size:12px 12px;
+    background-repeat:no-repeat;
+    animation:s7 1s infinite;
+  }
+  @keyframes s7 {to{transform: rotate(.5turn)}}
+
+  .btn-reset{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3rem;
+    color: #bec1c6;
+  }
+
+.reset-reset,.reset-confirm{
+    flex-direction: column;
+    gap: 1.6rem;
+    display: flex;
 }

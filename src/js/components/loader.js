@@ -1,5 +1,5 @@
-import { Overlay } from "./overlay.js";
-import { ComponentMethods } from "./componentMethods.js";
+import { Overlay } from "../views/loginView/overlay.js";
+import componentOptionsView from "../views/componentView/componentOptionsView.js";
 
 export class Loader {
 
@@ -9,16 +9,18 @@ export class Loader {
     }
 
     component() {
-        this._component = ComponentMethods.HTMLToEl(this._generateMarkup())
+        this._component = componentOptionsView.createHTMLElement(this._generateMarkup())
+
 
         this.overlay = new Overlay(this, true, {
             top: 40,
-            left: 50
+            left: 49
         }, true)
         this.overlay.render()
     }
 
     getComponent() {
+        console.log("the loader comp", this._component)
         return this._component;
     }
 

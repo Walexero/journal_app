@@ -454,6 +454,10 @@ const persistData = () => {
   localStorage.setItem("userJournal", JSON.stringify(state));
 };
 
+export const persistToken = function () {
+  localStorage.setItem("token", JSON.stringify(token))
+}
+
 const getPersistedData = () => {
   const stateFromDb = localStorage.getItem("userJournal");
   return JSON.parse(stateFromDb);

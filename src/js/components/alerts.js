@@ -1,5 +1,5 @@
-import { delegateMatch, timeoutWithoutPromise, selector } from "../helper.js";
-import { ComponentMethods } from "./componentMethods.js";
+import { delegateMatch, timeoutWithoutPromise, selector } from "../helpers.js";
+import componentOptionsView from "../views/componentView/componentOptionsView.js";
 
 export class Alert {
     _eventListeners = ["click"]
@@ -13,7 +13,7 @@ export class Alert {
 
     component() {
         const cls = this;
-        this._component = ComponentMethods.HTMLToEl(this._generateMarkup())
+        this._component = componentOptionsView.createHTMLElement(this._generateMarkup())
 
         this._eventListeners.forEach(ev => this._component.addEventListener(ev, cls._handleEvents.bind(cls)))
 

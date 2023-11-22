@@ -1,12 +1,17 @@
 import * as model from "./model.js";
 import { swapItemIndex } from "./helpers.js";
-import contentContainerListener from "./listeners/contentContainerListener.js";
+// import contentContainerListener from "./listeners/contentContainerListener.js";
+import { importContentContainerListener } from "./listeners/contentContainerListener.js";
 import tableComponentView from "./views/tableComponentView.js";
 import sidebarComponentView from "./views/sidebarComponentView.js";
 import journalInfoComponentView from "./views/journalInfoComponentView.js";
 import { componentGlobalState } from "./views/componentView/componentGlobalState.js";
 import Login from "./views/loginView/login.js";
 import "core-js/stable";
+import { Loader } from "./components/loader.js";
+import { DEFAULT_LOGIN_PAGE_TIMEOUT } from "./config.js";
+
+let contentContainerListener;
 
 const pass = () => { };
 
@@ -207,7 +212,22 @@ const controlDuplicateTableItem = function (payload, updateUI = true) {
     : pass();
 };
 
-const controlLogin = function () { }
+const controlLogin = function (loginComponentCallBack, token) {
+  debugger;
+  const loader = new Loader(DEFAULT_LOGIN_PAGE_TIMEOUT)
+  loader.component()
+
+  //set model token
+  model.token.value = token
+  model.persistToken()
+
+  //remove auth components
+  loginComponentCallBack()
+
+  //switch template
+  init();
+  loader.remove()
+}
 
 const init = function () {
   model.loadToken()
@@ -252,7 +272,7 @@ const init = function () {
       controlGetTableHeads(),
       model.getCurrentTable(),
     ];
-
+    contentContainerListener = importContentContainerListener();
     contentContainerListener.activateListener();
 
     sidebarComponentView.init(controlAddSideBar);

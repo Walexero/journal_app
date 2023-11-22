@@ -2,7 +2,7 @@ import { CreateForm } from "./createForm.js"
 import { LoginForm } from "./loginForm.js"
 // import { UpdateInfoForm } from "./updateInfoForm.js";
 // import { UpdatePasswordForm } from "./updatePasswordForm.js";
-// import { ResetPasswordForm } from "./resetPasswordForm.js";
+import { ResetPasswordForm } from "./resetPasswordForm.js";
 
 export class Form {
 
@@ -13,6 +13,9 @@ export class Form {
                 break;
             case "sign up":
                 return new CreateForm()
+                break;
+            case "reset":
+                return new ResetPasswordForm()
                 break;
             // case "updateInfo":
             //     return new UpdateInfoForm()

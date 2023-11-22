@@ -1,7 +1,7 @@
 import { Form } from "./form.js"
 import { Overlay } from "./overlay.js"
 import { delegateMatch } from "../../helpers.js"
-import componentOptionsView from "../componentView/componentOptionsView.js"
+
 class Login {
 
     _listenerNodes = []
@@ -44,76 +44,51 @@ class Login {
         ev.stopPropagation();
         //login ev
         if (delegateMatch(ev, "cta-btn")) this.handleAuth(ev.target.textContent.trim().toLowerCase())
-        // if (delegateMatch(ev, "auth-btn-signin")) this._reRenderComponentContent("login")
-        // //create ev
-        // if (delegateMatch(ev, "btn-create")) this.handleAuth("create")
-        // if (delegateMatch(ev, "auth-btn-signup")) this._reRenderComponentContent("create")
         //reset ev
-        // if (delegateMatch(ev, "btn-reset")) this._handleReset("reset")
+        if (delegateMatch(ev, "btn-reset")) this.handleAuth("reset")
     }
 
     handleAuth(authType) {
-        debugger;
-        this._generateAuthComponent(authType)
-        // this._component = this.component(this.form, this)
-        this.form.component()
-        this._overlay = new Overlay(this.form)
-        this._overlay.render()
-    }
-
-    _handleReset(resetType) {
-        const cls = this;
         this._removeChildren()
+        this._generateAuthComponent(authType)
+        this.form.component()
 
-        if (this.form) {
-            this.form.remove(true)
-            this.form = null
-            this.switcher = null
+        //add event to temp node
+        if (authType === "login") this._insertTempNodeToComponent(this.form.getComponent().querySelector(".btn-reset"), "click")
 
-        }
-
-        this._resetForm = Form.form(resetType)
-
-        //remove temp components that change during the component lifecycle
-        this._removeTempNodes()
-
-        //add authRelatedbtns to component
-        this._authBtnComponent = null;
-        this._authBtnComponent = this._generateAuthRelatedBtnMarkup()
-        this._insertTempNodeToComponent(this._authBtnComponent)
-
-        //add reset callback as control handler
-        this._resetForm.addControlHandler(this._handleResetCallBack.bind(this))
-        this._children.push(this._resetForm)
-        this._component.insertAdjacentElement("afterbegin", cls._resetForm.component())
+        this._overlay = new Overlay(this.form)
+        this._children.push(this._overlay)
+        this._overlay.render()
     }
 
     _handleResetCallBack() {
         this._removeChildren()
-        this._reRenderComponentContent("login")
+        this.remove(true)
+        // this._reRenderComponentContent("login")
     }
 
     _generateAuthComponent(authType) {
-        //remove reset form if it exists
-        if (this._resetForm) {
-
-            this._resetForm.remove(true)
-            this._resetForm = null;
-        }
+        debugger;
         this._removeChildren()
+
+        if (this.form) this.form.remove(true)
 
         this.form = Form.form(authType)
 
         //add control handler to form
-        this.form.addControlHandler(this.controlHandler)
+        this.form.addControlHandler(this._getFormCallBack(authType))
+
 
         this._children.push(this.form)
     }
 
     _reRenderComponentContent(authType) {
-        this._removeTempNodes()
         this._generateAuthComponent(authType)
-        this.component(this._baseComponent, this.switcher, this.form, this)
+    }
+
+    _getFormCallBack(authType) {
+        if (authType === "reset") return this._handleResetCallBack.bind(this)
+        return this.controlHandler
     }
 
     getComponent() {
@@ -121,43 +96,15 @@ class Login {
     }
 
     component(formComponent, cls) {
-
-        //add forgot btn
-        this._forgotBtnComponent = null
-        this._forgotBtnComponent = this._generateForgotBtnMarkup()
-
-        this._insertTempNodeToComponent(this._forgotBtnComponent)
-
         return this._component
     }
 
-    _generateForgotBtnMarkup() {
-        const markup = `<a class="btn-reset" href="#">Forgot Password?</a>`
-        const markupEl = this._forgotBtnComponent = componentOptionsView.createHTMLElement(markup)
-        return markupEl
-    }
-
-    _generateAuthRelatedBtnMarkup() {
-        const markup =
-            `
-        <div class="auth-btns">
-            <a class="auth-btn-signin auth-btn" href="#">Sign In</a>
-            <a class="auth-btn-signup auth-btn" href="#">Sign Up</a>
-        </div>
-        `
-        const markupEl = this._authBtnComponent = ComponentMethods.HTMLToEl(markup)
-        return markupEl
-    }
-
-    _insertTempNodeToComponent(tempNode) {
+    _insertTempNodeToComponent(tempNode, eventType = false) {
         const cls = this;
-        this._eventListeners.forEach(ev => tempNode.addEventListener(ev, cls._handleEvents.bind(cls)))
-        this._component.insertAdjacentElement("beforeend", tempNode)
-        this.updateListenerNodeState(tempNode, cls._handleEvents, true)
-    }
+        if (eventType) tempNode.addEventListener(eventType, cls._handleEvents.bind(cls))
+        if (!eventType) this._eventListeners.forEach(ev => tempNode.addEventListener(ev, cls._handleEvents.bind(cls)))
 
-    _removeResetActive() {
-        this._component.classList.remove("reset-active")
+        this.updateListenerNodeState(tempNode, cls._handleEvents, true)
     }
 
     _removeTempNodes() {
@@ -172,14 +119,14 @@ class Login {
         })
     }
 
+    _removeResetActive() {
+        this._component.classList.remove("reset-active")
+    }
+
     _removeChildren() {
         for (let i = this._children.length - 1; i > -1; i--) {
             this._children[i].remove(true)
             this._children.splice(i, 1)
-        }
-        if (this._forgotBtnComponent) {
-            this._forgotBtnComponent.remove()
-            this._forgotBtnComponent = null;
         }
     }
 

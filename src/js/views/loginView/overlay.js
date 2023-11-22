@@ -16,7 +16,8 @@ export class Overlay {
 
     component() {
         this._component = componentOptionsView.createHTMLElement(this._generateMarkup())
-        this.overlay_bkg = this._component.querySelector(".login-overlay")
+        // this.overlay = this._component.querySelector(".login-overlay")
+
         const overlayContent = this._component.querySelector(`${this.extraClassName ? ".form-container-above" : ".form-container"}`)
 
         //change content position based on defined params
@@ -31,7 +32,7 @@ export class Overlay {
         this.positionEl.insertAdjacentElement("beforeend", this._component)
 
         if (!this.disableEvents) {
-            this.overlay_bkg.addEventListener(cls._eventListeners[0], cls._handleEvents.bind(cls))
+            this._component.addEventListener(cls._eventListeners[0], cls._handleEvents.bind(cls))
             window.addEventListener(cls._eventListeners[1], cls._handleEvents.bind(cls))
         }
     }
@@ -42,13 +43,15 @@ export class Overlay {
     }
 
     _handleEvents(ev) {
-        if (delegateConditional(ev, "login-overlay", "body")) this.remove()
+        if (delegateConditional(ev, "login-overlay-bkg", "body")) this.remove()
+        if (delegateConditional(ev, "close-form", "body")) this.remove()
     }
 
     _generateMarkup() {
         return `
             <div class="login-overlay">
-                <div class="${this.extraClassName ? "overlay-content-above" : "form-container"}">
+                <div class="login-overlay-bkg"></div>
+                <div class="${this.extraClassName ? "form-container-above" : "form-container"}">
                     
                 </div>
             </div>
@@ -60,7 +63,7 @@ export class Overlay {
 
         if (!this.disableEvents) {
             this._eventListeners.forEach(ev => {
-                this.overlay_bkg.removeEventListener(ev, cls._handleEvents)
+                this._component.removeEventListener(ev, cls._handleEvents)
                 window.removeEventListener(ev, cls._handleEvents)
             })
             //remove content component

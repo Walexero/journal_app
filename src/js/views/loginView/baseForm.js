@@ -1,5 +1,10 @@
 import componentOptionsView from "../componentView/componentOptionsView.js";
-import { svgMarkup } from "../../helpers.js";
+import { svgMarkup, selector } from "../../helpers.js";
+import { Alert } from "../../components/alerts.js";
+import { DEFAULT_ALERT_TIMEOUT } from "../../config.js";
+import { PASSWORD_NOT_MATCH_ERROR, INVALID_NAME_FORMAT, INVALID_USERNAME_FORMAT } from "../../config.js";
+
+
 
 export class BaseForm {
     _eventListeners = ["submit", "keyup"]
@@ -7,7 +12,13 @@ export class BaseForm {
 
     component() {
         const cls = this;
+        this.componentWrapperEl = componentOptionsView.createHTMLElement(this._componentWrapper(this.formType()))
         this._component = componentOptionsView.createHTMLElement(this._generateMarkup())
+
+        // Wrap the element in its wrapper
+        this.wrapperContent = this.componentWrapperEl.querySelector(".form-content-form")
+
+        this.wrapperContent.insertAdjacentElement("afterbegin", this._component)
 
         this._eventListeners.forEach(ev => this._component.addEventListener(ev, cls._handleEvents.bind(cls)))
 
@@ -23,12 +34,15 @@ export class BaseForm {
     }
 
     getComponent() {
-        return this._component
+        return this.componentWrapperEl
+        //this._component
     }
 
     createPayload(ev) {
         ev.preventDefault();
+
         const form = new FormData(this._component)
+
         let payload = null;
         try {
             this.formValidator(form)
@@ -39,11 +53,12 @@ export class BaseForm {
             }
             return payload
         } catch (err) {
-            new Alert(err, DEFAULT_ALERT_TIMEOUT, "error").component()
+            new Alert(err, null, "error").component()
         } finally { return payload }
     }
 
     destructureFormData(form) {
+        debugger;
         const payload = {}
         for (const [key, value] of form) {
             payload[key] = value
@@ -89,6 +104,62 @@ export class BaseForm {
                 throw new Error(INVALID_NAME_FORMAT)
             }
         }
+
+        const username = data.get("username")
+        if (username) {
+            const validateUsername = this._validateName(username)
+            if (!validateUsername) {
+                const formErrors = {}
+                formErrors.username = "Invalid Username"
+                this._renderFormErrors(formErrors)
+                throw new Error(INVALID_USERNAME_FORMAT)
+            }
+        }
+    }
+    // formComponent, 
+    _componentWrapper(formType) {
+        return `
+            <div class="${formType}-form-container">
+                ${this._generateCloseFormNudge()}
+                <h1 class="form-heading">
+                  ${this._formRenderHeading(formType)}
+                </h1>
+                <div class="form-content">
+                  <div class="form-content-info">
+                    Enter your information below to ${this._formRenderInfo(formType)}
+                  </div>
+                  <div class="form-content-form">
+                    
+                  </div>
+                  ${this._formForgotBtnRender(formType) ?? ""}
+                </div>
+            </div>
+        `
+    }
+
+    _formForgotBtnRender(formType) {
+        if (formType === "login")
+            return `<a class="btn-reset" href="#">Forgot Password?</a>`
+    }
+
+    _formRenderHeading(formType) {
+        if (formType === "reset") return "Reset Password"
+
+        if (formType === "create") return "Create Account"
+
+        if (formType === "login") return formType.slice(0, 1).toUpperCase() + formType.slice(1)
+    }
+
+    _formRenderInfo(formType) {
+        const requestType = {
+            "login": "account",
+            "create": "account",
+            "reset": "password"
+        }
+
+        if (formType === "login") return `${formType} to your ${requestType[formType]}`
+        if (formType === "create") return `${formType} an ${requestType[formType]}`
+        if (formType === "reset") return `${formType} your ${requestType[formType]}`
     }
 
     _renderFormErrors(errors, success = false) {
@@ -97,17 +168,20 @@ export class BaseForm {
             this._clearForm()
             return;
         };
-        const errorKeys = Object.getOwnPropertyNames(errors)
 
-        errorKeys.forEach(formFieldKey => {
-            const formField = selector(`[name=${formFieldKey.trim()}]`, this._component)
-            if (formField) {
-                renderError = true
-                formField.classList.add("form-field-error")
-            }
-        })
-        if (renderError)
-            this.activeFormErrors = true;
+        if (errors) {
+            const errorKeys = Object.getOwnPropertyNames(errors)
+
+            errorKeys.forEach(formFieldKey => {
+                const formField = selector(`[name=${formFieldKey.trim()}]`, this._component)
+                if (formField) {
+                    renderError = true
+                    formField.classList.add("form-field-error")
+                }
+            })
+            if (renderError)
+                this.activeFormErrors = true;
+        }
     }
 
     _clearForm() {
@@ -152,11 +226,13 @@ export class BaseForm {
 
 
     remove(removeComponent = false) {
+        debugger;
         const cls = this;
         this._eventListeners.forEach(ev => this._component.removeEventListener(ev, cls._handleSubmit))
 
         if (removeComponent) {
             this._component.remove()
+            this?.wrapperContent ?? (this.wrapperContent = null)
             delete this
         }
     }

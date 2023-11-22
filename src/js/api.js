@@ -1,6 +1,5 @@
-import { timeout, timeoutWithoutPromise } from "./helper.js"
-import { BASE_API_URL } from "./config.js"
-// import { BASE_API_URL, HTTP_400_RESPONSE_LOGIN_USER, HTTP_200_RESPONSE, HTTP_400_RESPONSE_CREATE_USER, ALERT_STATUS_ERRORS, HTTP_204_SUCCESS_NO_CONTENT, PREVENT_DESTRUCTURING_FROM_API_ENDPOIN_RESP } from "./config.js"
+import { timeout, timeoutWithoutPromise } from "./helpers.js"
+import { BASE_API_URL, HTTP_204_SUCCESS_NO_CONTENT, ALERT_STATUS_ERRORS, HTTP_400_RESPONSE_LOGIN_USER, HTTP_400_RESPONSE_CREATE_USER, HTTP_200_RESPONSE, PREVENT_DESTRUCTURING_FROM_API_ENDPOINT_RESP } from "./config.js"
 import { Loader } from "./components/loader.js"
 import { Alert } from "./components/alerts.js"
 
@@ -76,6 +75,7 @@ export class API {
     }
 
     static queryAPI(queryObj) {
+        debugger
         //switch the timeout secs if null
         queryObj.sec = queryObj.sec ?? API.timeout
         //create the loader based on the queryObj
@@ -106,7 +106,7 @@ export class API {
         let data = null;
 
         try {
-            const res = await Promise.race([API.makeRequest(queryObj), timeout(queryObj.sec, queryObj.actionType)])
+            const res = await Promise.race([API.makeRequest(queryObj), timeout(queryObj.sec, queryObj.actionType)]) //TODO: Add fns to the timeout function
 
             const resContent = res.status !== HTTP_204_SUCCESS_NO_CONTENT ? await res.json() : {}
 

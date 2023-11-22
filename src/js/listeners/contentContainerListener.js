@@ -6,6 +6,7 @@ class ContentContainerListener {
   _events = ["click", "keyup"];
 
   activateListener() {
+    console.log("the par el", this._parentElement)
     this._events.forEach((ev) =>
       this._parentElement.addEventListener(ev, this._registerSubscribers)
     );
@@ -21,7 +22,8 @@ class ContentContainerListener {
     }
   }
 
-  _subscribers() {}
+  _subscribers() { }
 }
 
-export default new ContentContainerListener();
+
+export const importContentContainerListener = (() => new ContentContainerListener());
