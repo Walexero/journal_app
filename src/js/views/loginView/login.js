@@ -68,7 +68,6 @@ class Login {
     }
 
     _generateAuthComponent(authType) {
-        debugger;
         this._removeChildren()
 
         if (this.form) this.form.remove(true)

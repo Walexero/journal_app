@@ -124,8 +124,6 @@ export class API {
     }
 
     static getResponseToRender(response, queryObj, resStatus) {
-
-
         //set the resStatus on the queryObj
         if (resStatus) queryObj.resStatus = resStatus
 

@@ -11,7 +11,7 @@ class JournalInfoComponentView {
     modelHandler();
   }
 
-  pass() {}
+  pass() { }
 
   addComponentHandlers(handlers) {
     this._eventHandlers = handlers;
@@ -85,9 +85,8 @@ class JournalInfoComponentView {
               ${svgMarkup("journal-icon icon", "journal-icon")}
             </div>
 
-            <div class="nav-options-text">${
-              journal.name.length > 0 ? journal.name : "Untitled"
-            }</div>
+            <div class="nav-options-text">${journal.name.length > 0 ? journal.name : "Untitled"
+      }</div>
         </div>
     `;
   }
@@ -130,4 +129,4 @@ class JournalInfoComponentView {
     this._parentElement.insertAdjacentHTML("afterbegin", contentInfoMarkup);
   }
 }
-export default new JournalInfoComponentView();
+export const importJournalInfoComponentView = (() => new JournalInfoComponentView());

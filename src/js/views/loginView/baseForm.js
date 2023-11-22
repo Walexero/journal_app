@@ -58,7 +58,6 @@ export class BaseForm {
     }
 
     destructureFormData(form) {
-        debugger;
         const payload = {}
         for (const [key, value] of form) {
             payload[key] = value
@@ -226,7 +225,6 @@ export class BaseForm {
 
 
     remove(removeComponent = false) {
-        debugger;
         const cls = this;
         this._eventListeners.forEach(ev => this._component.removeEventListener(ev, cls._handleSubmit))
 

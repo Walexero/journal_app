@@ -1,10 +1,11 @@
 import * as model from "./model.js";
 import { swapItemIndex } from "./helpers.js";
-// import contentContainerListener from "./listeners/contentContainerListener.js";
+import { LoginTemplate } from "./templates/loginTemplate.js"
+import { JournalTemplate } from "./templates/journalTemplate.js"
 import { importContentContainerListener } from "./listeners/contentContainerListener.js";
-import tableComponentView from "./views/tableComponentView.js";
-import sidebarComponentView from "./views/sidebarComponentView.js";
-import journalInfoComponentView from "./views/journalInfoComponentView.js";
+import { importTableComponentView } from "./views/tableComponentView.js";
+import { importSideBarComponentView } from "./views/sidebarComponentView.js";
+import { importJournalInfoComponentView } from "./views/journalInfoComponentView.js";
 import { componentGlobalState } from "./views/componentView/componentGlobalState.js";
 import Login from "./views/loginView/login.js";
 import "core-js/stable";
@@ -12,6 +13,9 @@ import { Loader } from "./components/loader.js";
 import { DEFAULT_LOGIN_PAGE_TIMEOUT } from "./config.js";
 
 let contentContainerListener;
+let sidebarComponentView;
+let tableComponentView;
+let journalInfoComponentView;
 
 const pass = () => { };
 
@@ -213,7 +217,6 @@ const controlDuplicateTableItem = function (payload, updateUI = true) {
 };
 
 const controlLogin = function (loginComponentCallBack, token) {
-  debugger;
   const loader = new Loader(DEFAULT_LOGIN_PAGE_TIMEOUT)
   loader.component()
 
@@ -229,11 +232,30 @@ const controlLogin = function (loginComponentCallBack, token) {
   loader.remove()
 }
 
+const controlAddTemplate = function (templateType) {
+  if (templateType === "login") {
+    document.body.classList.remove("journal-template")
+    document.body.classList.add("login-template")
+    document.body.innerHTML = LoginTemplate.template();
+    LoginTemplate.templateStyling();
+    Login.addEventListeners(controlLogin)
+  }
+
+  if (templateType === "journal") {
+    document.body.innerHTML = ""
+    document.body.classList.remove("login-template")
+    document.body.classList.add("journal-template")
+    document.body.innerHTML = JournalTemplate.template();
+    JournalTemplate.templateStyling();
+  }
+}
+
 const init = function () {
   model.loadToken()
   if (model.token.value) {
+    controlAddTemplate("journal")
 
-
+    debugger;
     const infoControllers = {
       controlGetJournalName,
       controlUpdateJournalInfo,
@@ -272,8 +294,15 @@ const init = function () {
       controlGetTableHeads(),
       model.getCurrentTable(),
     ];
+
+    //create module objects
     contentContainerListener = importContentContainerListener();
-    contentContainerListener.activateListener();
+    journalInfoComponentView = importJournalInfoComponentView()
+    sidebarComponentView = importSideBarComponentView();
+    tableComponentView = importTableComponentView()
+
+    contentContainerListener.init(journalInfoComponentView, tableComponentView)
+    // contentContainerListener.activateListener();
 
     sidebarComponentView.init(controlAddSideBar);
 
@@ -298,8 +327,6 @@ const init = function () {
       componentControllers,
     };
   }
-  if (!model.token.value) {
-    Login.addEventListeners(controlLogin)
-  }
+  if (!model.token.value) controlAddTemplate("login")
 };
 init();

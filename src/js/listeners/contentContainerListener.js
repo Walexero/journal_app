@@ -1,9 +1,16 @@
-import journalInfoComponentView from "../views/journalInfoComponentView";
-import tableComponentView from "../views/tableComponentView";
+// import journalInfoComponentView from "../views/journalInfoComponentView";
+// import tableComponentView from "../views/tableComponentView";
 
 class ContentContainerListener {
   _parentElement = document.querySelector(".content-container");
   _events = ["click", "keyup"];
+
+  init(journalInfoComponentView, tableComponentView) {
+    this.journalInfoComponentView = journalInfoComponentView
+    this.tableComponentView = tableComponentView
+
+    this.activateListener()
+  }
 
   activateListener() {
     console.log("the par el", this._parentElement)
@@ -15,9 +22,9 @@ class ContentContainerListener {
   _registerSubscribers(e) {
     e.stopPropagation();
     if (e.type === "click") {
-      tableComponentView.addDelegationEventListener(e);
+      this.tableComponentView.addDelegationEventListener(e);
     }
-    if (journalInfoComponentView._events.find((ev) => ev === e.type)) {
+    if (this.journalInfoComponentView._events.find((ev) => ev === e.type)) {
       journalInfoComponentView.addDelegationEventListener(e);
     }
   }

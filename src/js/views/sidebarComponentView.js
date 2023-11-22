@@ -164,8 +164,7 @@ class SideBarComponentView {
 
   _generateSideBarTablesMarkup(table, currentTableId) {
     return `
-      <div class="tables-list-box hover ${
-        table[1] === currentTableId ? "hover-bg-stay" : ""
+      <div class="tables-list-box hover ${table[1] === currentTableId ? "hover-bg-stay" : ""
       }" data-id="${table[1]}">
         <div class="tables-list-disc"></div>
         <li class="tables-list-table">${table[0]}</li>
@@ -178,9 +177,8 @@ class SideBarComponentView {
     return `
         <div class="nav-options-heading">
             <div class="options-heading-icon">${userFirstName[0]}</div>
-            <div class="options-heading-title">${
-              userFirstName[0].toUpperCase() + userFirstName.slice(1)
-            }'s Notion</div>
+            <div class="options-heading-title">${userFirstName[0].toUpperCase() + userFirstName.slice(1)
+      }'s Notion</div>
 
           ${svgMarkup("angles-icon sidebar-close icon", "angles-left")}
         </div>
@@ -192,9 +190,9 @@ class SideBarComponentView {
         <div class="nav-option nav-options-journal">
             <div class="nav-options-icon">
               ${svgMarkup(
-                "arrow-render arrow-right-icon icon icon-mid",
-                "arrow-right"
-              )}
+      "arrow-render arrow-right-icon icon icon-mid",
+      "arrow-right"
+    )}
             </div>
     
             <div class="nav-icon-text">
@@ -202,9 +200,8 @@ class SideBarComponentView {
                 ${svgMarkup("journal-icon icon", "journal-icon")}
               </div>
 
-              <div class="nav-options-text">${
-                journalName.length > 0 ? journalName : "Untitled"
-              }</div>
+              <div class="nav-options-text">${journalName.length > 0 ? journalName : "Untitled"
+      }</div>
 
               <div class="journal-tables-list">
               <ul class="tables-list">
@@ -240,4 +237,4 @@ class SideBarComponentView {
   }
 }
 
-export default new SideBarComponentView();
+export const importSideBarComponentView = (() => new SideBarComponentView());

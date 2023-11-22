@@ -1,8 +1,9 @@
-body{
+.login-template{
     font-family: 'Roboto Mono', monospace;
     background: #112237;
     color: #bec1c6;
     overflow-x: hidden;
+    font-size: 100%;
 }
 
 .cta-btn{
@@ -197,6 +198,7 @@ body{
 
 .form-heading{
     text-align: center;
+    margin-bottom: 3rem;
 }
 
 .form-content{

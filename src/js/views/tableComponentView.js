@@ -230,9 +230,8 @@ class TableComponentView {
           ${journalsMarkup}
   
           <div class="table-column-options table-row">
-          <div class="table-row-text">${
-            journals.length - TABLE_HEAD_LIMIT
-          } more...</div>
+          <div class="table-row-text">${journals.length - TABLE_HEAD_LIMIT
+        } more...</div>
           </div>
         </div>
       `;
@@ -243,14 +242,12 @@ class TableComponentView {
     return `
       <div role="rowgroup" class="rowfill">
         <div role="row">
-            <div class="${
-              placeholder ? "row-adder-filter" : "row-adder-content"
-            }">
-              <div class="row-adder-text color-dull">${
-                placeholder
-                  ? TABLE_ROW_FILTER_PLACEHOLDER
-                  : TABLE_ROW_PLACEHOLDER
-              }</div>
+            <div class="${placeholder ? "row-adder-filter" : "row-adder-content"
+      }">
+              <div class="row-adder-text color-dull">${placeholder
+        ? TABLE_ROW_FILTER_PLACEHOLDER
+        : TABLE_ROW_PLACEHOLDER
+      }</div>
             </div>
         </div>
       </div>
@@ -319,4 +316,4 @@ class TableComponentView {
   }
 }
 
-export default new TableComponentView();
+export const importTableComponentView = (() => new TableComponentView());
