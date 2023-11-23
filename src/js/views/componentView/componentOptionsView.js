@@ -178,4 +178,5 @@ class ComponentOptionsView {
   }
 }
 
+
 export default new ComponentOptionsView();

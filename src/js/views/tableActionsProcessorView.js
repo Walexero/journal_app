@@ -3,13 +3,15 @@ import tableHeadProcessorView from "./tableHeadProcessorView.js";
 import tableFilterOptionComponent from "./componentView/propertyComponentView/tableFilterOptionComponent.js";
 import tableSortOptionComponent from "./componentView/propertyComponentView/tableSortOptionComponent.js";
 import tableComponentView from "./tableComponentView.js";
-import sidebarComponentView from "./sidebarComponentView.js";
 import containerSidePeekComponentView from "./containerSidePeekComponentView.js";
 import { componentGlobalState } from "./componentView/componentGlobalState.js";
+import { importSideBarComponentView } from "./sidebarComponentView.js";
+// import sidebarComponentView from "./sidebarComponentView.js";
 
 class TableActionsProcessorView {
   _tableHeadProcessor = tableHeadProcessorView;
   _eventHandlers;
+  _sidebarComponentView = importSideBarComponentView.object
 
   addHandlers(handlers) {
     this._eventHandlers = handlers;
@@ -120,7 +122,7 @@ class TableActionsProcessorView {
       const sidebarJournalContainer = document.querySelector(
         ".nav-options-journal"
       );
-      sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
+      this._sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
     }
   }
 
