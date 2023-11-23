@@ -21,7 +21,7 @@ class TableComponentView {
   _tableElement = document.querySelector(".main-table");
   _tableHeadElement = document.querySelector(".main-table-head");
   _tableBodyElement = document.querySelector(`[role="tablerow"]`);
-  _signals = importSignals.object
+  _signals = importSignals.object ? importSignals.object : (importSignals.object = importSignals.import())
   _tableBodyItemElement;
   _tableViewOptionsActive = false;
   _currentTable;
@@ -36,6 +36,7 @@ class TableComponentView {
     //add handleer to set currentTable in the model
     this._currentTableHandler = currentTableHandler;
     tableHandler();
+    console.log(this._signals, "tablecomponentvie")
 
     this._currentTable = currentTable;
 

@@ -1,8 +1,7 @@
 import { BaseForm } from "./baseForm.js"
 import { API } from "../../api.js";
-import componentOptionsView from "../componentView/componentOptionsView.js";
+// import componentOptionsView from "../componentView/componentOptionsView.js";
 import { delegateMatch, delegateMatchId, delegateMatchChild, selector } from "../../helpers.js";
-import componentOptionsView from "../componentView/componentOptionsView.js";
 
 export class ResetPasswordForm extends BaseForm {
     _token;
@@ -94,7 +93,7 @@ export class ResetPasswordForm extends BaseForm {
 
     getResetConfirmForm() {
         const markup = this._generateResetConfirmMarkup()
-        const markupEl = componentOptionsView.createHTMLElement(markup)
+        const markupEl = this._componentHandler.createHTMLElement(markup)
         return markupEl
     }
 

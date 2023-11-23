@@ -1,5 +1,6 @@
 import { Overlay } from "../views/loginView/overlay.js";
-import componentOptionsView from "../views/componentView/componentOptionsView.js";
+// import componentOptionsView from "../views/componentView/componentOptionsView.js";
+import importComponentOptionsView from "../views/componentView/componentOptionsView.js";
 
 export class Loader {
 
@@ -9,7 +10,7 @@ export class Loader {
     }
 
     component() {
-        this._component = componentOptionsView.createHTMLElement(this._generateMarkup())
+        this._component = importComponentOptionsView.cls.createHTMLElement(this._generateMarkup())
 
 
         this.overlay = new Overlay(this, true, {

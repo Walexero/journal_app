@@ -1,4 +1,5 @@
-import componentOptionsView from "./componentView/componentOptionsView.js";
+// import componentOptionsView from "./componentView/componentOptionsView.js";
+import { importComponentOptionsView } from "./componentView/componentOptionsView.js";
 import tagOptionComponent from "./componentView/tagsOptionComponent.js";
 import { dateTimeFormat, svgMarkup } from "../helpers.js";
 import alertComponent from "./componentView/alertComponent.js";
@@ -6,6 +7,7 @@ import { COPY_ALERT } from "../config.js";
 import icons from "url:../../icons.svg";
 import { componentGlobalState } from "./componentView/componentGlobalState.js";
 export default class ContainerSidePeekComponentView {
+  _componentHandler = importComponentOptionsView.object
   _state;
   _events = ["click", "keyup", "keydown"];
 
@@ -24,9 +26,8 @@ export default class ContainerSidePeekComponentView {
       </div>
     `;
 
-    const inputMarkup = `<div class="slide-${inputType}-input slide-input" placeholder="List" contenteditable="true">${
-      type?.text ?? ""
-    }</div>`;
+    const inputMarkup = `<div class="slide-${inputType}-input slide-input" placeholder="List" contenteditable="true">${type?.text ?? ""
+      }</div>`;
 
     const strikeThroughMarkup = `<s>${inputMarkup}</s>`;
 
@@ -123,9 +124,8 @@ export default class ContainerSidePeekComponentView {
                 </div>
               </div>
               <div class="slide-tag-text--box">
-                <div class="slide-property-text slide-tag-text hover ${
-                  tableItemTags !== "Empty" ? "active" : ""
-                }">${tableItemTags}</div>
+                <div class="slide-property-text slide-tag-text hover ${tableItemTags !== "Empty" ? "active" : ""
+      }">${tableItemTags}</div>
               </div>
             </div>
           </div>
@@ -140,9 +140,8 @@ export default class ContainerSidePeekComponentView {
                 </div>
               </div>
               <div class="slide-created-text--box">
-                <div class="slide-property-text slide-created-text hover ${
-                  tableItem.id ? "active" : ""
-                }">${dateTimeFormat(tableItem.id ?? "Empty")}
+                <div class="slide-property-text slide-created-text hover ${tableItem.id ? "active" : ""
+      }">${dateTimeFormat(tableItem.id ?? "Empty")}
                 </div>
                 <div class="row-actions-render">
                       <div class="row-actions-render-icon">
@@ -168,8 +167,8 @@ export default class ContainerSidePeekComponentView {
   _generateSlideTagsMarkup(tableItem) {
     return tableItem.itemTags.length > 0
       ? tableItem.itemTags
-          .map((tag) => tagOptionComponent.prototype._generateTagAddMarkup(tag))
-          .join("")
+        .map((tag) => tagOptionComponent.prototype._generateTagAddMarkup(tag))
+        .join("")
       : "Empty";
   }
 
@@ -188,28 +187,26 @@ export default class ContainerSidePeekComponentView {
               
               <div class="nav-nav-icon slide-nav-next hover">
                 ${svgMarkup(
-                  `icon-md ${
-                    this._state.position === -1 ||
-                    this._state.position === 0 ||
-                    this._state.position === "only"
-                      ? "nav-icon-inactive"
-                      : "nav-icon-active"
-                  }`,
-                  "arrow-down"
-                )}
+      `icon-md ${this._state.position === -1 ||
+        this._state.position === 0 ||
+        this._state.position === "only"
+        ? "nav-icon-inactive"
+        : "nav-icon-active"
+      }`,
+      "arrow-down"
+    )}
                 
               </div>
               <div class="nav-nav-icon slide-nav-prev hover">
                 ${svgMarkup(
-                  `icon-md ${
-                    this._state.position === -2 ||
-                    this._state.position === 1 ||
-                    this._state.position === "only"
-                      ? "nav-icon-inactive"
-                      : "nav-icon-active"
-                  }`,
-                  "arrow-up"
-                )}
+      `icon-md ${this._state.position === -2 ||
+        this._state.position === 1 ||
+        this._state.position === "only"
+        ? "nav-icon-inactive"
+        : "nav-icon-active"
+      }`,
+      "arrow-up"
+    )}
                 
               </div>
             </div>
@@ -231,7 +228,7 @@ export default class ContainerSidePeekComponentView {
     //implement url change
     // window.history.pushState(null,"",`${this._state.tableId}/${this._state.itemId}`)
 
-    const component = componentOptionsView._componentRender(this._state);
+    const component = this._componentHandler._componentRender(this._state);
 
     this._state = {
       ...this._state,
@@ -517,8 +514,8 @@ export default class ContainerSidePeekComponentView {
     const relativeAddedItem =
       inputSelectionExists || nextElInput
         ? document
-            .querySelector(`[data-id="${updateId}"]`)
-            ?.nextElementSibling.querySelector(`.slide-${inputType}-input`)
+          .querySelector(`[data-id="${updateId}"]`)
+          ?.nextElementSibling.querySelector(`.slide-${inputType}-input`)
         : null;
 
     //focus on the relative or last element on content refresh
@@ -764,8 +761,8 @@ export default class ContainerSidePeekComponentView {
     const formatInput = inputType.split("-");
     return shouldFormatInput
       ? formatInput[0] +
-          (formatInput[1][0].toUpperCase() +
-            formatInput[1].slice(1).toLowerCase())
+      (formatInput[1][0].toUpperCase() +
+        formatInput[1].slice(1).toLowerCase())
       : inputType;
   }
   _splitFromInputVal(inputContainer, inputVal, valToSplit) {

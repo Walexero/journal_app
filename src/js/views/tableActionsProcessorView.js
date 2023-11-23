@@ -2,10 +2,11 @@ import tableViewOptionComponent from "./componentView/tableViewOptionComponent.j
 import tableHeadProcessorView from "./tableHeadProcessorView.js";
 import tableFilterOptionComponent from "./componentView/propertyComponentView/tableFilterOptionComponent.js";
 import tableSortOptionComponent from "./componentView/propertyComponentView/tableSortOptionComponent.js";
-import tableComponentView from "./tableComponentView.js";
+// import tableComponentView from "./tableComponentView.js";
 import containerSidePeekComponentView from "./containerSidePeekComponentView.js";
 import { componentGlobalState } from "./componentView/componentGlobalState.js";
 import { importSideBarComponentView } from "./sidebarComponentView.js";
+import { importTableComponentView } from "./tableComponentView.js";
 // import sidebarComponentView from "./sidebarComponentView.js";
 
 class TableActionsProcessorView {
@@ -204,7 +205,7 @@ class TableActionsProcessorView {
         filteredSearchValue =
           componentGlobalState.filterMethod(filteredSearchValue);
 
-      tableComponentView.renderTableItem(
+      importTableComponentView.object.renderTableItem(
         filteredSearchValue,
         componentGlobalState.filterMethod
       );

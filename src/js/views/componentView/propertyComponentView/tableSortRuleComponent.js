@@ -1,12 +1,14 @@
-import componentOptionsView from "../componentOptionsView.js";
-import tableComponentView from "../../tableComponentView.js";
+// import componentOptionsView from "../componentOptionsView.js";
+import { importComponentOptionsView } from "../componentOptionsView.js";
+// import tableComponentView from "../../tableComponentView.js";
+import { importTableComponentView } from "../../tableComponentView.js";
 import { TABLE_SORT_TYPE } from "../../../config.js";
 import { svgMarkup } from "../../../helpers.js";
 import { componentGlobalState } from "../componentGlobalState.js";
 import tableSortRuleOptionActionComponent from "./tableSortRuleOptionActionComponent.js";
 
 export default class TableSortRuleComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click"];
 
@@ -24,16 +26,16 @@ export default class TableSortRuleComponent {
                     <div class="sort-select sort-property-options-box">
                       <div class="sort-sort-icon">
                         ${svgMarkup(
-                          "sort-icon icon-active icon-md",
-                          `${property.icon}`
-                        )}
+      "sort-icon icon-active icon-md",
+      `${property.icon}`
+    )}
                       </div>
                       <div class="action-filter-text">${property.text}</div>
                       <div class="sort-dropdown-icon">
                         ${svgMarkup(
-                          "sort-icon icon-active icon-sm",
-                          "arrow-down"
-                        )}
+      "sort-icon icon-active icon-sm",
+      "arrow-down"
+    )}
                       </div>
                     </div>
                   </div>
@@ -43,9 +45,9 @@ export default class TableSortRuleComponent {
                         <div class="action-filter-text">${sortType}</div>
                         <div class="sort-dropdown-icon">
                           ${svgMarkup(
-                            "sort-icon icon-active icon-sm",
-                            "arrow-down"
-                          )}
+      "sort-icon icon-active icon-sm",
+      "arrow-down"
+    )}
                         </div>
                       </div>
                     </div>
@@ -207,8 +209,8 @@ export default class TableSortRuleComponent {
               ? -1
               : 1
             : a.itemTitle > d.itemTitle
-            ? -1
-            : 1;
+              ? -1
+              : 1;
         });
     }
 
@@ -278,7 +280,7 @@ export default class TableSortRuleComponent {
   }
 
   _renderSortedTableItems(sortedItems, filterPlaceHolder = false) {
-    tableComponentView.renderTableItem(sortedItems, null);
+    importTableComponentView.object.renderTableItem(sortedItems, null);
   }
 
   remove(reset = true) {

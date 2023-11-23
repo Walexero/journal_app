@@ -1,11 +1,12 @@
-import componentOptionsView from "../componentOptionsView.js";
+// import componentOptionsView from "../componentOptionsView.js";
+import { importComponentOptionsView } from "../componentOptionsView.js";
 import { componentGlobalState } from "../componentGlobalState.js";
 import optionActionComponent from "./optionActionComponent.js";
 import { TABLE_SORT_TYPE } from "../../../config.js";
 import { svgMarkup } from "../../../helpers.js";
 
 export default class TableSortRuleOptionActionComponent extends optionActionComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click"];
 
@@ -14,7 +15,7 @@ export default class TableSortRuleOptionActionComponent extends optionActionComp
     this._state = state;
   }
 
-  pass() {}
+  pass() { }
 
   _generateActionSelectOption(options) {
     let markup = "";
@@ -22,7 +23,7 @@ export default class TableSortRuleOptionActionComponent extends optionActionComp
       markup += `
         <div class="filter-option-action filter-option-${option.text.toLowerCase()} hover">
           <div class="filter-option-icon">
-            ${svgMarkup("filter-icon icon-md icon-active",`${option.icon}`)}
+            ${svgMarkup("filter-icon icon-md icon-active", `${option.icon}`)}
           </div>
           <div class="filter-option-text">${option.text}</div>
         </div>

@@ -1,10 +1,11 @@
-import componentOptionsView from "./componentOptionsView.js";
+// import componentOptionsView from "./componentOptionsView.js";
+import { importComponentOptionsView } from "./componentOptionsView.js";
 import { TABLE_NOT_FOUND_RESPONSE } from "../../config.js";
 import tableHeadProcessorView from "../tableHeadProcessorView.js";
 import { svgMarkup } from "../../helpers.js";
 
 export default class TableViewOptionComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click", "keyup"];
 

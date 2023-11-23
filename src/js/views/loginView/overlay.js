@@ -1,9 +1,10 @@
 
 import { delegateConditional } from "../../helpers.js";
-import componentOptionsView from "../componentView/componentOptionsView.js";
-
+// import componentOptionsView from "../componentView/componentOptionsView.js";
+import { importComponentOptionsView } from "../componentView/componentOptionsView.js";
 export class Overlay {
     _eventListeners = ["click", "keyup"]
+    _componentHandler = importComponentOptionsView.object
 
     constructor(contentComponent, disableEvents = false, position = undefined, extraClassName = false) {
         this.contentComponent = contentComponent
@@ -15,7 +16,7 @@ export class Overlay {
     }
 
     component() {
-        this._component = componentOptionsView.createHTMLElement(this._generateMarkup())
+        this._component = this._componentHandler.createHTMLElement(this._generateMarkup())
         // this.overlay = this._component.querySelector(".login-overlay")
 
         const overlayContent = this._component.querySelector(`${this.extraClassName ? ".form-container-above" : ".form-container"}`)

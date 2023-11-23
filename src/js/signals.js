@@ -5,7 +5,7 @@ class Signals {
   _subscribers = [];
   _eventsToListenFor = ["click"];
   _listeners = [
-    { listenerType: "tablebody", listener: importTableBodyContainerListener() },
+    { listenerType: "tablebody", listener: importTableBodyContainerListener.object },
   ];
 
   observe(e, source) {

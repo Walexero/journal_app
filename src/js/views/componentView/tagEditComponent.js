@@ -1,10 +1,11 @@
-import componentOptionsView from "./componentOptionsView.js";
+// import componentOptionsView from "./componentOptionsView.js";
+import { importComponentOptionsView } from "./componentOptionsView.js";
 import notificationComponent from "./notificationComponent.js";
 import cloneDeep from "../../../../node_modules/lodash-es/cloneDeep.js";
 import { svgMarkup } from "../../helpers.js";
 
 export default class TagEditComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click", "keyup"];
 

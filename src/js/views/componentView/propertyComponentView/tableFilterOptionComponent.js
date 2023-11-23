@@ -1,5 +1,6 @@
 import propertyOptionsComponent from "./propertyOptionsComponent.js";
-import componentOptionsView from "../componentOptionsView.js";
+// import componentOptionsView from "../componentOptionsView.js";
+import { importComponentOptionsView } from "../componentOptionsView.js";
 import { TABLE_PROPERTIES } from "../../../config.js";
 import tableFilterRuleComponent from "./tableFilterRuleComponent.js";
 import { importSignals } from "../../../signals.js";//allows signals to be sent to required component
@@ -7,7 +8,7 @@ import { componentGlobalState } from "../componentGlobalState.js";
 import containerSidePeekComponentView from "../../containerSidePeekComponentView.js";
 
 export default class TableFilterOptionComponent extends propertyOptionsComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click", "keyup"];
   _signals = importSignals.object

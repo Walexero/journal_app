@@ -1,4 +1,5 @@
-import componentOptionsView from "../componentView/componentOptionsView.js";
+// import componentOptionsView from "../componentView/componentOptionsView.js";
+import { importComponentOptionsView } from "../componentView/componentOptionsView.js";
 import { svgMarkup, selector } from "../../helpers.js";
 import { Alert } from "../../components/alerts.js";
 import { DEFAULT_ALERT_TIMEOUT } from "../../config.js";
@@ -9,11 +10,11 @@ import { PASSWORD_NOT_MATCH_ERROR, INVALID_NAME_FORMAT, INVALID_USERNAME_FORMAT 
 export class BaseForm {
     _eventListeners = ["submit", "keyup"]
     activeFormErrors = false
-
+    _componentHandler = importComponentOptionsView.cls
     component() {
         const cls = this;
-        this.componentWrapperEl = componentOptionsView.createHTMLElement(this._componentWrapper(this.formType()))
-        this._component = componentOptionsView.createHTMLElement(this._generateMarkup())
+        this.componentWrapperEl = this._componentHandler.createHTMLElement(this._componentWrapper(this.formType()))
+        this._component = this._componentHandler.createHTMLElement(this._generateMarkup())
 
         // Wrap the element in its wrapper
         this.wrapperContent = this.componentWrapperEl.querySelector(".form-content-form")

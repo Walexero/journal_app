@@ -7,6 +7,8 @@ import { importContentContainerListener } from "./listeners/contentContainerList
 import { importTableComponentView } from "./views/tableComponentView.js";
 import { importSideBarComponentView } from "./views/sidebarComponentView.js";
 import { importJournalInfoComponentView } from "./views/journalInfoComponentView.js";
+import { importComponentOptionsView } from "./views/componentView/componentOptionsView.js";
+import { importTableBodyContainerListener } from "./listeners/tableBodyContainerListener.js";
 import { componentGlobalState } from "./views/componentView/componentGlobalState.js";
 import Login from "./views/loginView/login.js";
 import "core-js/stable";
@@ -297,9 +299,14 @@ const init = function () {
     debugger;
 
     //create module objects
-    contentContainerListener = importJournalInfoComponentView.object = importContentContainerListener.import()
+    importTableBodyContainerListener.object = importTableBodyContainerListener.import()
+
+    contentContainerListener = importContentContainerListener.object = importContentContainerListener.import()
 
     journalInfoComponentView = importJournalInfoComponentView.object = importJournalInfoComponentView.import()
+
+    //init the componentOptionsView
+    importComponentOptionsView.object = importComponentOptionsView.import()
 
     sidebarComponentView = importSideBarComponentView.object = importSideBarComponentView.import();
 

@@ -1,5 +1,7 @@
-import componentOptionsView from "../componentOptionsView.js";
-import tableComponentView from "../../tableComponentView.js";
+// import componentOptionsView from "../componentOptionsView.js";
+import { importComponentOptionsView } from "../componentOptionsView.js";
+// import tableComponentView from "../../tableComponentView.js";
+import { importTableComponentView } from "../../tableComponentView.js";
 import {
   PREPOSITIONS,
   FILTER_RULE_CONTAINER_TOP_DIFF,
@@ -7,13 +9,15 @@ import {
 import tableFilterPrepositionComponent from "./tableFilterPrepositionComponent.js";
 import tableFilterRuleOptionActionComponent from "./tableFilterRuleOptionActionComponent.js";
 import { componentGlobalState } from "../componentGlobalState.js";
-import signals from "../../../signals.js";
+// import signals from "../../../signals.js";
+import { importSignals } from "../../../signals.js";
 import { svgMarkup } from "../../../helpers.js";
 
 export default class TableFilterRuleComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click", "keyup"];
+  _signals = importSignals.object
 
   constructor(state) {
     this._state = state;
@@ -65,9 +69,9 @@ export default class TableFilterRuleComponent {
     const removeFilterInput = ["Is empty", "Is not empty"];
     const filterInputMarkup =
       this._state?.removeFilterInput ||
-      removeFilterInput.find(
-        (filter) => filter.toLowerCase() === conditional?.toLowerCase()
-      )
+        removeFilterInput.find(
+          (filter) => filter.toLowerCase() === conditional?.toLowerCase()
+        )
         ? ""
         : this._generateFilterInput(inpVal, property);
 
@@ -82,17 +86,17 @@ export default class TableFilterRuleComponent {
               </div>
               <div class="added-rule-icon">
                 ${svgMarkup(
-                  "filter-addeed-icon icon-sm nav-icon-active",
-                  "arrow-down"
-                )}
+      "filter-addeed-icon icon-sm nav-icon-active",
+      "arrow-down"
+    )}
               </div>
             </div>
             <div class="div-filler"></div>
             <div class="filter-input-option hover">
               ${svgMarkup(
-                "filter-added-icon icon-md nav-icon-active",
-                "ellipsis"
-              )}
+      "filter-added-icon icon-md nav-icon-active",
+      "ellipsis"
+    )}
             </div>
           </div>
           ${filterInputMarkup}
@@ -115,7 +119,7 @@ export default class TableFilterRuleComponent {
         : componentGlobalState.filterTagList;
     this._state.markup = this._generateMarkup(
       this._state.parentState.conditional ??
-        this._state.conditional[0].condition,
+      this._state.conditional[0].condition,
       inputValue,
       this._state.property.text
     );
@@ -151,7 +155,7 @@ export default class TableFilterRuleComponent {
     });
 
     //register for events from tag Options
-    signals.subscribe({ component: this, source: ["tagadd"] });
+    this._signals.subscribe({ component: this, source: ["tagadd"] });
   }
 
   _insertFilterRuleInput() {
@@ -514,7 +518,7 @@ export default class TableFilterRuleComponent {
   }
 
   _renderFilteredTableItems(filteredItems, filterPlaceHolder = false) {
-    tableComponentView.renderTableItem(filteredItems, null, filterPlaceHolder);
+    importTableComponentView.object.renderTableItem(filteredItems, null, filterPlaceHolder);
   }
 
   remove(reset = true, parentRemove = false) {
@@ -539,7 +543,7 @@ export default class TableFilterRuleComponent {
     if (reset) this._renderFilteredTableItems(table.tableItems);
 
     //unsubscribe from signals
-    signals.unsubscribe(this);
+    this._signals.unsubscribe(this);
 
     //remove its components
     this._state.component.remove();

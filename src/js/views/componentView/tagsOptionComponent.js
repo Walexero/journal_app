@@ -1,20 +1,23 @@
-import componentOptionsView from "./componentOptionsView.js";
+// import componentOptionsView from "./componentOptionsView.js";
+import { importComponentOptionsView } from "./componentOptionsView.js";
 import tagEditComponent from "./tagEditComponent.js";
 import { componentGlobalState } from "./componentGlobalState.js";
-import signals from "../../signals.js";
+// import signals from "../../signals.js";
+import { importSignals } from "../../signals.js";
 import { svgMarkup } from "../../helpers.js";
 
 export default class TagOptionComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click", "keyup"];
+  _signals = importSignals.object
   _inputCounter = 0;
 
   constructor(state) {
     this._state = state;
   }
 
-  pass() {}
+  pass() { }
 
   _createTagForCurrentItem(tag) {
     const tagClass = Array.from(tag.classList).find((cls) =>
@@ -39,20 +42,18 @@ export default class TagOptionComponent {
 
   _generateTagAddMarkup(tag, addXmark = false) {
     return `
-      <div class=" ${addXmark ? "tag-tag" : "row-tag-tag"} ${
-      tag.color
-    }" data-id=${tag.id}>
+      <div class=" ${addXmark ? "tag-tag" : "row-tag-tag"} ${tag.color
+      }" data-id=${tag.id}>
         ${tag.text}
 
-        ${
-          addXmark
-            ? `
+        ${addXmark
+        ? `
           <div class="row-tag-icon">
             ${svgMarkup("tags-items-icon", "xmark")}
           </div>
           `
-            : ""
-        }
+        : ""
+      }
       </div>
     `;
   }
@@ -87,11 +88,10 @@ export default class TagOptionComponent {
           <div class="row-option-tag">
             ${this._generateTagAddMarkup(tag)}
           </div>
-          ${
-            this._state.disableOptionsNudge
-              ? ""
-              : this._generateTagsOptionsNudge()
-          }
+          ${this._state.disableOptionsNudge
+          ? ""
+          : this._generateTagsOptionsNudge()
+        }
         </div>
       `;
     });
@@ -123,8 +123,8 @@ export default class TagOptionComponent {
       tagItemsMarkup =
         tagItems.length > 0
           ? tagItems
-              .map((tagItem) => this._generateTagAddMarkup(tagItem, true))
-              .join("")
+            .map((tagItem) => this._generateTagAddMarkup(tagItem, true))
+            .join("")
           : "";
     }
 
@@ -240,7 +240,7 @@ export default class TagOptionComponent {
             this._generateTagAddMarkup.bind(this);
 
           //observe for add events to route to filter view if active
-          signals.observe(e, "tagadd");
+          this._signals.observe(e, "tagadd");
         }
 
         //if tags not active somewhere else, deliver to its handler
@@ -352,8 +352,8 @@ export default class TagOptionComponent {
     this._inputCounter > 0
       ? this.pass()
       : inputContainer.value.length > 0
-      ? (this._inputCounter = inputContainer.value.length + 1)
-      : this.pass();
+        ? (this._inputCounter = inputContainer.value.length + 1)
+        : this.pass();
     this._inputCounter--;
 
     //protect against key delete deleting tags if input has text values

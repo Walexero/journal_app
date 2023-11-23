@@ -1,4 +1,3 @@
-import componentOptionsView from "../componentView/componentOptionsView.js";
 import { BaseForm } from "./baseForm.js";
 import { API } from "../../api.js";
 

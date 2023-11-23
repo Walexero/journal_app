@@ -5,10 +5,13 @@ import { componentGlobalState } from "./componentView/componentGlobalState.js";
 import containerSidePeekComponentView from "./containerSidePeekComponentView.js";
 import alertComponent from "./componentView/alertComponent.js";
 import { COPY_ALERT } from "../config.js";
-import componentOptionsView from "./componentView/componentOptionsView.js";
-
+// import componentOptionsView from "./componentView/componentOptionsView.js";
+import {
+  importComponentOptionsView
+} from "./componentView/componentOptionsView.js";
 class TableBodyProcessorView {
   _parentElement = document.querySelector(`[role="tablebody"]`);
+  _componentHandler = importComponentOptionsView.cls
   _eventHandlers;
   _textInputActive = false;
   _currentTable;
@@ -709,14 +712,12 @@ class TableBodyProcessorView {
             </label>
           </div>
           <div role="rowgroup">
-            <div role="row" class="row-actions-handler-container" data-id="${
-              item.id
-            }">
+            <div role="row" class="row-actions-handler-container" data-id="${item.id
+        }">
               <span role="cell" class="table-item table-item-name">
                 <div class="row-actions-segment">
-                    <div class="name-actions-text row-actions-text highlight-column">${
-                      item.itemTitle
-                    }</div>
+                    <div class="name-actions-text row-actions-text highlight-column">${item.itemTitle
+        }</div>
                     <div class="row-actions-render hidden">
                       <div class="row-actions-render-icon">
                         ${svgMarkup("row-icon", "arrow-open")}
@@ -818,7 +819,7 @@ class TableBodyProcessorView {
         </div>
     `;
     const hoverEl =
-      componentOptionsView._convertHTMLStringToElement(hoverMarkup);
+      this._componentHandler.createHTMLElement(hoverMarkup);
     return hoverEl;
   }
 }

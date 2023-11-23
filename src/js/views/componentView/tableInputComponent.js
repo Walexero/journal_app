@@ -1,8 +1,9 @@
-import componentOptionsView from "./componentOptionsView.js";
+// import componentOptionsView from "./componentOptionsView.js";
+import { importComponentOptionsView } from "./componentOptionsView.js";
 import { componentGlobalState } from "./componentGlobalState.js";
 
 export default class TableInputComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["keydown"];
 

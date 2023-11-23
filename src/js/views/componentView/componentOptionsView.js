@@ -2,15 +2,15 @@ class ComponentOptionsView {
   _overlayCount = 0;
   _overlayContainer = document.querySelector(".overlay-container");
 
-  _convertHTMLStringToElement(html) {
+  static _convertHTMLStringToElement(html) {
     const template = document.createElement("template");
     html = html.trim();
     template.innerHTML = html;
     return template.content.firstChild;
   }
 
-  createHTMLElement(html) {
-    return this._convertHTMLStringToElement(html)
+  static createHTMLElement(html) {
+    return ComponentOptionsView._convertHTMLStringToElement(html)
   }
 
   _componentRender(componentObj) {
@@ -78,7 +78,8 @@ class ComponentOptionsView {
 
     const overlayMarkup = this._generateOverlayMarkup(componentObj.markup);
 
-    const overlay = this._convertHTMLStringToElement(overlayMarkup);
+    //FIXME: check to make sure implementation reesolves
+    const overlay = this.constructor._convertHTMLStringToElement(overlayMarkup);
 
     //set the positioning of
     this._overlayCount === 1
@@ -179,4 +180,10 @@ class ComponentOptionsView {
 }
 
 
-export default new ComponentOptionsView();
+// export default new ComponentOptionsView();
+
+export const importComponentOptionsView = {
+  cls: ComponentOptionsView,
+  import: (() => new ComponentOptionsView()),
+  object: null
+}
