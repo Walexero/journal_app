@@ -2,7 +2,7 @@ import propertyOptionsComponent from "./propertyOptionsComponent.js";
 import componentOptionsView from "../componentOptionsView.js";
 import { TABLE_PROPERTIES } from "../../../config.js";
 import tableFilterRuleComponent from "./tableFilterRuleComponent.js";
-import signals from "../../../signals.js"; //allows signals to be sent to required component
+import { importSignals } from "../../../signals.js";//allows signals to be sent to required component
 import { componentGlobalState } from "../componentGlobalState.js";
 import containerSidePeekComponentView from "../../containerSidePeekComponentView.js";
 
@@ -10,6 +10,7 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
   _componentHandler = componentOptionsView;
   _state;
   _events = ["click", "keyup"];
+  _signals = importSignals.object
 
   constructor(state) {
     super();
@@ -43,7 +44,7 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
     });
 
     //register the component as an observer
-    signals.subscribe({ component: this, source: ["tablebody", "content"] });
+    this._signals.subscribe({ component: this, source: ["tablebody", "content"] });
   }
 
   _handleEvents(e, signal = false) {
@@ -224,7 +225,7 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
 
     const updateAction = this._getConditionalAction(
       this._state.conditional?.toLowerCase() ??
-        componentGlobalState.conditional.toLowerCase()
+      componentGlobalState.conditional.toLowerCase()
     );
 
     const updateObj = {
@@ -238,8 +239,8 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
         updateAction === "createEmpty"
           ? []
           : componentGlobalState.filterTagList?.length > 0
-          ? [componentGlobalState.filterTagList[0]]
-          : [],
+            ? [componentGlobalState.filterTagList[0]]
+            : [],
       //conditional is gotten from the filter rule component
     };
 
@@ -363,7 +364,7 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
     filterContainer.remove();
 
     //unsubscribe from signal events
-    signals.unsubscribe(this);
+    this._signals.unsubscribe(this);
     componentGlobalState.filterMethod = null;
   }
 }

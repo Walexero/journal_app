@@ -2,6 +2,7 @@ import * as model from "./model.js";
 import { swapItemIndex } from "./helpers.js";
 import { LoginTemplate } from "./templates/loginTemplate.js"
 import { JournalTemplate } from "./templates/journalTemplate.js"
+
 import { importContentContainerListener } from "./listeners/contentContainerListener.js";
 import { importTableComponentView } from "./views/tableComponentView.js";
 import { importSideBarComponentView } from "./views/sidebarComponentView.js";
@@ -255,7 +256,6 @@ const init = function () {
   if (model.token.value) {
     controlAddTemplate("journal")
 
-    debugger;
     const infoControllers = {
       controlGetJournalName,
       controlUpdateJournalInfo,
@@ -294,16 +294,16 @@ const init = function () {
       controlGetTableHeads(),
       model.getCurrentTable(),
     ];
+    debugger;
 
     //create module objects
-    // contentContainerListener = importContentContainerListener();
-    contentContainerListener = importContentContainerListener.object = importContentContainerListener.import()
+    contentContainerListener = importJournalInfoComponentView.object = importContentContainerListener.import()
 
-    journalInfoComponentView = importJournalInfoComponentView()
-    sidebarComponentView = importSideBarComponentView();
-    // tableComponentView = importTableComponentView()
+    journalInfoComponentView = importJournalInfoComponentView.object = importJournalInfoComponentView.import()
 
-    // tableComponentView = importTableComponentView.object = importTableComponentView.import()
+    sidebarComponentView = importSideBarComponentView.object = importSideBarComponentView.import();
+
+    tableComponentView = importTableComponentView.object = importTableComponentView.import()
 
     contentContainerListener.init(journalInfoComponentView, tableComponentView)
     // contentContainerListener.activateListener();

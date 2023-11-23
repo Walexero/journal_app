@@ -95,7 +95,7 @@ class ComponentOptionsView {
         this._overlayCount,
         disableOverlayInterceptor
       );
-
+    console.log("this overlaycontaineer", this)
     this._overlayContainer.insertAdjacentElement("beforeend", overlay);
 
     const component = overlay.querySelector(componentObj.selector);

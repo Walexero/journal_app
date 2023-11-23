@@ -8,17 +8,20 @@ import {
   swapItemIndexInPlace,
   svgMarkup,
 } from "../helpers.js";
+import { importSignals } from "../signals.js";
+import { componentGlobalState } from "./componentView/componentGlobalState.js";
 import tableHeadProcessorView from "./tableHeadProcessorView.js";
+
 import tableActionsProcessorView from "./tableActionsProcessorView.js";
 import tableBodyProcessorView from "./tableBodyProcessorView.js";
-import signals from "../signals.js"; //passes events from one component to another
-import { componentGlobalState } from "./componentView/componentGlobalState.js";
+// import signals from "../signals.js"; //passes events from one component to another
 
 class TableComponentView {
   _parentElement = document.querySelector(".content-container");
   _tableElement = document.querySelector(".main-table");
   _tableHeadElement = document.querySelector(".main-table-head");
   _tableBodyElement = document.querySelector(`[role="tablerow"]`);
+  _signals = importSignals.object
   _tableBodyItemElement;
   _tableViewOptionsActive = false;
   _currentTable;
@@ -113,8 +116,8 @@ class TableComponentView {
     cls._tableBodyEventProcessor.matchEvent(e);
 
     //register the event as a signal as well
-    if (signals.eventsToListenFor().find((events) => e.type === events))
-      signals.observe(e, "content");
+    if (this._signals.eventsToListenFor().find((events) => e.type === events))
+      this._signals.observe(e, "content");
   }
 
   addBodyDelegationEventListener() {
@@ -183,7 +186,7 @@ class TableComponentView {
   }
 
   listen() {
-    signals.activateListener("tablebody", this._tableBodyItemElement);
+    this._signals.activateListener("tablebody", this._tableBodyItemElement);
   }
 
   _generateMarkup(journals, currentTableId) {

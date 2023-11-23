@@ -1,18 +1,20 @@
 import { USER } from "../config";
-import tableHeadProcessorView from "./tableHeadProcessorView";
-import signals from "../signals";
+// import signals from "../signals";
+import { importSignals } from "../signals";
 import { componentGlobalState } from "./componentView/componentGlobalState";
 import { svgMarkup } from "../helpers";
+import tableHeadProcessorView from "./tableHeadProcessorView";
 
 class SideBarComponentView {
   _parentElement = document.querySelector(".nav-sidebar");
   _eventHandlers = null;
   _events = ["click"];
+  _signals = importSignals.object
 
   init(sideBarHandler) {
     sideBarHandler();
     this.addSideBarDelegationEventListener();
-    signals.subscribe({ component: this, source: ["journalInfo"] });
+    this._signals.subscribe({ component: this, source: ["journalInfo"] });
   }
 
   addComponentHandlers(handlers) {
@@ -237,4 +239,6 @@ class SideBarComponentView {
   }
 }
 
-export const importSideBarComponentView = (() => new SideBarComponentView());
+export const importSideBarComponentView = {
+  import: (() => new SideBarComponentView()), object: null
+}

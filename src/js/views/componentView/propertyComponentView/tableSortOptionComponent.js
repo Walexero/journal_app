@@ -1,7 +1,7 @@
 import propertyOptionsComponent from "./propertyOptionsComponent.js";
 import componentOptionsView from "../componentOptionsView.js";
 import { TABLE_PROPERTIES } from "../../../config.js";
-import signals from "../../../signals.js"; //allows signals to be sent to required component
+import { importSignals } from "../../../signals.js";//allows signals to be sent to required component
 import { componentGlobalState } from "../componentGlobalState.js";
 import tableSortRuleComponent from "./tableSortRuleComponent.js";
 
@@ -9,6 +9,7 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
   _componentHandler = componentOptionsView;
   _state;
   _events = ["click", "keyup"];
+  _signals = importSignals.object
 
   constructor(state) {
     super();
@@ -47,7 +48,7 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
     //register for events from the body
     if (!componentGlobalState.sortMethod) {
       //prevent subscribing multiple times if already subscribeed
-      signals.subscribe({ component: this, source: ["tablebody", "content"] });
+      this._signals.subscribe({ component: this, source: ["tablebody", "content"] });
     }
   }
 

@@ -39,4 +39,5 @@ class Signals {
   }
 }
 
-export default new Signals();
+//export default new Signals();
+export const importSignals = { import: (() => new Signals), object: null }

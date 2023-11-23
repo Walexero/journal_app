@@ -1,10 +1,12 @@
-import signals from "../signals";
+import { importSignals } from "../signals";
 import { valueEclipser, svgMarkup } from "../helpers";
 
 class JournalInfoComponentView {
   _parentElement = document.querySelector(".container-main-content .row");
   _eventHandlers;
   _events = ["keyup", "click"];
+  //init import of signal
+  _signals = importSignals.object = importSignals.import()
 
   //signals to route sidebarclose event to sidebar component
   init(modelHandler) {
@@ -30,7 +32,7 @@ class JournalInfoComponentView {
     if (this._journalDescChangeMatchStrategy(e))
       this._handleJournalDescChangeEvent(e);
 
-    signals.observe(e, "journalInfo");
+    this._signals.observe(e, "journalInfo");
   }
 
   _journalNameChangeMatchStrategy(e) {
@@ -129,4 +131,8 @@ class JournalInfoComponentView {
     this._parentElement.insertAdjacentHTML("afterbegin", contentInfoMarkup);
   }
 }
-export const importJournalInfoComponentView = (() => new JournalInfoComponentView());
+// export const importJournalInfoComponentView = (() => new JournalInfoComponentView());
+
+export const importJournalInfoComponentView = {
+  import: (() => new JournalInfoComponentView()), object: null
+}

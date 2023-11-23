@@ -1,12 +1,14 @@
 import componentOptionsView from "./componentOptionsView.js";
 import { componentGlobalState } from "./componentGlobalState.js";
-import sidebarComponentView from "../sidebarComponentView.js";
+// import sidebarComponentView from "../sidebarComponentView.js";
+import { importSideBarComponentView } from "../sidebarComponentView.js";
 import { svgMarkup } from "../../helpers.js";
 
 export default class TableOptionComponent {
   _componentHandler = componentOptionsView;
   _state;
   _events = ["click"];
+  _sidebarComponentView = importSideBarComponentView.object
 
   constructor(state) {
     this._state = state;
@@ -155,7 +157,7 @@ export default class TableOptionComponent {
         const sidebarJournalContainer = document.querySelector(
           ".nav-options-journal"
         );
-        sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
+        this._sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
       }
     });
   }
@@ -170,7 +172,7 @@ export default class TableOptionComponent {
       const sidebarJournalContainer = document.querySelector(
         ".nav-options-journal"
       );
-      sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
+      this._sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
     }
   }
 
@@ -184,7 +186,7 @@ export default class TableOptionComponent {
       const sidebarJournalContainer = document.querySelector(
         ".nav-options-journal"
       );
-      sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
+      this._sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
     }
   }
 

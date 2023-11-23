@@ -1,6 +1,6 @@
 import tableOptionComponent from "./componentView/tableOptionComponent.js";
 import { componentGlobalState } from "./componentView/componentGlobalState.js";
-import sidebarComponentView from "./sidebarComponentView.js";
+import { importSideBarComponentView } from "./sidebarComponentView.js";
 
 class TableHeadProcessorView {
   _optionsView; // = tableOptionsView;
@@ -10,6 +10,7 @@ class TableHeadProcessorView {
   _active = false;
   _eventHandlers;
   _currentTableSetter;
+  _sidebarComponentView = importSideBarComponentView.object
 
   addHandlers(handlers, currentTableSetter) {
     this._eventHandlers = handlers.optionControllers;
@@ -116,7 +117,7 @@ class TableHeadProcessorView {
         const sidebarJournalContainer = document.querySelector(
           ".nav-options-journal"
         );
-        sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
+        this._sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
       }
     }
 
