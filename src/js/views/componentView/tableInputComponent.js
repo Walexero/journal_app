@@ -1,7 +1,7 @@
 // import componentOptionsView from "./componentOptionsView.js";
 import { importComponentOptionsView } from "./componentOptionsView.js";
 import { componentGlobalState } from "./componentGlobalState.js";
-
+import { API } from "../../api.js";
 export default class TableInputComponent {
   _componentHandler = importComponentOptionsView.object;
   _state;
@@ -56,6 +56,7 @@ export default class TableInputComponent {
   }
 
   _handleEvents(e) {
+    debugger;
     //listen for enter from the textinput
     if (e.key === "Enter") {
       //adds the filter to be used when updating the item

@@ -88,7 +88,7 @@ export class API {
     }
 
     static queryAPI(queryObj) {
-        debugger
+
         //switch the timeout secs if null
         queryObj.sec = queryObj.sec ?? API.timeout
         //create the loader based on the queryObj

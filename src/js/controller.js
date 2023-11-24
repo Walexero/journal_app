@@ -1,5 +1,5 @@
 import * as model from "./model.js";
-import { swapItemIndex } from "./helpers.js";
+import { swapItemIndex, formatAPITableItems } from "./helpers.js";
 import { LoginTemplate } from "./templates/loginTemplate.js"
 import { JournalTemplate } from "./templates/journalTemplate.js"
 
@@ -14,6 +14,7 @@ import Login from "./views/loginView/login.js";
 import "core-js/stable";
 import { Loader } from "./components/loader.js";
 import { DEFAULT_LOGIN_PAGE_TIMEOUT } from "./config.js";
+import { API } from "./api.js";
 
 let contentContainerListener;
 let sidebarComponentView;
@@ -116,6 +117,49 @@ const controlAddNewTable = function () {
   if (tableHeads.length > 4) controlRenderUpdatedTableHeads(tableId);
 };
 
+const filterSortRenderTableItem = function (addTableItemParam) {//currentTable, filter, sort, itemId) {
+  let tableItems;
+  //returns the filtered tableItems using the filterMethod from the Component or returns all the tableItems for the current Table
+  addTableItemParam.filter
+    ? (tableItems = addTableItemParam.filter(addTableItemParam.currentTable.tableItems))
+    : (tableItems = addTableItemParam.currentTable.tableItems);
+
+  addTableItemParam.sort ? addTableItemParam.sort(tableItems) : pass();
+
+  if (tableItems && !Array.isArray(tableItems)) tableItems = [tableItems];
+
+  tableComponentView.updateTableItem(
+    addTableItemParam.currentTable,
+    tableItems,
+    addTableItemParam.itemId,
+    addTableItemParam.callBack
+  );
+}
+
+const controlAddTableItemFallback = function (addTableItemParam, returnData, requestStatus = false) {
+  debugger;
+  const currentTable = model.getCurrentTable();
+
+  if (!requestStatus) {
+    const itemId = model.addTableItem(addTableItemParam.payload, addTableItemParam.relativeItem);
+    model.diff.tableItemToCreate.push({ table: currentTable.id, item: itemId })
+    addTableItemParam.currentTable = currentTable
+    addTableItemParam.itemId = itemId
+
+    //filter,sort and render the table items
+    filterSortRenderTableItem(addTableItemParam)
+  }
+  if (requestStatus) {
+    const formattedAPIResp = formatAPITableItems([returnData])
+    const itemId = model.addTableItem(...formattedAPIResp, addTableItemParam.relativeItem, true);
+    addTableItemParam.currentTable = currentTable
+    addTableItemParam.itemId = itemId
+
+    //filter,sort and render the table items
+    filterSortRenderTableItem(addTableItemParam)
+  }
+}
+
 /**
  *
  * @param {*Object} payload - To add new Item to the curreentTable
@@ -127,28 +171,27 @@ const controlAddTableItem = function (
   relativeItem = undefined,
   filter = false,
   sort = false,
-  callBack = false
+  callBack = false,
 ) {
-  // debugger;
-  let tableItems;
-  const itemId = model.addTableItem(payload, relativeItem);
-  const currentTable = model.getCurrentTable();
+  const currentTableBeforeUpdate = model.getCurrentTable()
+  const apiPayload = {
+    "name": "",
+    "journal_table": currentTableBeforeUpdate.id,
+  }
+  const queryObj = {
+    endpoint: API.APIEnum.ACTIVITIES.CREATE,
+    token: model.token.value,
+    sec: null,
+    queryData: apiPayload,
+    actionType: "createTableItem",
+    spinner: false,
+    alert: false,
+    type: "POST",
+    callBack: controlAddTableItemFallback.bind(null, { payload, relativeItem, filter, sort, callBack }),
+    callBackParam: true
+  }
 
-  //returns the filtered tableItems using the filterMethod from the Component or returns all the tableItems for the current Table
-  filter
-    ? (tableItems = filter(currentTable.tableItems))
-    : (tableItems = currentTable.tableItems);
-
-  sort ? sort(tableItems) : pass();
-
-  if (tableItems && !Array.isArray(tableItems)) tableItems = [tableItems];
-
-  tableComponentView.updateTableItem(
-    currentTable,
-    tableItems,
-    itemId,
-    callBack
-  );
+  API.queryAPI(queryObj)
 };
 
 const controlGetTableItem = function (
@@ -253,89 +296,97 @@ const controlAddTemplate = function (templateType) {
   }
 }
 
-const init = function () {
+const controlLoadUI = function () {
+  const infoControllers = {
+    controlGetJournalName,
+    controlUpdateJournalInfo,
+  };
+
+  const tableControllers = {
+    controlAddNewTable,
+    controlGetTableHeads,
+    controlGetTable,
+    controlGetJournalName,
+    controlSetCurrentTable,
+  };
+
+  const tableItemControllers = {
+    controlAddTableItem,
+    controlDeleteTableItem,
+    controlUpdateTableItem,
+    controlGetTableItem,
+    controlGetTableItemWithMaxTags,
+    controlDuplicateTableItem,
+  };
+
+  const optionControllers = {
+    controlRenameOption,
+    controlDuplicateOption,
+    controlDeleteOption,
+  };
+
+  const componentControllers = {
+    tableControllers,
+    tableItemControllers,
+    optionControllers,
+  };
+
+  const [tableHeads, currentTable] = [
+    controlGetTableHeads(),
+    model.getCurrentTable(),
+  ];
+
+  //create module objects
+  importTableBodyContainerListener.object = importTableBodyContainerListener.import()
+
+  contentContainerListener = importContentContainerListener.object = importContentContainerListener.import()
+
+  journalInfoComponentView = importJournalInfoComponentView.object = importJournalInfoComponentView.import()
+
+  //init the componentOptionsView
+  importComponentOptionsView.object = importComponentOptionsView.import()
+
+  sidebarComponentView = importSideBarComponentView.object = importSideBarComponentView.import();
+
+  tableComponentView = importTableComponentView.object = importTableComponentView.import()
+
+  contentContainerListener.init(journalInfoComponentView, tableComponentView)
+  // contentContainerListener.activateListener();
+
+  sidebarComponentView.init(controlAddSideBar);
+
+  journalInfoComponentView.init(controlAddJournalInfo);
+
+  tableComponentView.init(
+    controlAddTable,
+    controlSetCurrentTable,
+    tableHeads,
+    currentTable
+  );
+
+  sidebarComponentView.addComponentHandlers(componentControllers);
+  journalInfoComponentView.addComponentHandlers(infoControllers);
+  tableComponentView.addComponentHandlers(componentControllers);
+  //componentGlobalState inherits all controller methods all components have
+  componentGlobalState.eventHandlers = {
+    infoControllers,
+    tableControllers,
+    tableItemControllers,
+    optionControllers,
+    componentControllers,
+  };
+}
+
+const init = function (loadTemplate = true) {
   model.loadToken()
   if (model.token.value) {
-    controlAddTemplate("journal")
+    if (loadTemplate) {
+      controlAddTemplate("journal")
+      model.init(init)
+    }
 
-    const infoControllers = {
-      controlGetJournalName,
-      controlUpdateJournalInfo,
-    };
+    if (!loadTemplate) controlLoadUI()
 
-    const tableControllers = {
-      controlAddNewTable,
-      controlGetTableHeads,
-      controlGetTable,
-      controlGetJournalName,
-      controlSetCurrentTable,
-    };
-
-    const tableItemControllers = {
-      controlAddTableItem,
-      controlDeleteTableItem,
-      controlUpdateTableItem,
-      controlGetTableItem,
-      controlGetTableItemWithMaxTags,
-      controlDuplicateTableItem,
-    };
-
-    const optionControllers = {
-      controlRenameOption,
-      controlDuplicateOption,
-      controlDeleteOption,
-    };
-
-    const componentControllers = {
-      tableControllers,
-      tableItemControllers,
-      optionControllers,
-    };
-
-    const [tableHeads, currentTable] = [
-      controlGetTableHeads(),
-      model.getCurrentTable(),
-    ];
-
-    //create module objects
-    importTableBodyContainerListener.object = importTableBodyContainerListener.import()
-
-    contentContainerListener = importContentContainerListener.object = importContentContainerListener.import()
-
-    journalInfoComponentView = importJournalInfoComponentView.object = importJournalInfoComponentView.import()
-
-    //init the componentOptionsView
-    importComponentOptionsView.object = importComponentOptionsView.import()
-
-    sidebarComponentView = importSideBarComponentView.object = importSideBarComponentView.import();
-
-    tableComponentView = importTableComponentView.object = importTableComponentView.import()
-
-    contentContainerListener.init(journalInfoComponentView, tableComponentView)
-    // contentContainerListener.activateListener();
-
-    sidebarComponentView.init(controlAddSideBar);
-
-    journalInfoComponentView.init(controlAddJournalInfo);
-
-    tableComponentView.init(
-      controlAddTable,
-      controlSetCurrentTable,
-      tableHeads,
-      currentTable
-    );
-
-    sidebarComponentView.addComponentHandlers(componentControllers);
-    journalInfoComponentView.addComponentHandlers(infoControllers);
-    tableComponentView.addComponentHandlers(componentControllers);
-    //componentGlobalState inherits all controller methods all components have
-    componentGlobalState.eventHandlers = {
-      infoControllers,
-      tableControllers,
-      tableItemControllers,
-      optionControllers,
-      componentControllers,
-    };
   }
   if (!model.token.value) controlAddTemplate("login")
 };

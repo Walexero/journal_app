@@ -32,6 +32,12 @@ export let state = {
   tagsColor: TAGS_COLORS.colors,
 };
 
+export let diff = {
+  tableItemToCreate: [],
+  tableItemToUpdate: [],
+  tableItemToDelete: [],
+}
+
 export let token = {}
 
 const pass = () => { };
@@ -293,9 +299,13 @@ export const addNewTable = function () {
   return createdTableId;
 };
 
-export const addTableItem = function (payload, relativeItem = undefined) {
+export const addTableItem = function (payload, relativeItem = undefined, APIResp = false) {
+  debugger;
+  let tableItem
   const currentTable = getCurrentTable();
-  const tableItem = createTableItem("", payload);
+  if (!APIResp) tableItem = createTableItem("", payload);
+  if (APIResp) tableItem = payload
+
   if (!relativeItem) currentTable.tableItems.push(tableItem);
   if (relativeItem) {
     const relativeItemIndex = getItemFromTableItems(
@@ -475,13 +485,15 @@ export const loadToken = () => {
 
 // const replace
 
-const requestJournalTableCallback = function (journalTableAPIResp, requestState) {
+const requestJournalTableCallback = function (callBack, journalTableAPIResp, requestState) {
+  let tableItems = [];
   if (requestState) {
-    const formattedData = formatAPIResp(journalTableAPIResp, "journalTables")
-    console.log("formatted data jourtable", formattedData)
+    journalTableAPIResp.forEach(tableItem => tableItems.push(formatAPIResp(tableItem, "journalTables")))
+    //replace state data with api data
+    replaceStateJournalDataWithAPIData(tableItems, "journalTables")
 
-
-    //TODO: add formattd v alus to model
+    //re-call the model init
+    callBack()
   }
 
 }
@@ -492,27 +504,26 @@ const replaceStateJournalDataWithAPIData = function (formattedAPIData, type) {
     state.name = formattedAPIData.name
     state.description = formattedAPIData.description
     state.tableHeads = formattedAPIData.tableHeads
-    // FIXME: add curTable after journaltableadded
-    // state.currentTable = formattedAPIData.currentTable
+    state.currentTable = formattedAPIData.currentTable
   }
 
   if (type === "journalTables") {
-    // state
+    state.tables.push(...formattedAPIData)
   }
 }
 
-const requestJournalTableData = function (journalAPIResp, requestState) {
+const requestJournalTableData = function (callBack, journalAPIResp, requestState) {
   if (requestState) {
     const queryObjJournalActiveTable = {
-      endpoint: API.APIEnum.JOURNAL_TABLES.GET(journalAPIResp[0].current_table),
+      endpoint: API.APIEnum.JOURNAL_TABLES.LIST, //.GET(journalAPIResp[0].current_table),
       token: token.value,
       sec: null,
       actionType: "getActiveTable",
       // queryData
       spinner: true,
-      alert: true,
+      alert: false,
       type: "GET",
-      callBack: requestJournalTableCallback,
+      callBack: requestJournalTableCallback.bind(null, callBack),
       callBackParam: true
     }
 
@@ -521,14 +532,13 @@ const requestJournalTableData = function (journalAPIResp, requestState) {
     const formattedJournalAPIResp = formatAPIResp(...journalAPIResp, "journal")
 
     //replace state data for journal
-    replaceStateJournalDataWithAPIData(formattedJournalAPIResp)
+    replaceStateJournalDataWithAPIData(formattedJournalAPIResp, "journal")
   }
 
   //TODO: add formatted data to model
 }
 
-const requestJournalData = function () {
-  console.log("token", token.value)
+const requestJournalData = function (callBack) {
   const queryObjJournal = {
     endpoint: API.APIEnum.JOURNAL.LIST,
     token: token.value,
@@ -538,7 +548,7 @@ const requestJournalData = function () {
     spinner: true,
     alert: true,
     type: "GET",
-    callBack: requestJournalTableData,
+    callBack: requestJournalTableData.bind(null, callBack),
     callBackParam: true
   }
   API.queryAPI(queryObjJournal)
@@ -548,22 +558,31 @@ const requestJournalData = function () {
 // 
 // }
 
-const init = function () {
-  const dataLoadedFromDb = getPersistedData();
-  if (dataLoadedFromDb) {
-    state = dataLoadedFromDb
-    if (!token.value) loadToken()
-    // requestJournalData()
-  };
+export const init = function (controllerInit = undefined, loadController = false) {
+  if (!loadController) {
 
-  if (!dataLoadedFromDb) {
-    //create default tables
-    TABLE_DEFAULT_JOURNALS.forEach((table, i) =>
-      createTable(table, i, Date.now())
-    );
+    const dataLoadedFromDb = getPersistedData();
+    if (dataLoadedFromDb) {
+      state = dataLoadedFromDb
+      if (!token.value) loadToken()
+      const initCallBack = init.bind(null, controllerInit, true)
+      requestJournalData(initCallBack)
 
-    //create ids for tags
-    state.tags.forEach((tag) => (tag.id = stringToHash(tag.text)));
+    };
+
+    if (!dataLoadedFromDb) {
+      //create default tables
+      const initCallBack = init.bind(null, controllerInit, true)
+      requestJournalData(initCallBack)
+      // TABLE_DEFAULT_JOURNALS.forEach((table, i) =>
+      //   createTable(table, i, Date.now())
+      // );
+
+      //create ids for tags
+      state.tags.forEach((tag) => (tag.id = stringToHash(tag.text)));
+    }
   }
+
+  if (loadController) controllerInit(false)
 };
-init();
+// init();

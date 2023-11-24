@@ -202,19 +202,25 @@ export const formatAPISub = function (APIResp, type) {
 }
 
 export const formatAPITableItems = function (APIResp, type) {
+  debugger;
+  let formattedData = [];
   if (APIResp.length > 0) {
-    let formatAPITableItem = {
-      "id": APIResp.id,
-      "itemTitle": APIResp.name,
-      "itemTags": formatAPISub(APIResp.tags, "tags"),
-      "actionItems": formatAPISub(APIResp.action_items, "actionItems"),
-      "intentions": formatAPISub(APIResp.intentions, "intentions"),
-      "happenings": formatAPISub(APIResp.happenings, "happenings"),
-      "gratefulFor": formatAPISub(APIResp.grateful_for, "gratefulFor")
-    }
-    return formatAPITableItem
+    APIResp.forEach(resp => {
+
+      let formatAPITableItem = {
+        "id": resp.id,
+        "itemTitle": resp.name,
+        "itemTags": formatAPISub(resp.tags, "tags"),
+        "actionItems": formatAPISub(resp.action_items, "actionItems"),
+        "intentions": formatAPISub(resp.intentions, "intentions"),
+        "happenings": formatAPISub(resp.happenings, "happenings"),
+        "gratefulFor": formatAPISub(resp.grateful_for, "gratefulFor")
+      }
+      formattedData.push(formatAPITableItem)
+    })
+    return formattedData
   }
-  return APIResp
+  if (!APIResp.length > 0) return APIResp
 }
 
 export const formatAPIResp = function (APIResp, type) {

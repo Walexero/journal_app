@@ -54,6 +54,7 @@ class TableBodyProcessorView {
   }
 
   renderTableInput(inputContainer, currentTable = undefined) {
+    debugger;
     const cls = this;
 
     //if currentTable not passeed in, get the current table from the DOM
