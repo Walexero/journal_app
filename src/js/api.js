@@ -31,6 +31,19 @@ export class API {
             // BATCH_DELETE: "todo/todos/batch_delete",
         },
 
+        JOURNAL_TABLES: {
+            CREATE: "journal/journal-tables/",
+            LIST: "journal/journal-tables/",
+            // BATCH_CREATE: "todo/todos/batch_create/",
+            GET: ((tableId) => `journal/journal-tables/${tableId}/`),
+            PUT: ((tableId) => `journal/journal-tables/${tableId}/`),
+            PATCH: ((tableId) => `journal/journal-tables/${tableId}/`),
+            // BATCH_UPDATE_ORDERING: "todo/todos/batch_update_ordering/",
+            // BATCH_UPDATE: "todo/todos/batch_update/",
+            DELETE: ((tableId) => `journal/journal-tables/${tableId}/`),
+
+        },
+
         TAG: {
             CREATE: "journal/tags/",
             LIST: "journal/tags/",
@@ -107,7 +120,7 @@ export class API {
 
         try {
             const res = await Promise.race([API.makeRequest(queryObj), timeout(queryObj.sec, queryObj.actionType)]) //TODO: Add fns to the timeout function
-
+            debugger
             const resContent = res.status !== HTTP_204_SUCCESS_NO_CONTENT ? await res.json() : {}
 
             if (!res.ok) throw new Error(`${ALERT_STATUS_ERRORS.find(s => s === res.status) ? API.getResponseToRender(resContent, queryObj, res.status) : res.message} (${res.status})`)

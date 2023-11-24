@@ -296,7 +296,6 @@ const init = function () {
       controlGetTableHeads(),
       model.getCurrentTable(),
     ];
-    debugger;
 
     //create module objects
     importTableBodyContainerListener.object = importTableBodyContainerListener.import()

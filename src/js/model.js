@@ -1,3 +1,4 @@
+import { API } from "./api.js";
 import {
   NEW_JOURNAL_NAME,
   TABLE_DEFAULT_JOURNALS,
@@ -14,6 +15,8 @@ import {
   stringToHash,
   dynamicArithmeticOperator,
   indexVal,
+  formatAPIResp,
+
 } from "./helpers.js";
 
 import cloneDeep from "../../node_modules/lodash-es/cloneDeep.js";
@@ -24,6 +27,7 @@ export let state = {
   name: "",
   description: DEFAULT_JOURNAL_DESC,
   tables: [],
+  tableHeads: [],
   tags: TABLE_TAGS.tags,
   tagsColor: TAGS_COLORS.colors,
 };
@@ -452,6 +456,7 @@ export const duplicateTableItem = function (payload) {
 
 const persistData = () => {
   localStorage.setItem("userJournal", JSON.stringify(state));
+  console.log("saveed state", state)
 };
 
 export const persistToken = function () {
@@ -468,9 +473,88 @@ export const loadToken = () => {
   if (storedToken) token = JSON.parse(storedToken)
 }
 
+// const replace
+
+const requestJournalTableCallback = function (journalTableAPIResp, requestState) {
+  if (requestState) {
+    const formattedData = formatAPIResp(journalTableAPIResp, "journalTables")
+    console.log("formatted data jourtable", formattedData)
+
+
+    //TODO: add formattd v alus to model
+  }
+
+}
+
+const replaceStateJournalDataWithAPIData = function (formattedAPIData, type) {
+  if (type === "journal") {
+
+    state.name = formattedAPIData.name
+    state.description = formattedAPIData.description
+    state.tableHeads = formattedAPIData.tableHeads
+    // FIXME: add curTable after journaltableadded
+    // state.currentTable = formattedAPIData.currentTable
+  }
+
+  if (type === "journalTables") {
+    // state
+  }
+}
+
+const requestJournalTableData = function (journalAPIResp, requestState) {
+  if (requestState) {
+    const queryObjJournalActiveTable = {
+      endpoint: API.APIEnum.JOURNAL_TABLES.GET(journalAPIResp[0].current_table),
+      token: token.value,
+      sec: null,
+      actionType: "getActiveTable",
+      // queryData
+      spinner: true,
+      alert: true,
+      type: "GET",
+      callBack: requestJournalTableCallback,
+      callBackParam: true
+    }
+
+    API.queryAPI(queryObjJournalActiveTable)
+
+    const formattedJournalAPIResp = formatAPIResp(...journalAPIResp, "journal")
+
+    //replace state data for journal
+    replaceStateJournalDataWithAPIData(formattedJournalAPIResp)
+  }
+
+  //TODO: add formatted data to model
+}
+
+const requestJournalData = function () {
+  console.log("token", token.value)
+  const queryObjJournal = {
+    endpoint: API.APIEnum.JOURNAL.LIST,
+    token: token.value,
+    sec: null,
+    actionType: "getJournal",
+    // queryData
+    spinner: true,
+    alert: true,
+    type: "GET",
+    callBack: requestJournalTableData,
+    callBackParam: true
+  }
+  API.queryAPI(queryObjJournal)
+}
+
+// const loadAPIData = function () {
+// 
+// }
+
 const init = function () {
   const dataLoadedFromDb = getPersistedData();
-  if (dataLoadedFromDb) state = dataLoadedFromDb;
+  if (dataLoadedFromDb) {
+    state = dataLoadedFromDb
+    if (!token.value) loadToken()
+    // requestJournalData()
+  };
 
   if (!dataLoadedFromDb) {
     //create default tables

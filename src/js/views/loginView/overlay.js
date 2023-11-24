@@ -1,10 +1,8 @@
-
 import { delegateConditional } from "../../helpers.js";
-// import componentOptionsView from "../componentView/componentOptionsView.js";
 import { importComponentOptionsView } from "../componentView/componentOptionsView.js";
 export class Overlay {
     _eventListeners = ["click", "keyup"]
-    _componentHandler = importComponentOptionsView.object
+    _componentHandler = importComponentOptionsView.cls
 
     constructor(contentComponent, disableEvents = false, position = undefined, extraClassName = false) {
         this.contentComponent = contentComponent

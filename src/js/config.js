@@ -179,6 +179,8 @@ export const HTTP_200_RESPONSE = {
   "login": ((placeholder) => "Authentication Successful"), "create": ((placeholder) => "Account Created Successfully"), "loadTodos": ((placeholder) => "Data Loading Completed"), "updatePwd": ((placeholder) => "Password Changed Successfully"), "updateInfo": ((placeholder) => "User Info Updated Successfully"),
   "resetPwd": ((APIResp) => `${APIResp}\n Please fill in the form with the email details`),
   "resetConfirmPwd": ((APIResp) => APIResp),
+  "getJournal": ((APIResp) => APIResp),
+  "getActiveTable": ((APIResp) => APIResp),
 }
-export const PREVENT_DESTRUCTURING_FROM_API_ENDPOINT_RESP = ["create"]
+export const PREVENT_DESTRUCTURING_FROM_API_ENDPOINT_RESP = ["create", "getJournal", "getActiveTable"]
 // "loadTodos", "createTodo", "updateTask", "deleteTodo", "deleteTask", "updateTodo", "createBatchTodo", "createBatchTask", "updateBatchTodo", "updateBatchTask", "deleteTodoBatch", "deleteBatchTask", "updateOrdering"

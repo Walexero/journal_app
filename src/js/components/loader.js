@@ -1,6 +1,6 @@
 import { Overlay } from "../views/loginView/overlay.js";
 // import componentOptionsView from "../views/componentView/componentOptionsView.js";
-import importComponentOptionsView from "../views/componentView/componentOptionsView.js";
+import { importComponentOptionsView } from "../views/componentView/componentOptionsView.js";
 
 export class Loader {
 
@@ -10,6 +10,7 @@ export class Loader {
     }
 
     component() {
+        console.log("import compopt", importComponentOptionsView.cls)
         this._component = importComponentOptionsView.cls.createHTMLElement(this._generateMarkup())
 
 

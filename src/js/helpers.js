@@ -191,3 +191,90 @@ export const delegateConditional = (ev, className, optional = undefined) => {
   const condition = ev.key === "Escape" || ev.type === "click"
   if (condition) return delegateMatch(ev, className, optional)
 }
+
+export const formatAPISub = function (APIResp, type) {
+  let formatList = [];
+  if (APIResp.length > 1 || APIResp.length === 1) {
+    APIResp.forEach(resp => formatList.push(formatAPIResp(resp, type)))
+    return formatList
+  }
+  return APIResp
+}
+
+export const formatAPITableItems = function (APIResp, type) {
+  if (APIResp.length > 0) {
+    let formatAPITableItem = {
+      "id": APIResp.id,
+      "itemTitle": APIResp.name,
+      "itemTags": formatAPISub(APIResp.tags, "tags"),
+      "actionItems": formatAPISub(APIResp.action_items, "actionItems"),
+      "intentions": formatAPISub(APIResp.intentions, "intentions"),
+      "happenings": formatAPISub(APIResp.happenings, "happenings"),
+      "gratefulFor": formatAPISub(APIResp.grateful_for, "gratefulFor")
+    }
+    return formatAPITableItem
+  }
+  return APIResp
+}
+
+export const formatAPIResp = function (APIResp, type) {
+  let formattedData;
+  console.log("APIResp before form", APIResp)
+  if (type === "journal") {
+    formattedData = {
+      "id": APIResp.id,
+      "name": APIResp.journal_name,
+      "description": APIResp.journal_description,
+      "tableHeads": APIResp.journal_tables,
+      "currentTable": APIResp.current_table
+    }
+  }
+
+  if (type === "journalTables") {
+    formattedData = {
+      "id": APIResp.id,
+      "tableTitle": APIResp.table_name,
+      "tableItems": formatAPITableItems(APIResp.activities, "activities"),
+    }
+  }
+
+  if (type === "actionItems") {
+    formattedData = {
+      "id": APIResp.id,
+      "text": APIResp.action_item,
+      "checkbox": true,
+      "checked": APIResp.cheecked
+    }
+  }
+
+  if (type === "intentions") {
+    formattedData = {
+      "id": APIResp.id,
+      "text": APIResp.intention
+    }
+  }
+
+  if (type === "happenings") {
+    formattedData = {
+      "id": APIResp.id,
+      "text": APIResp.happening
+    }
+  }
+
+  if (type === "gratefulFor") {
+    formattedData = {
+      "id": APIResp.id,
+      "text": APIResp.grateful_for
+    }
+  }
+
+  if (type === "tags") {
+    formattedData = {
+      "color": APIResp.tag_color,
+      "text": APIResp.tag_name,
+      "color_value": APIResp.tag_class
+    }
+  }
+
+  return formattedData
+}

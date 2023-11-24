@@ -1,5 +1,5 @@
 import { delegateMatch, timeoutWithoutPromise, selector } from "../helpers.js";
-import importComponentOptionsView from "../views/componentView/componentOptionsView.js";
+import { importComponentOptionsView } from "../views/componentView/componentOptionsView.js";
 
 export class Alert {
     _eventListeners = ["click"]
