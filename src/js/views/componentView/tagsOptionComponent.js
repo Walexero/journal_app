@@ -446,6 +446,7 @@ export default class TagOptionComponent {
       width,
       height,
       tags: state.tags,
+      eventHandlers: this._state.eventHandlers,
       tagsColors: state.tagsColors,
       table: state.table,
       itemId: +currentTarget.dataset.id,

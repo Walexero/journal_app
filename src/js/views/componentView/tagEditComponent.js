@@ -1,4 +1,3 @@
-// import componentOptionsView from "./componentOptionsView.js";
 import { importComponentOptionsView } from "./componentOptionsView.js";
 import notificationComponent from "./notificationComponent.js";
 import cloneDeep from "../../../../node_modules/lodash-es/cloneDeep.js";
@@ -194,12 +193,7 @@ export default class TagEditComponent {
   }
 
   _deleteTag(tagId, el) {
-    const tagToDelete = this._state.tags.findIndex(
-      (tag) => String(tag.id) === String(tagId)
-    );
-    //delete the tag
-    //NOTE: this also updates the object in the model
-    this._state.tags.splice(tagToDelete, 1);
+    this._state.eventHandlers.tableItemControllers.controlDeleteTag(tagId)
     this._deleteElFromOptionContainer(el);
   }
 
@@ -214,6 +208,7 @@ export default class TagEditComponent {
   }
 
   updateTagAndNotifyCallers(deleteTag) {
+    debugger;
     const cls = this;
     let cloneTagBeforeUpdate = null;
 
@@ -296,15 +291,19 @@ export default class TagEditComponent {
         tagBeforeUpdate: cloneTagBeforeUpdate,
       };
 
-      this._state.callBack(
-        {
-          tableId: +this._state.currentTarget.dataset.id,
-          itemId: this._state.itemId,
-          updateObj,
-        }
-        //
-        //
-      );
+
+      this._state.eventHandlers.tableItemControllers.controlUpdateTag(updateObj, "tagsValue")
+      // this._state.callBack(
+      // {
+      // tableId: +this._state.currentTarget.dataset.id,
+      // itemId: this._state.itemId,
+      // updateObj,
+      // },
+      // null,
+      // null,
+      // "tagsValue" //added payload type
+
+      // );
     }
   }
 

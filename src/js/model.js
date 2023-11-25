@@ -36,6 +36,9 @@ export let diff = {
   tableItemToCreate: [],
   tableItemToUpdate: [],
   tableItemToDelete: [],
+  tagToDelete: [],
+  tagsToUpdate: [],
+
 }
 
 export let token = {}
@@ -65,6 +68,7 @@ export const setCurrentTable = (currentTable) => {
   persistData();
 };
 
+//deprc
 const checkForAndAddNewTag = (updateObj) => {
   updateObj.forEach((obj) => {
     const objExistInTableTags = state.tags.find(
@@ -74,6 +78,15 @@ const checkForAndAddNewTag = (updateObj) => {
     if (!objExistInTableTags) state.tags.push(obj);
   });
 };
+
+export const checkForAndUpdateTag = (payload) => {
+  let tagToUpdate = state.tags.find(
+    (tag) => tag.id === payload.id && tag.text.toLowerCase() === payload.text.toLowerCase()
+  );
+
+  //FIXME: make sure obj is replaced
+  if (tagToUpdate) tagToUpdate = payload
+}
 
 const getItemFromTableItems = (table, item, index = false, convert = true) => {
   if (!index)
@@ -300,7 +313,6 @@ export const addNewTable = function () {
 };
 
 export const addTableItem = function (payload, relativeItem = undefined, APIResp = false) {
-  debugger;
   let tableItem
   const currentTable = getCurrentTable();
   if (!APIResp) tableItem = createTableItem("", payload);
@@ -322,6 +334,13 @@ export const addTableItem = function (payload, relativeItem = undefined, APIResp
   persistData();
   return tableItem.id;
 };
+
+export const deleteTag = function (tagId) {
+  const tagToDelete = state.tags.findIndex(
+    (tag) => String(tag.id) === String(tagId)
+  );
+  state.tags.splice(tagToDelete, 1);
+}
 
 export const deleteTableItem = function (payload) {
   const tableToDeleteFrom = getCurrentTable(payload.tableId);

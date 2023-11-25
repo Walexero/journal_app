@@ -1,5 +1,6 @@
 import { LOCALE_TIME } from "./config.js";
 import icons from "url:../icons.svg";
+import { TAGS_COLORS } from "./config.js";
 
 const pass = () => { };
 
@@ -221,6 +222,19 @@ export const formatTagPayload = function (APIResp, type) {
 
 }
 
+export const formatAPIRequestTagPayload = function (payload, type) {
+  let formattedRequest;
+  if (type === "tagsValue") {
+    formattedRequest = {
+      "tag_class": payload.tag.color,
+      "tag_name": payload.tag.text,
+      "tag_color": TAGS_COLORS.colors.find(color => color.color_value == payload.tag.color).color,
+
+    }
+  }
+  return formattedRequest
+}
+
 export const formatAPITableItems = function (APIResp, type) {
   debugger;
   let formattedData = [];
@@ -330,12 +344,10 @@ export const formatAPIRequestUpdateTableItemPayload = function (payload, type) {
       tags: tagsWithId//formatTagPayload(tagsWithId, type)
     }
   }
-
   return formattedRequest
 }
 
 export const getAPICreatedTagFromModel = function (apiPayload, payload, state, type) {
-  //TODO: pass api payload, update payload with filtered id from the state, and reeturn
   if (type === "tags") {
     const tagsWithoutId = payload.tags.map(tag => tag.dataset?.id === "undefined" ? tag : pass()).filter(tag => tag)
     tagsWithoutId.forEach(tagObj => {

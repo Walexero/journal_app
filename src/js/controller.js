@@ -1,5 +1,5 @@
 import * as model from "./model.js";
-import { swapItemIndex, formatAPITableItems, formatAPIRequestUpdateTableItemPayload, formatAPISub, getAPICreatedTagFromModel } from "./helpers.js";
+import { swapItemIndex, formatAPITableItems, formatAPIRequestUpdateTableItemPayload, formatAPISub, getAPICreatedTagFromModel, formatAPIRequestTagPayload, formatAPIResp } from "./helpers.js";
 import { LoginTemplate } from "./templates/loginTemplate.js"
 import { JournalTemplate } from "./templates/journalTemplate.js"
 
@@ -275,6 +275,7 @@ const controlUpdateTableItem = function (
   let tableItems;
   debugger
   console.log('the upd payload', payload)
+  if (!payload) return
   //TODO: add payload typee to every interface that calls this func
   //FIXME: make sure the payload is updated to capture other payload types apart from title update
   const apiPayload = formatAPIRequestUpdateTableItemPayload(payload, payloadType)
@@ -295,6 +296,62 @@ const controlUpdateTableItem = function (
 
   API.queryAPI(queryObj)
 };
+
+const controlUpdateTagFallback = function (payload, returnData, requestStatus) {
+  console.log(model.state.tags)
+  if (!requestStatus) {
+    model.checkForAndUpdateTag(payload)
+    model.diff.tagsToUpdate.push(payload)
+    model.persistDiff()
+
+  }
+
+  if (requestStatus) {
+    //val updated from thee tagEdit comp
+    // const formattedData = formatAPIResp(returnData, "tags")
+    // model.checkForAndUpdateTag(formattedData)
+  }
+}
+
+const controlUpdateTag = function (payload, payloadType) {
+  const apiPayload = formatAPIRequestTagPayload(payload, payloadType)
+  const queryObj = {
+    endpoint: API.APIEnum.TAG.PATCH(payload.tag.id),
+    token: model.token.value,
+    sec: null,
+    queryData: apiPayload,
+    actionType: "updateTag",
+    spinner: false,
+    alert: false,
+    type: "PATCH",
+    callBack: controlUpdateTagFallback.bind(null, payload.tag)
+  }
+  API.queryAPI(queryObj)
+
+}
+
+const controlAPIDeleteTagFallback = function (tagId, returnData, requestStatus) {
+  if (!requestStatus) {
+    model.diff.tagToDelete.push(tagId)
+    model.persistDiff()
+  }
+}
+
+const controlDeleteTag = function (tagId) {
+  const queryObj = {
+    endpoint: API.APIEnum.TAG.DELETE(tagId),
+    token: model.token.value,
+    sec: null,
+    actionType: "deleteTag",
+    spinner: false,
+    alert: false,
+    type: "DELETE",
+    callBack: controlAPIDeleteTagFallback.bind(null, tagId)
+  }
+  API.queryAPI(queryObj)
+
+  model.deleteTag(tagId)
+}
 
 const controlDeleteTableItem = function (
   payload,
@@ -379,6 +436,8 @@ const controlLoadUI = function () {
     controlGetTableItemWithMaxTags,
     controlDuplicateTableItem,
     controlAddTag,
+    controlDeleteTag,
+    controlUpdateTag
   };
 
   const optionControllers = {
