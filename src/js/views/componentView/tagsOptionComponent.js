@@ -20,26 +20,8 @@ export default class TagOptionComponent {
 
   pass() { }
 
-  _createAPITagFallback(payload, returnData, requestState = false) {
-    if (!requestState) { }
-
-    if (requestState) { }
-    //TODO: add request fallback
-  }
-
   _createAPITag(payload) {
-    const queryObj = {
-      endpoint: API.APIEnum.TAG.CREATE,
-      token: this._state.token,
-      sec: null,
-      queryData: payload,
-      actionType: "createTag",
-      spinner: false,
-      alert: false,
-      type: "POST",
-      callBack: this._createAPITagFallback.bind(this, payload)
-    }
-    //TODO: add api request for tag
+    this._state.eventHandlers.tableItemControllers.controlAddTag(payload)
   }
 
   _createTagForCurrentItem(tag) {
@@ -58,8 +40,6 @@ export default class TagOptionComponent {
 
 
     if (!tagObj.id) {
-
-      //TODO: make below callback
       const tagAPIRequestPayload = formatTagRequestBody(tagObj)
 
       this._createAPITag(tagAPIRequestPayload)
@@ -69,33 +49,33 @@ export default class TagOptionComponent {
 
     return { createTagMarkup, tagObj };
   }
-}
 
-_getRandomColor() {
-  const randomColor = Math.trunc(Math.random() * 9) + 1;
-  return this._state.tagsColors[randomColor].color_value;
-}
 
-_generateTagAddMarkup(tag, addXmark = false) {
-  return `
+  _getRandomColor() {
+    const randomColor = Math.trunc(Math.random() * 9) + 1;
+    return this._state.tagsColors[randomColor].color_value;
+  }
+
+  _generateTagAddMarkup(tag, addXmark = false) {
+    return `
       <div class=" ${addXmark ? "tag-tag" : "row-tag-tag"} ${tag.color
-    }" data-id=${tag.id}>
+      }" data-id=${tag.id}>
         ${tag.text}
 
         ${addXmark
-      ? `
+        ? `
           <div class="row-tag-icon">
             ${svgMarkup("tags-items-icon", "xmark")}
           </div>
           `
-      : ""
-    }
+        : ""
+      }
       </div>
     `;
-}
+  }
 
-_generateCreateOptionsTagMarkup(inputVal) {
-  return `
+  _generateCreateOptionsTagMarkup(inputVal) {
+    return `
       <div class="tag-create">
         Create 
         <div class="tag-tag ${this._getRandomColor()}">
@@ -103,20 +83,20 @@ _generateCreateOptionsTagMarkup(inputVal) {
         </div>
       </div>
     `;
-}
+  }
 
-_generateTagsOptionsNudge() {
-  return `
+  _generateTagsOptionsNudge() {
+    return `
       <div class="row-option-icon">
         ${svgMarkup("row-icon icon-md", "ellipsis")}
       </div>
     `;
-}
+  }
 
-_generateTagsOptions(tags) {
-  let tagsOptionsMarkup = "";
-  tags.forEach((tag) => {
-    tagsOptionsMarkup += `
+  _generateTagsOptions(tags) {
+    let tagsOptionsMarkup = "";
+    tags.forEach((tag) => {
+      tagsOptionsMarkup += `
         <div class="tags-option">
           <div class="row-drag-icon">
             ${svgMarkup("row-icon icon-md", "drag-icon")}
@@ -125,17 +105,17 @@ _generateTagsOptions(tags) {
             ${this._generateTagAddMarkup(tag)}
           </div>
           ${this._state.disableOptionsNudge
-        ? ""
-        : this._generateTagsOptionsNudge()
-      }
+          ? ""
+          : this._generateTagsOptionsNudge()
+        }
         </div>
       `;
-  });
-  return tagsOptionsMarkup;
-}
+    });
+    return tagsOptionsMarkup;
+  }
 
-_generateTagInput(tagItemsMarkup) {
-  return `
+  _generateTagInput(tagItemsMarkup) {
+    return `
       <div class="tag-input-container">
         <div class="tag-input">
           <div class="tags-items">
@@ -150,25 +130,25 @@ _generateTagInput(tagItemsMarkup) {
       </div>
 
     `;
-}
-
-_generateMarkup(tagItems = undefined, itemId = undefined) {
-  //restrict the item tags markup to only when the itemId is provided
-  let tagItemsMarkup = "";
-  if (tagItems) {
-    tagItemsMarkup =
-      tagItems.length > 0
-        ? tagItems
-          .map((tagItem) => this._generateTagAddMarkup(tagItem, true))
-          .join("")
-        : "";
   }
 
-  const tagInputMarkup = this._state.disableInput
-    ? ""
-    : this._generateTagInput(tagItemsMarkup);
+  _generateMarkup(tagItems = undefined, itemId = undefined) {
+    //restrict the item tags markup to only when the itemId is provided
+    let tagItemsMarkup = "";
+    if (tagItems) {
+      tagItemsMarkup =
+        tagItems.length > 0
+          ? tagItems
+            .map((tagItem) => this._generateTagAddMarkup(tagItem, true))
+            .join("")
+          : "";
+    }
 
-  return `
+    const tagInputMarkup = this._state.disableInput
+      ? ""
+      : this._generateTagInput(tagItemsMarkup);
+
+    return `
           <div class="row-tag-popup options-markup" data-id="${itemId}">
             <div class="row-tag-box">
               ${tagInputMarkup}
@@ -181,348 +161,348 @@ _generateMarkup(tagItems = undefined, itemId = undefined) {
             </div>
           </div>
         `;
-}
-
-render() {
-  const cls = this;
-  this._state.markup = this._generateMarkup(
-    this._state.tagItems,
-    this._state.itemId
-  );
-
-  const { overlay, overlayInterceptor, component } =
-    this._componentHandler._componentOverlay(this._state);
-
-  this._state = { ...this._state, overlay, overlayInterceptor, component };
-
-  this._handleUpdateModelIfFilterActive();
-
-  //overlay component handles its event
-  overlayInterceptor.addEventListener(
-    "click",
-    function (e) {
-      cls._componentHandler._componentRemover(cls._state);
-    },
-    { once: true }
-  );
-
-  //component handles its event
-  this._events.forEach((ev) => {
-    component.addEventListener(ev, this._handleEvents.bind(cls));
-  });
-}
-
-_handleEvents(e) {
-  //form listener event, tag selection and tag creation markup
-  if (this._createTagOrTagMatchStrategy(e))
-    this._handleCreateTagOrTagSelectEvent(e);
-
-  //tag create and add tag to tag item
-  if (this._createTagItemMatchStrategy(e)) this._handleCreateTagItem(e);
-
-  //tag add event
-  if (this._addTagMatchStrategy(e)) this._handleAddTagToItemEvent(e);
-
-  //remove tag click event
-  if (this._removeTagClickMatchStrategy(e))
-    this._handleRemoveTagClickEvent(e);
-
-  //remove tag key event
-  if (this._removeTagKeyMatchStrategy(e)) this._handleRemoveTagKeyEvent(e);
-
-  //tags options options render event
-  if (this._renderTagOptionOptionsMatchStrategy(e))
-    this._handleTagOptionOptionsRenderEvent(e);
-}
-
-_createTagOrTagMatchStrategy(e) {
-  if (e.type === "keyup") {
-    const matchStrategy = e.target.classList.contains("tag-input-input");
-    return matchStrategy;
-  }
-}
-
-_createTagItemMatchStrategy(e) {
-  if (e.type === "click") {
-    const matchStrategy =
-      e.target.classList.contains("tag-create") ||
-      e.target.closest(".tag-create");
-    return matchStrategy;
   }
 
-  if (e.type === "keyup" && e.key === "Enter") {
-    const matchStrategy =
-      e.target.classList.contains("tag-input-input") ||
-      e.target.closest(".tag-input-input");
+  render() {
+    const cls = this;
+    this._state.markup = this._generateMarkup(
+      this._state.tagItems,
+      this._state.itemId
+    );
 
-    return matchStrategy;
+    const { overlay, overlayInterceptor, component } =
+      this._componentHandler._componentOverlay(this._state);
+
+    this._state = { ...this._state, overlay, overlayInterceptor, component };
+
+    this._handleUpdateModelIfFilterActive();
+
+    //overlay component handles its event
+    overlayInterceptor.addEventListener(
+      "click",
+      function (e) {
+        cls._componentHandler._componentRemover(cls._state);
+      },
+      { once: true }
+    );
+
+    //component handles its event
+    this._events.forEach((ev) => {
+      component.addEventListener(ev, this._handleEvents.bind(cls));
+    });
   }
-}
 
-_addTagMatchStrategy(e) {
-  if (e.type === "click") {
-    // debugger;
-    const matchStrategy =
-      e.target.classList.contains("row-tag-tag") ||
-      e.target.classList.contains("tags-option") ||
-      e.target.closest(".row-option-tag");
+  _handleEvents(e) {
+    //form listener event, tag selection and tag creation markup
+    if (this._createTagOrTagMatchStrategy(e))
+      this._handleCreateTagOrTagSelectEvent(e);
 
-    if (matchStrategy) {
-      //implements the signals observer here
-      if (componentGlobalState.filterTagOptionActive) {
-        componentGlobalState.tagItemFactory =
-          this._createTagForCurrentItem.bind(this);
-        componentGlobalState.tagItemMarkupFactory =
-          this._generateTagAddMarkup.bind(this);
+    //tag create and add tag to tag item
+    if (this._createTagItemMatchStrategy(e)) this._handleCreateTagItem(e);
 
-        //observe for add events to route to filter view if active
-        this._signals.observe(e, "tagadd");
-      }
+    //tag add event
+    if (this._addTagMatchStrategy(e)) this._handleAddTagToItemEvent(e);
 
-      //if tags not active somewhere else, deliver to its handler
-      if (!componentGlobalState.filterTagOptionActive) return matchStrategy;
+    //remove tag click event
+    if (this._removeTagClickMatchStrategy(e))
+      this._handleRemoveTagClickEvent(e);
+
+    //remove tag key event
+    if (this._removeTagKeyMatchStrategy(e)) this._handleRemoveTagKeyEvent(e);
+
+    //tags options options render event
+    if (this._renderTagOptionOptionsMatchStrategy(e))
+      this._handleTagOptionOptionsRenderEvent(e);
+  }
+
+  _createTagOrTagMatchStrategy(e) {
+    if (e.type === "keyup") {
+      const matchStrategy = e.target.classList.contains("tag-input-input");
+      return matchStrategy;
     }
   }
-}
 
-_removeTagClickMatchStrategy(e) {
-  if (e.type === "click") {
-    const matchStrategy =
-      e.target.classList.contains("tags-items-icon") ||
-      e.target.closest(".tags-items-icon");
-    return matchStrategy;
-  }
-}
+  _createTagItemMatchStrategy(e) {
+    if (e.type === "click") {
+      const matchStrategy =
+        e.target.classList.contains("tag-create") ||
+        e.target.closest(".tag-create");
+      return matchStrategy;
+    }
 
-_removeTagKeyMatchStrategy(e) {
-  if (e.type === "keyup") {
-    const matchStrategy = e.key === "Backspace";
-    return matchStrategy;
-  }
-}
+    if (e.type === "keyup" && e.key === "Enter") {
+      const matchStrategy =
+        e.target.classList.contains("tag-input-input") ||
+        e.target.closest(".tag-input-input");
 
-_renderTagOptionOptionsMatchStrategy(e) {
-  if (e.type === "click") {
-    const matchStrategy =
-      e.target.classList.contains("row-icon") ||
-      (e.target.classList.contains("svg-icon") &&
-        e.target.closest(".row-option-icon"));
-    return matchStrategy;
-  }
-}
-
-_handleCreateTagOrTagSelectEvent(e) {
-  const cls = this;
-
-  const tagsAvailableContainer =
-    e.currentTarget.querySelector(".tags-available");
-  const inputContainer = e.currentTarget.querySelector(".tag-input-input");
-
-  const filteredTags = this._state.tags.filter((tag) =>
-    tag.text.toLowerCase().includes(inputContainer.value.trim().toLowerCase())
-  );
-
-  const findEqualTag = this._state.tags.find(
-    (tag) =>
-      tag.text.toLowerCase() === inputContainer.value.trim().toLowerCase()
-  );
-
-  const filteredTagsExists = filteredTags.length > 0;
-  const createTagMarkup = this._generateCreateOptionsTagMarkup(
-    inputContainer.value.trim()
-  );
-
-  tagsAvailableContainer.innerHTML = "";
-
-  if (filteredTagsExists) {
-    //prevent tag creation and only select tag
-    const filteredTagsMarkup = this._generateTagsOptions(filteredTags);
-    // tagsAvailableContainer.innerHTML = "";
-    tagsAvailableContainer.insertAdjacentHTML(
-      "beforeend",
-      filteredTagsMarkup
-    );
+      return matchStrategy;
+    }
   }
 
-  if (!findEqualTag && inputContainer.value.length > 0) {
-    //allow tag creation if it doesn't exist
-    tagsAvailableContainer.insertAdjacentHTML("beforeend", createTagMarkup);
+  _addTagMatchStrategy(e) {
+    if (e.type === "click") {
+      // debugger;
+      const matchStrategy =
+        e.target.classList.contains("row-tag-tag") ||
+        e.target.classList.contains("tags-option") ||
+        e.target.closest(".row-option-tag");
+
+      if (matchStrategy) {
+        //implements the signals observer here
+        if (componentGlobalState.filterTagOptionActive) {
+          componentGlobalState.tagItemFactory =
+            this._createTagForCurrentItem.bind(this);
+          componentGlobalState.tagItemMarkupFactory =
+            this._generateTagAddMarkup.bind(this);
+
+          //observe for add events to route to filter view if active
+          this._signals.observe(e, "tagadd");
+        }
+
+        //if tags not active somewhere else, deliver to its handler
+        if (!componentGlobalState.filterTagOptionActive) return matchStrategy;
+      }
+    }
   }
-}
 
-_handleCreateTagItem(e) {
-  const tagsAvailableContainer =
-    e.currentTarget.querySelector(".tags-available");
-  const inputContainer = e.currentTarget.querySelector(".tag-input-input");
-  debugger;
-  //guard clause against empty input val
-  const inputValExists = inputContainer?.value.trim().length > 0;
-  if (!inputValExists) return;
+  _removeTagClickMatchStrategy(e) {
+    if (e.type === "click") {
+      const matchStrategy =
+        e.target.classList.contains("tags-items-icon") ||
+        e.target.closest(".tags-items-icon");
+      return matchStrategy;
+    }
+  }
 
-  //clear input
-  inputContainer.value = "";
-  // e.target.closest(".tag-tag")
-  const tagContainer = e.currentTarget.querySelector(".tag-create .tag-tag");
-  const { createTagMarkup: createdTagItem, tagObj } =
-    this._createTagForCurrentItem(tagContainer);
-  this._tagItemAdder(e, createdTagItem);
+  _removeTagKeyMatchStrategy(e) {
+    if (e.type === "keyup") {
+      const matchStrategy = e.key === "Backspace";
+      return matchStrategy;
+    }
+  }
 
-  //update the _tags obj with the newly created tag
-  this._state.tags.push(tagObj);
+  _renderTagOptionOptionsMatchStrategy(e) {
+    if (e.type === "click") {
+      const matchStrategy =
+        e.target.classList.contains("row-icon") ||
+        (e.target.classList.contains("svg-icon") &&
+          e.target.closest(".row-option-icon"));
+      return matchStrategy;
+    }
+  }
 
-  //render tags
-  const tagsMarkup = this._generateTagsOptions(this._state.tags);
-  tagsAvailableContainer.innerHTML = "";
-  tagsAvailableContainer.insertAdjacentHTML("beforeend", tagsMarkup);
-}
+  _handleCreateTagOrTagSelectEvent(e) {
+    const cls = this;
 
-_handleRemoveTagClickEvent(e) {
-  const tag = e.target.closest(".tag-tag");
-  tag.remove();
-}
+    const tagsAvailableContainer =
+      e.currentTarget.querySelector(".tags-available");
+    const inputContainer = e.currentTarget.querySelector(".tag-input-input");
 
-_handleRemoveTagKeyEvent(e) {
-  const inputContainer = e.currentTarget.querySelector(".tag-input-input");
-
-  //logic to keep track of key presses
-  this._inputCounter > 0
-    ? this.pass()
-    : inputContainer.value.length > 0
-      ? (this._inputCounter = inputContainer.value.length + 1)
-      : this.pass();
-  this._inputCounter--;
-
-  //protect against key delete deleting tags if input has text values
-  if (this._inputCounter > -1) return;
-
-  const tagItemsContainer = e.target.closest(".tags-items");
-  const tagsArray = Array.from(tagItemsContainer.children);
-  tagsArray.length < 2 ? this.pass() : tagsArray.at(-2).remove();
-}
-
-_handleAddTagToItemEvent(e) {
-  const tagToAdd =
-    e.target.closest(".row-tag-tag") ||
-    e.target.querySelector(".row-tag-tag");
-
-  //
-  const tagsAvailableContainer =
-    e.currentTarget.querySelector(".tags-available");
-  const inputContainer = e.currentTarget.querySelector(".tag-input-input");
-
-  const tagItemsContainer = document.querySelector(".tags-items");
-
-  const addedTagItems = Array.from(tagItemsContainer.children)
-    .map((tagItem) => tagItem.textContent.trim())
-    .filter((tagItem) => tagItem.length > 0);
-
-  const { createTagMarkup: createdItemTag, tagObj } =
-    this._createTagForCurrentItem(tagToAdd);
-
-  //check if tag in addedTags
-  const duplicateCheck =
-    addedTagItems.length > 0 &&
-    addedTagItems.find(
-      (tag) => tag.toLowerCase() === tagObj.text.toLowerCase()
+    const filteredTags = this._state.tags.filter((tag) =>
+      tag.text.toLowerCase().includes(inputContainer.value.trim().toLowerCase())
     );
 
-  //prevents duplicate addition of tag to tag items
-  if (!duplicateCheck) {
+    const findEqualTag = this._state.tags.find(
+      (tag) =>
+        tag.text.toLowerCase() === inputContainer.value.trim().toLowerCase()
+    );
+
+    const filteredTagsExists = filteredTags.length > 0;
+    const createTagMarkup = this._generateCreateOptionsTagMarkup(
+      inputContainer.value.trim()
+    );
+
+    tagsAvailableContainer.innerHTML = "";
+
+    if (filteredTagsExists) {
+      //prevent tag creation and only select tag
+      const filteredTagsMarkup = this._generateTagsOptions(filteredTags);
+      // tagsAvailableContainer.innerHTML = "";
+      tagsAvailableContainer.insertAdjacentHTML(
+        "beforeend",
+        filteredTagsMarkup
+      );
+    }
+
+    if (!findEqualTag && inputContainer.value.length > 0) {
+      //allow tag creation if it doesn't exist
+      tagsAvailableContainer.insertAdjacentHTML("beforeend", createTagMarkup);
+    }
+  }
+
+  _handleCreateTagItem(e) {
+    const tagsAvailableContainer =
+      e.currentTarget.querySelector(".tags-available");
+    const inputContainer = e.currentTarget.querySelector(".tag-input-input");
+    debugger;
+    //guard clause against empty input val
+    const inputValExists = inputContainer?.value.trim().length > 0;
+    if (!inputValExists) return;
+
+    //clear input
     inputContainer.value = "";
+    // e.target.closest(".tag-tag")
+    const tagContainer = e.currentTarget.querySelector(".tag-create .tag-tag");
+    const { createTagMarkup: createdTagItem, tagObj } =
+      this._createTagForCurrentItem(tagContainer);
+    this._tagItemAdder(e, createdTagItem);
 
-    this._tagItemAdder(e, createdItemTag);
+    //update the _tags obj with the newly created tag
+    // this._state.tags.push(tagObj);
+
+    //render tags
     const tagsMarkup = this._generateTagsOptions(this._state.tags);
     tagsAvailableContainer.innerHTML = "";
     tagsAvailableContainer.insertAdjacentHTML("beforeend", tagsMarkup);
   }
-}
 
-_handleTagOptionOptionsRenderEvent(e) {
-  const state = this._state;
-
-  const currentTarget = e.currentTarget;
-
-  const cls = this;
-
-  const itemId = e.currentTarget.dataset.id;
-
-  const tagName = e.target
-    .closest(".tags-option")
-    .querySelector(".row-tag-tag");
-
-  const tagToEdit = this._state.tags.find(
-    (tag) => String(tag.id) === tagName.dataset.id
-  );
-
-  const optionNudge = e.target.closest(".row-option-icon");
-
-  const { top, left, width, height } = optionNudge.getBoundingClientRect();
-
-  const componentObj = {
-    callBack: state.subComponentCallback,
-    selector: ".row-tag-options",
-    top,
-    left,
-    width,
-    height,
-    tags: state.tags,
-    tagsColors: state.tagsColors,
-    table: state.table,
-    itemId: +currentTarget.dataset.id,
-    tagToEdit,
-    currentTarget,
-  };
-
-  const component = new tagEditComponent(componentObj);
-  component.render();
-}
-
-_tagItemAdder(e, createdItemTag) {
-  const tagsAddContainer = e.currentTarget.querySelector(".tags-items");
-  //clone input
-  const tagAddInputClone = e.currentTarget
-    .querySelector(".tag-input-input")
-    .cloneNode(true);
-
-  //remove input
-  e.currentTarget.querySelector(".tag-input-input").remove();
-
-  //add tag and cloned input
-  tagsAddContainer.insertAdjacentHTML("beforeend", createdItemTag);
-  tagsAddContainer.insertAdjacentElement("beforeend", tagAddInputClone);
-}
-
-_handleUpdateModelIfFilterActive() {
-  // debugger;
-  let updateModel;
-  if (componentGlobalState.filterMethod) {
-    updateModel = this._state.updateModel?.bind(
-      null,
-      componentGlobalState.filterMethod,
-      componentGlobalState.sortMethod,
-      "tags"
-    );
-    this._state.updateModel = updateModel;
+  _handleRemoveTagClickEvent(e) {
+    const tag = e.target.closest(".tag-tag");
+    tag.remove();
   }
 
-  if (componentGlobalState.sortMethod && !componentGlobalState.filterMethod) {
-    updateModel = this._state.updateModel?.bind(
-      null,
-      componentGlobalState.filterMethod,
-      componentGlobalState.sortMethod,
-      "tags"
-    );
-    this._state.updateModel = updateModel;
+  _handleRemoveTagKeyEvent(e) {
+    const inputContainer = e.currentTarget.querySelector(".tag-input-input");
+
+    //logic to keep track of key presses
+    this._inputCounter > 0
+      ? this.pass()
+      : inputContainer.value.length > 0
+        ? (this._inputCounter = inputContainer.value.length + 1)
+        : this.pass();
+    this._inputCounter--;
+
+    //protect against key delete deleting tags if input has text values
+    if (this._inputCounter > -1) return;
+
+    const tagItemsContainer = e.target.closest(".tags-items");
+    const tagsArray = Array.from(tagItemsContainer.children);
+    tagsArray.length < 2 ? this.pass() : tagsArray.at(-2).remove();
   }
 
-  if (!componentGlobalState.sortMethod && !componentGlobalState.filterMethod) {
-    updateModel = this._state.updateModel?.bind(
-      null,
-      componentGlobalState.filterMethod,
-      componentGlobalState.sortMethod,
-      "tags"
-    );
-    this._state.updateModel = updateModel;
+  _handleAddTagToItemEvent(e) {
+    const tagToAdd =
+      e.target.closest(".row-tag-tag") ||
+      e.target.querySelector(".row-tag-tag");
+
+    //
+    const tagsAvailableContainer =
+      e.currentTarget.querySelector(".tags-available");
+    const inputContainer = e.currentTarget.querySelector(".tag-input-input");
+
+    const tagItemsContainer = document.querySelector(".tags-items");
+
+    const addedTagItems = Array.from(tagItemsContainer.children)
+      .map((tagItem) => tagItem.textContent.trim())
+      .filter((tagItem) => tagItem.length > 0);
+
+    const { createTagMarkup: createdItemTag, tagObj } =
+      this._createTagForCurrentItem(tagToAdd);
+
+    //check if tag in addedTags
+    const duplicateCheck =
+      addedTagItems.length > 0 &&
+      addedTagItems.find(
+        (tag) => tag.toLowerCase() === tagObj.text.toLowerCase()
+      );
+
+    //prevents duplicate addition of tag to tag items
+    if (!duplicateCheck) {
+      inputContainer.value = "";
+
+      this._tagItemAdder(e, createdItemTag);
+      const tagsMarkup = this._generateTagsOptions(this._state.tags);
+      tagsAvailableContainer.innerHTML = "";
+      tagsAvailableContainer.insertAdjacentHTML("beforeend", tagsMarkup);
+    }
   }
-}
+
+  _handleTagOptionOptionsRenderEvent(e) {
+    const state = this._state;
+
+    const currentTarget = e.currentTarget;
+
+    const cls = this;
+
+    const itemId = e.currentTarget.dataset.id;
+
+    const tagName = e.target
+      .closest(".tags-option")
+      .querySelector(".row-tag-tag");
+
+    const tagToEdit = this._state.tags.find(
+      (tag) => String(tag.id) === tagName.dataset.id
+    );
+
+    const optionNudge = e.target.closest(".row-option-icon");
+
+    const { top, left, width, height } = optionNudge.getBoundingClientRect();
+
+    const componentObj = {
+      callBack: state.subComponentCallback,
+      selector: ".row-tag-options",
+      top,
+      left,
+      width,
+      height,
+      tags: state.tags,
+      tagsColors: state.tagsColors,
+      table: state.table,
+      itemId: +currentTarget.dataset.id,
+      tagToEdit,
+      currentTarget,
+    };
+
+    const component = new tagEditComponent(componentObj);
+    component.render();
+  }
+
+  _tagItemAdder(e, createdItemTag) {
+    const tagsAddContainer = e.currentTarget.querySelector(".tags-items");
+    //clone input
+    const tagAddInputClone = e.currentTarget
+      .querySelector(".tag-input-input")
+      .cloneNode(true);
+
+    //remove input
+    e.currentTarget.querySelector(".tag-input-input").remove();
+
+    //add tag and cloned input
+    tagsAddContainer.insertAdjacentHTML("beforeend", createdItemTag);
+    tagsAddContainer.insertAdjacentElement("beforeend", tagAddInputClone);
+  }
+
+  _handleUpdateModelIfFilterActive() {
+    // debugger;
+    let updateModel;
+    if (componentGlobalState.filterMethod) {
+      updateModel = this._state.updateModel?.bind(
+        null,
+        componentGlobalState.filterMethod,
+        componentGlobalState.sortMethod,
+        "tags"
+      );
+      this._state.updateModel = updateModel;
+    }
+
+    if (componentGlobalState.sortMethod && !componentGlobalState.filterMethod) {
+      updateModel = this._state.updateModel?.bind(
+        null,
+        componentGlobalState.filterMethod,
+        componentGlobalState.sortMethod,
+        "tags"
+      );
+      this._state.updateModel = updateModel;
+    }
+
+    if (!componentGlobalState.sortMethod && !componentGlobalState.filterMethod) {
+      updateModel = this._state.updateModel?.bind(
+        null,
+        componentGlobalState.filterMethod,
+        componentGlobalState.sortMethod,
+        "tags"
+      );
+      this._state.updateModel = updateModel;
+    }
+  }
 }

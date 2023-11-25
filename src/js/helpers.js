@@ -324,10 +324,25 @@ export const formatAPIRequestUpdateTableItemPayload = function (payload, type) {
     }
   }
 
-  if (type === "tags")
+  if (type === "tags") {
+    const tagsWithId = payload.tags.map(tag => tag?.dataset?.id ? +tag.dataset.id : pass()).filter(tag => tag)
     formattedRequest = {
-      tags: formatTagPayload(payload.tags, type)
+      tags: tagsWithId//formatTagPayload(tagsWithId, type)
     }
+  }
 
   return formattedRequest
+}
+
+export const getAPICreatedTagFromModel = function (apiPayload, payload, state, type) {
+  //TODO: pass api payload, update payload with filtered id from the state, and reeturn
+  if (type === "tags") {
+    const tagsWithoutId = payload.tags.map(tag => tag.dataset?.id === "undefined" ? tag : pass()).filter(tag => tag)
+    tagsWithoutId.forEach(tagObj => {
+      const objExistInTableTags = state.tags.find(
+        (tag) => tag.text.toLowerCase() === tagObj.textContent.replaceAll("\n", "").trim().toLowerCase()
+      );
+      if (objExistInTableTags) apiPayload.tags.push(objExistInTableTags.id)
+    })
+  }
 }

@@ -33,10 +33,6 @@ class TableBodyProcessorView {
     [this._tags, this._tagsColor] = tagsMetaData;
   }
 
-  addToken(token) {
-    this._token = token
-  }
-
   resetTextInputActiveState() {
     this._textInputActive = false;
   }
@@ -528,7 +524,7 @@ class TableBodyProcessorView {
       updateModel: cls.callUpdateItemHandler.bind(cls, updateObj),
       subComponentCallback: cls.callUpdateItemHandler.bind(cls),
       updateTag: true,
-      token: this._token //TODO: add token
+      eventHandlers: this._eventHandlers,
       updateObj: updateObj,
       tagItems: getTableItemWithMaxTags.itemTags,
       tags: this._tags,
@@ -588,6 +584,7 @@ class TableBodyProcessorView {
       updateModel: cls.callUpdateItemHandler.bind(cls, updateObj),
       subComponentCallback: cls.callUpdateItemHandler.bind(cls),
       updateTag: true,
+      eventHandlers: this._eventHandlers,
       updateObj: updateObj,
       tagItems: getTableItemData.itemTags,
       itemId: itemId,

@@ -1,5 +1,5 @@
 import * as model from "./model.js";
-import { swapItemIndex, formatAPITableItems, formatAPIRequestUpdateTableItemPayload } from "./helpers.js";
+import { swapItemIndex, formatAPITableItems, formatAPIRequestUpdateTableItemPayload, formatAPISub, getAPICreatedTagFromModel } from "./helpers.js";
 import { LoginTemplate } from "./templates/loginTemplate.js"
 import { JournalTemplate } from "./templates/journalTemplate.js"
 
@@ -169,8 +169,27 @@ const controlAddTableItemFallback = function (addTableItemParam, returnData, req
   }
 }
 
-const controlAddTag = function (payload) {
+const controlAPIAddTagFallback = function (returnData, requestState = false) {
+  if (requestState) {
+    const formattedData = formatAPISub(Array.isArray(returnData) ? returnData : [returnData], "tags")
+    model.state.tags.push(...formattedData)
+  }
 
+}
+
+const controlAddTag = function (payload) {
+  const queryObj = {
+    endpoint: API.APIEnum.TAG.CREATE,
+    token: model.token.value,
+    sec: null,
+    queryData: payload,
+    actionType: "createTag",
+    spinner: false,
+    alert: false,
+    type: "POST",
+    callBack: controlAPIAddTagFallback
+  }
+  API.queryAPI(queryObj)
 }
 
 /**
@@ -245,9 +264,6 @@ const controlUpdateTableItemFallback = function (addTableItemParam, returnData, 
 
 }
 
-const controlAddTag = function (payload) {
-
-}
 
 const controlUpdateTableItem = function (
   payload,
@@ -262,6 +278,7 @@ const controlUpdateTableItem = function (
   //TODO: add payload typee to every interface that calls this func
   //FIXME: make sure the payload is updated to capture other payload types apart from title update
   const apiPayload = formatAPIRequestUpdateTableItemPayload(payload, payloadType)
+  getAPICreatedTagFromModel(apiPayload, payload, model.state, payloadType)
   const queryObj = {
     endpoint: API.APIEnum.ACTIVITIES.PATCH(payload.itemId),
     token: model.token.value,
@@ -361,6 +378,7 @@ const controlLoadUI = function () {
     controlGetTableItem,
     controlGetTableItemWithMaxTags,
     controlDuplicateTableItem,
+    controlAddTag,
   };
 
   const optionControllers = {
@@ -406,7 +424,6 @@ const controlLoadUI = function () {
     controlSetCurrentTable,
     tableHeads,
     currentTable,
-    model.token.value
   );
 
   sidebarComponentView.addComponentHandlers(componentControllers);

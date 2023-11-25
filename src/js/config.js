@@ -72,19 +72,19 @@ export const TABLE_TAGS = {
 export const TAGS_COLORS = {
   colors: [
     {
-      color: "Off gray",
+      color: "Off Gray",
       color_value: "color-gray",
     },
     {
-      color: "Midnight green",
+      color: "Midnight Green",
       color_value: "color-green",
     },
     {
-      color: "Wine red",
+      color: "Wine Red",
       color_value: "color-red",
     },
     {
-      color: "Army green",
+      color: "Army Green",
       color_value: "color-army-green",
     },
     {
@@ -92,7 +92,7 @@ export const TAGS_COLORS = {
       color_value: "color-yellow",
     },
     {
-      color: "Light blue",
+      color: "Light Blue",
       color_value: "color-blue",
     },
     {
@@ -182,5 +182,5 @@ export const HTTP_200_RESPONSE = {
   "getJournal": ((APIResp) => "Loading completed"),
   "getActiveTable": ((APIResp) => APIResp),
 }
-export const PREVENT_DESTRUCTURING_FROM_API_ENDPOINT_RESP = ["create", "getJournal", "getActiveTable", "createTableItem", "updateTableItem"]
+export const PREVENT_DESTRUCTURING_FROM_API_ENDPOINT_RESP = ["create", "getJournal", "getActiveTable", "createTableItem", "updateTableItem", "createTag"]
 // "loadTodos", "createTodo", "updateTask", "deleteTodo", "deleteTask", "updateTodo", "createBatchTodo", "createBatchTask", "updateBatchTodo", "updateBatchTask", "deleteTodoBatch", "deleteBatchTask", "updateOrdering"
