@@ -371,8 +371,10 @@ export const updateAPITableItem = function (payload, api = true, tableId) {
 
     payload?.itemTags ? (itemToUpdate.itemTags = payload.itemTags) : pass();
 
+
     //create new tag object if it doesn't exist in the tag table
     //TODO: use the createtagendpoint to update the journal tags or a fallback
+    //TODO: implement prev logic with check against model update
     // payload.tags ? checkForAndAddNewTag(formattedTags) : pass();
 
     if (payload.modelProperty) {

@@ -169,6 +169,10 @@ const controlAddTableItemFallback = function (addTableItemParam, returnData, req
   }
 }
 
+const controlAddTag = function (payload) {
+
+}
+
 /**
  *
  * @param {*Object} payload - To add new Item to the curreentTable
@@ -238,6 +242,10 @@ const controlUpdateTableItemFallback = function (addTableItemParam, returnData, 
 
   //free mem
   addTableItemParam = {}
+
+}
+
+const controlAddTag = function (payload) {
 
 }
 
@@ -397,7 +405,8 @@ const controlLoadUI = function () {
     controlAddTable,
     controlSetCurrentTable,
     tableHeads,
-    currentTable
+    currentTable,
+    model.token.value
   );
 
   sidebarComponentView.addComponentHandlers(componentControllers);

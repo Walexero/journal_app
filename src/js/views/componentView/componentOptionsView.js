@@ -107,7 +107,6 @@ class ComponentOptionsView {
   }
 
   _componentRemover(componentObj, component = undefined, mutate = true) {
-    debugger;
     if (componentObj.componentInput) {
       componentObj.component.textContent =
         componentObj.componentInput.textContent;

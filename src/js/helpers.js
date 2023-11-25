@@ -100,6 +100,16 @@ export const formatUpdateObjTags = (tagsToFormat) => {
   return formattedTag;
 };
 
+export const formatTagRequestBody = (tagToCreate) => {
+  let formattedTags;
+  formattedTags = {
+    "tag_name": tagToCreate.text,
+    "tag_color": tagToCreate.tagColor.color,
+    "tag_class": tagToCreate.tagColor.color_value
+  }
+  return formattedTags
+}
+
 export const stringToHash = (string) => {
   let hash = 0;
 

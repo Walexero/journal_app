@@ -65,7 +65,6 @@ export default class TableInputComponent {
   }
 
   _handleUpdateModelIfFilterActive() {
-    debugger;
     const updateModel = this._state.updateModel.bind(
       null,
       componentGlobalState.filterMethod,

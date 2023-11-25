@@ -21,6 +21,7 @@ class TableBodyProcessorView {
   _tagsColor;
   _checkedInputs = [];
   _currentHoverId = null;
+  _token;
 
   addHandlers(handlers, currentTableSetter) {
     this._eventHandlers = handlers; //.tableItemControllers;
@@ -30,6 +31,10 @@ class TableBodyProcessorView {
   addTagsMetaData(...tagsMetaData) {
     tagsMetaData = [...tagsMetaData[0]];
     [this._tags, this._tagsColor] = tagsMetaData;
+  }
+
+  addToken(token) {
+    this._token = token
   }
 
   resetTextInputActiveState() {
@@ -55,7 +60,6 @@ class TableBodyProcessorView {
   }
 
   renderTableInput(inputContainer, currentTable = undefined) {
-    debugger;
     const cls = this;
 
     //if currentTable not passeed in, get the current table from the DOM
@@ -524,6 +528,7 @@ class TableBodyProcessorView {
       updateModel: cls.callUpdateItemHandler.bind(cls, updateObj),
       subComponentCallback: cls.callUpdateItemHandler.bind(cls),
       updateTag: true,
+      token: this._token //TODO: add token
       updateObj: updateObj,
       tagItems: getTableItemWithMaxTags.itemTags,
       tags: this._tags,

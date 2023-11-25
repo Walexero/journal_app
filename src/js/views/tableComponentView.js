@@ -31,8 +31,13 @@ class TableComponentView {
   _tableActionsEventProcessor = tableActionsProcessorView;
   _tableBodyEventProcessor = tableBodyProcessorView;
   _bodyEventListenerActive = false;
+  _token; //api token
 
-  init(tableHandler, currentTableHandler, tables, currentTable) {
+  init(tableHandler, currentTableHandler, tables, currentTable, token) {
+    this._token = token
+
+    //add token to other components
+    this._tableBodyEventProcessor.addToken(token)
     //add handleer to set currentTable in the model
     this._currentTableHandler = currentTableHandler;
     tableHandler();
