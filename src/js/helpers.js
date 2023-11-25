@@ -201,6 +201,16 @@ export const formatAPISub = function (APIResp, type) {
   return APIResp
 }
 
+export const formatTagPayload = function (APIResp, type) {
+  let formatList = []
+  if (APIResp.length > 1 || APIResp.length === 1) {
+    APIResp.forEach(resp => formatList.push(+resp.dataset.id))
+    return formatList
+  }
+  return APIResp
+
+}
+
 export const formatAPITableItems = function (APIResp, type) {
   debugger;
   let formattedData = [];
@@ -232,7 +242,16 @@ export const formatAPIResp = function (APIResp, type) {
       "name": APIResp.journal_name,
       "description": APIResp.journal_description,
       "tableHeads": APIResp.journal_tables,
-      "currentTable": APIResp.current_table
+      "currentTable": APIResp.current_table,
+      "tags": formatAPISub(APIResp.tags, "tags")
+    }
+  }
+
+  if (type === "tags") {
+    formattedData = {
+      "id": APIResp.id,
+      "text": APIResp.tag_name,
+      "color": APIResp.tag_class
     }
   }
 
@@ -276,9 +295,10 @@ export const formatAPIResp = function (APIResp, type) {
 
   if (type === "tags") {
     formattedData = {
-      "color": APIResp.tag_color,
+      "id": APIResp.id,
+      "color": APIResp.tag_class,
       "text": APIResp.tag_name,
-      "color_value": APIResp.tag_class
+      // "color_value": APIResp.tag_class
     }
   }
 
@@ -294,11 +314,10 @@ export const formatAPIRequestUpdateTableItemPayload = function (payload, type) {
     }
   }
 
-  if (type === "tags") {
+  if (type === "tags")
     formattedRequest = {
-      tags: [] //TODO: Add tag ids to add
+      tags: formatTagPayload(payload.tags, type)
     }
-  }
 
   return formattedRequest
 }

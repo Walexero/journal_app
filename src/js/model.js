@@ -369,14 +369,11 @@ export const updateAPITableItem = function (payload, api = true, tableId) {
     const itemToUpdate = getTableItem(tableToUpdate, payload.id);
     payload?.itemTitle ? (itemToUpdate.itemTitle = payload.itemTitle) : pass();
 
-    const formattedTags = payload?.tags
-      ? formatUpdateObjTags(payload?.tags)
-      : pass();
-
-    formattedTags ? (itemToUpdate.itemTags = formattedTags) : pass();
+    payload?.itemTags ? (itemToUpdate.itemTags = payload.itemTags) : pass();
 
     //create new tag object if it doesn't exist in the tag table
-    payload.tags ? checkForAndAddNewTag(formattedTags) : pass();
+    //TODO: use the createtagendpoint to update the journal tags or a fallback
+    // payload.tags ? checkForAndAddNewTag(formattedTags) : pass();
 
     if (payload.modelProperty) {
       if (payload.modelProperty.property.update) {
@@ -601,6 +598,7 @@ const replaceStateJournalDataWithAPIData = function (formattedAPIData, type) {
     state.description = formattedAPIData.description
     state.tableHeads = formattedAPIData.tableHeads
     state.currentTable = formattedAPIData.currentTable
+    state.tags = formattedAPIData.tags
   }
 
   if (type === "journalTables") {
