@@ -36,11 +36,12 @@ class TableBodyProcessorView {
     this._textInputActive = false;
   }
 
-  callUpdateItemHandler(updateObj, filter = undefined, sort = undefined) {
+  callUpdateItemHandler(updateObj, filter = undefined, sort = undefined, payloadType = undefined) {
     this._eventHandlers.tableItemControllers.controlUpdateTableItem(
       updateObj,
       filter,
-      sort
+      sort,
+      payloadType
     );
   }
 

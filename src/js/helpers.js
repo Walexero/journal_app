@@ -284,3 +284,21 @@ export const formatAPIResp = function (APIResp, type) {
 
   return formattedData
 }
+
+export const formatAPIRequestUpdateTableItemPayload = function (payload, type) {
+  let formattedRequest;
+  if (type === "title") {
+    formattedRequest = {
+      "name": payload?.title ?? "",
+      // "journal_table": currentTableId
+    }
+  }
+
+  if (type === "tags") {
+    formattedRequest = {
+      tags: [] //TODO: Add tag ids to add
+    }
+  }
+
+  return formattedRequest
+}

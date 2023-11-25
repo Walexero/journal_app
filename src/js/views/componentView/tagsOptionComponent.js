@@ -463,7 +463,8 @@ export default class TagOptionComponent {
       updateModel = this._state.updateModel?.bind(
         null,
         componentGlobalState.filterMethod,
-        componentGlobalState.sortMethod
+        componentGlobalState.sortMethod,
+        "tags"
       );
       this._state.updateModel = updateModel;
     }
@@ -472,7 +473,18 @@ export default class TagOptionComponent {
       updateModel = this._state.updateModel?.bind(
         null,
         componentGlobalState.filterMethod,
-        componentGlobalState.sortMethod
+        componentGlobalState.sortMethod,
+        "tags"
+      );
+      this._state.updateModel = updateModel;
+    }
+
+    if (!componentGlobalState.sortMethod && !componentGlobalState.filterMethod) {
+      updateModel = this._state.updateModel?.bind(
+        null,
+        componentGlobalState.filterMethod,
+        componentGlobalState.sortMethod,
+        "tags"
       );
       this._state.updateModel = updateModel;
     }

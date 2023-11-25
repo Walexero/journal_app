@@ -1,5 +1,5 @@
 import * as model from "./model.js";
-import { swapItemIndex, formatAPITableItems } from "./helpers.js";
+import { swapItemIndex, formatAPITableItems, formatAPIRequestUpdateTableItemPayload } from "./helpers.js";
 import { LoginTemplate } from "./templates/loginTemplate.js"
 import { JournalTemplate } from "./templates/journalTemplate.js"
 
@@ -117,7 +117,7 @@ const controlAddNewTable = function () {
   if (tableHeads.length > 4) controlRenderUpdatedTableHeads(tableId);
 };
 
-const filterSortRenderTableItem = function (addTableItemParam) {//currentTable, filter, sort, itemId) {
+const filterSortRenderTableItem = function (addTableItemParam, renderAddedItem = false, renderUpdatedItem = false) {//currentTable, filter, sort, itemId) {
   let tableItems;
   //returns the filtered tableItems using the filterMethod from the Component or returns all the tableItems for the current Table
   addTableItemParam.filter
@@ -128,12 +128,20 @@ const filterSortRenderTableItem = function (addTableItemParam) {//currentTable, 
 
   if (tableItems && !Array.isArray(tableItems)) tableItems = [tableItems];
 
-  tableComponentView.updateTableItem(
-    addTableItemParam.currentTable,
-    tableItems,
-    addTableItemParam.itemId,
-    addTableItemParam.callBack
-  );
+
+  if (renderAddedItem)
+    tableComponentView.updateTableItem(
+      addTableItemParam.currentTable,
+      tableItems,
+      addTableItemParam.itemId,
+      addTableItemParam.callBack
+    );
+
+  if (renderUpdatedItem)
+    tableComponentView.renderTableItem(tableItems, addTableItemParam.filter)
+
+  //free mem
+  addTableItemParam = {}
 }
 
 const controlAddTableItemFallback = function (addTableItemParam, returnData, requestStatus = false) {
@@ -143,11 +151,12 @@ const controlAddTableItemFallback = function (addTableItemParam, returnData, req
   if (!requestStatus) {
     const itemId = model.addTableItem(addTableItemParam.payload, addTableItemParam.relativeItem);
     model.diff.tableItemToCreate.push({ table: currentTable.id, item: itemId })
+    model.persistDiff()
     addTableItemParam.currentTable = currentTable
     addTableItemParam.itemId = itemId
 
     //filter,sort and render the table items
-    filterSortRenderTableItem(addTableItemParam)
+    filterSortRenderTableItem(addTableItemParam, true)
   }
   if (requestStatus) {
     const formattedAPIResp = formatAPITableItems([returnData])
@@ -156,7 +165,7 @@ const controlAddTableItemFallback = function (addTableItemParam, returnData, req
     addTableItemParam.itemId = itemId
 
     //filter,sort and render the table items
-    filterSortRenderTableItem(addTableItemParam)
+    filterSortRenderTableItem(addTableItemParam, true)
   }
 }
 
@@ -212,27 +221,54 @@ const controlGetTableItemWithMaxTags = function (tableId, itemsId) {
   return tableItemWithMaxTags;
 };
 
+const controlUpdateTableItemFallback = function (addTableItemParam, returnData, requestStatus = false) {
+  debugger;
+  const currentTable = model.getCurrentTable();
+  if (!requestStatus) {
+    model.updateTableItem(addTableItemParam.payload);
+  }
+
+  if (requestStatus) {
+    const formattedData = formatAPITableItems(Array.isArray(returnData) ? returnData : [returnData])
+    model.updateAPITableItem(formattedData[0], null, currentTable.id)
+  }
+
+  addTableItemParam.currentTable = currentTable
+  filterSortRenderTableItem(addTableItemParam, null, addTableItemParam.updateUI ? true : null)
+
+  //free mem
+  addTableItemParam = {}
+
+}
+
 const controlUpdateTableItem = function (
   payload,
   filter = undefined,
   sort = false,
+  payloadType = undefined,
   updateUI = true
 ) {
-  // debugger;
   let tableItems;
-  // tableId,itemId,updateObj previous param
-  model.updateTableItem(payload);
-  const currentTable = model.getCurrentTable();
+  debugger
+  console.log('the upd payload', payload)
+  //TODO: add payload typee to every interface that calls this func
+  //FIXME: make sure the payload is updated to capture other payload types apart from title update
+  const apiPayload = formatAPIRequestUpdateTableItemPayload(payload, payloadType)
+  const queryObj = {
+    endpoint: API.APIEnum.ACTIVITIES.PATCH(payload.itemId),
+    token: model.token.value,
+    sec: null,
+    queryData: apiPayload,
+    actionType: "updateTableItem",
+    spinner: false,
+    alert: false,
+    type: "PATCH",
+    callBack: controlUpdateTableItemFallback.bind(null, { payload, filter, sort, updateUI }),
+    callBackParam: true
+  }
+  debugger;
 
-  filter
-    ? (tableItems = filter(currentTable.tableItems))
-    : (tableItems = currentTable.tableItems);
-
-  sort ? sort(tableItems) : pass();
-
-  if (tableItems && !Array.isArray(tableItems)) tableItems = [tableItems];
-  //render current table
-  updateUI ? tableComponentView.renderTableItem(tableItems, filter) : pass();
+  API.queryAPI(queryObj)
 };
 
 const controlDeleteTableItem = function (

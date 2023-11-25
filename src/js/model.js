@@ -359,6 +359,97 @@ export const deleteTableItem = function (payload) {
   persistData();
 };
 
+export const updateAPITableItem = function (payload, api = true, tableId) {
+  const updateSingleItem = payload?.id
+  const updateMultipleItems = payload?.itemIds;
+  const tableToUpdate = getCurrentTable(tableId ?? null);
+
+  if (updateSingleItem) {
+    //logic runs for single item update
+    const itemToUpdate = getTableItem(tableToUpdate, payload.id);
+    payload?.itemTitle ? (itemToUpdate.itemTitle = payload.itemTitle) : pass();
+
+    const formattedTags = payload?.tags
+      ? formatUpdateObjTags(payload?.tags)
+      : pass();
+
+    formattedTags ? (itemToUpdate.itemTags = formattedTags) : pass();
+
+    //create new tag object if it doesn't exist in the tag table
+    payload.tags ? checkForAndAddNewTag(formattedTags) : pass();
+
+    if (payload.modelProperty) {
+      if (payload.modelProperty.property.update) {
+        const updateValue = payload.modelProperty.property.update;
+        const propertyToUpdate = itemToUpdate[updateValue.key].find(
+          (propItem) => propItem.id === updateValue.propertyId
+        );
+
+        propertyToUpdate.text = updateValue.value;
+        propertyToUpdate.checkbox
+          ? (propertyToUpdate.checkbox =
+            payload.modelProperty.checkedProperty.checkbox) &&
+          (propertyToUpdate.checked =
+            payload.modelProperty.checkedProperty.checked)
+          : pass();
+      }
+
+      if (payload.modelProperty.property.create) {
+        const payloadValue = payload.modelProperty.property.create;
+        const updateObj = {
+          id: uuid4(),
+          text: payloadValue.value,
+        };
+
+        const hasCheckbox = payload.modelProperty.checkedProperty.checkbox;
+
+        hasCheckbox
+          ? (updateObj.checkbox = true) && (updateObj.checked = false)
+          : pass();
+
+        if (payloadValue.relativeProperty) {
+          const relativePropertyIndex = itemToUpdate[
+            payload.modelProperty.property.key
+          ].findIndex(
+            (property) => property.id === payloadValue.relativeProperty
+          );
+
+          itemToUpdate[payload.modelProperty.property.key].splice(
+            relativePropertyIndex + 1,
+            0,
+            updateObj
+          );
+        } else itemToUpdate[payload.modelProperty.property.key].push(updateObj);
+      }
+
+      if (payload.modelProperty.property.updateActionItem) {
+        const updateValue = payload.modelProperty.property.updateActionItem;
+        const propertyToUpdate = itemToUpdate[updateValue.key].find(
+          (propItem) => propItem.id === updateValue.propertyId
+        );
+        propertyToUpdate.text = updateValue.value;
+        propertyToUpdate.checked = updateValue.checked;
+      }
+    }
+  }
+
+  if (!updateSingleItem && updateMultipleItems) {
+    const formattedTags = payload?.tags
+      ? formatUpdateObjTags(payload?.tags)
+      : pass();
+
+    //create new tag object if it doesn't exist in the tag table
+    payload?.tags ? checkForAndAddNewTag(formattedTags) : pass();
+
+    const itemsToUpdate = payload.itemIds.map((item) =>
+      getItemFromTableItems(tableToUpdate, Number(item))
+    );
+    itemsToUpdate.forEach((item) => (item.itemTags = [...formattedTags]));
+  }
+
+  persistData();
+}
+
 export const updateTableItem = function (payload) {
   const updateSingleItem = payload?.itemId;
   const updateMultipleItems = payload?.itemIds;
@@ -472,6 +563,11 @@ const persistData = () => {
 export const persistToken = function () {
   localStorage.setItem("token", JSON.stringify(token))
 }
+
+export const persistDiff = () => {
+  localStorage.setItem("diffState", JSON.stringify(diff));
+  console.log("saveed diff", diff)
+};
 
 const getPersistedData = () => {
   const stateFromDb = localStorage.getItem("userJournal");
