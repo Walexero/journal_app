@@ -344,6 +344,13 @@ export const formatAPIRequestUpdateTableItemPayload = function (payload, type) {
       tags: tagsWithId//formatTagPayload(tagsWithId, type)
     }
   }
+
+  if (type === "intentions") {
+    formattedRequest = {
+      "intention": payload.modelProperty.property.update.value,
+      // "activity": payload.itemId
+    }
+  }
   return formattedRequest
 }
 

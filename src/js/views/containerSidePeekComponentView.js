@@ -432,6 +432,7 @@ export default class ContainerSidePeekComponentView {
           cls._state.tableId,
           cls._state.itemId
         ),
+      eventHandlers: this._state.eventHandlers,
       refreshCaller: this.refreshContent.bind(cls),
       updateTag: true,
       updateObj: updateObj,
@@ -445,6 +446,7 @@ export default class ContainerSidePeekComponentView {
   }
 
   _handleInputUpdateAndAddEvent(e) {
+    debugger;
     const inputType = this._getInputType(e);
 
     const [inputContainer, checkedValue, updateVal, updateId] =
@@ -495,6 +497,7 @@ export default class ContainerSidePeekComponentView {
     };
 
     //update the item
+    debugger;
     this._state.eventHandlers.tableItemControllers.controlUpdateTableItem(
       payload,
       null,
@@ -542,6 +545,7 @@ export default class ContainerSidePeekComponentView {
   }
 
   _handleInputUpdateEvent(e) {
+    debugger;
     const inputType = this._getInputType(e);
     const [inputContainer, checkedValue, updateVal, updateId] =
       this._getInputAndChecked(e, inputType);
@@ -574,7 +578,10 @@ export default class ContainerSidePeekComponentView {
     };
 
     this._state.eventHandlers.tableItemControllers.controlUpdateTableItem(
-      payload
+      payload,
+      null,
+      null,
+      payload.modelProperty.property.update.key
     );
   }
 
@@ -802,7 +809,7 @@ export default class ContainerSidePeekComponentView {
   }
 
   refreshContent(updatedData) {
-    // debugger;
+    debugger;
     const itemPropertyContainer = document.querySelector(".slide-content");
     const contentContainer = document.querySelector(".container-slide-content");
 
