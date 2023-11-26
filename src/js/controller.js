@@ -7,7 +7,7 @@ import journalInfoComponentView from "./views/journalInfoComponentView.js";
 import { componentGlobalState } from "./views/componentView/componentGlobalState.js";
 import "core-js/stable";
 
-const pass = () => {};
+const pass = () => { };
 
 const controlGetJournalName = function () {
   return model.state.name;
@@ -162,7 +162,7 @@ const controlUpdateTableItem = function (
   sort = false,
   updateUI = true
 ) {
-  // debugger;
+  debugger;
   let tableItems;
   // tableId,itemId,updateObj previous param
   model.updateTableItem(payload);

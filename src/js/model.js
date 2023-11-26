@@ -28,7 +28,7 @@ export let state = {
   tagsColor: TAGS_COLORS.colors,
 };
 
-const pass = () => {};
+const pass = () => { };
 
 export const updateJournalInfo = (payload) => {
   if (payload?.name?.length >= 0) {
@@ -369,12 +369,12 @@ export const updateTableItem = function (payload) {
           (propItem) => propItem.id === updateValue.propertyId
         );
 
-        propertyToUpdate.text = updateValue.value;
-        propertyToUpdate.checkbox
+        propertyToUpdate?.text ? propertyToUpdate.text = updateValue.value : pass();
+        propertyToUpdate?.checkbox
           ? (propertyToUpdate.checkbox =
-              payload.modelProperty.checkedProperty.checkbox) &&
-            (propertyToUpdate.checked =
-              payload.modelProperty.checkedProperty.checked)
+            payload.modelProperty.checkedProperty.checkbox) &&
+          (propertyToUpdate.checked =
+            payload.modelProperty.checkedProperty.checked)
           : pass();
       }
 
