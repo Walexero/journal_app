@@ -307,256 +307,258 @@ const controlUpdateTableItemFallback = function (addTableItemParam, returnData, 
     addTableItemParam = {}
 
   }
-  const controlAddSubModelItem = function (payload, payloadType = undefined) {
+}
+const controlAddSubModelItem = function (payload, payloadType = undefined) {
+
+}
+
+
+const controlUpdateTableItem = function (
+  payload,
+  filter = undefined,
+  sort = false,
+  payloadType = undefined,
+  updateUI = true
+) {
+  let tableItems;
+  debugger
+  console.log('the upd payload', payload)
+  if (!payload) return
+  //TODO: add payload typee to every interface that calls this func
+  //FIXME: make sure the payload is updated to capture other payload types apart from title update
+  const apiPayload = formatAPIRequestUpdateTableItemPayload(payload, payloadType)
+  getAPICreatedTagFromModel(apiPayload, payload, model.state, payloadType)
+  console.log("the api payload", apiPayload)
+  const queryObj = {
+    endpoint: API.APIEnum.ACTIVITIES.PATCH(payload.itemId),
+    token: model.token.value,
+    sec: null,
+    queryData: apiPayload,
+    actionType: "updateTableItem",
+    spinner: false,
+    alert: false,
+    type: "PATCH",
+    callBack: controlUpdateTableItemFallback.bind(null, { payload, filter, sort, updateUI, payloadType }),
+    callBackParam: true
+  }
+  // debugger;
+
+  API.queryAPI(queryObj)
+};
+
+const controlUpdateTagFallback = function (payload, returnData, requestStatus) {
+  console.log(model.state.tags)
+  if (!requestStatus) {
+    model.checkForAndUpdateTag(payload)
+    model.diff.tagsToUpdate.push(payload)
+    model.persistDiff()
 
   }
 
-
-  const controlUpdateTableItem = function (
-    payload,
-    filter = undefined,
-    sort = false,
-    payloadType = undefined,
-    updateUI = true
-  ) {
-    let tableItems;
-    // debugger
-    console.log('the upd payload', payload)
-    if (!payload) return
-    //TODO: add payload typee to every interface that calls this func
-    //FIXME: make sure the payload is updated to capture other payload types apart from title update
-    const apiPayload = formatAPIRequestUpdateTableItemPayload(payload, payloadType)
-    getAPICreatedTagFromModel(apiPayload, payload, model.state, payloadType)
-    const queryObj = {
-      endpoint: API.APIEnum.ACTIVITIES.PATCH(payload.itemId),
-      token: model.token.value,
-      sec: null,
-      queryData: apiPayload,
-      actionType: "updateTableItem",
-      spinner: false,
-      alert: false,
-      type: "PATCH",
-      callBack: controlUpdateTableItemFallback.bind(null, { payload, filter, sort, updateUI, payloadType }),
-      callBackParam: true
-    }
-    // debugger;
-
-    API.queryAPI(queryObj)
-  };
-
-  const controlUpdateTagFallback = function (payload, returnData, requestStatus) {
-    console.log(model.state.tags)
-    if (!requestStatus) {
-      model.checkForAndUpdateTag(payload)
-      model.diff.tagsToUpdate.push(payload)
-      model.persistDiff()
-
-    }
-
-    if (requestStatus) {
-      //val updated from thee tagEdit comp
-      // const formattedData = formatAPIResp(returnData, "tags")
-      // model.checkForAndUpdateTag(formattedData)
-    }
+  if (requestStatus) {
+    //val updated from thee tagEdit comp
+    // const formattedData = formatAPIResp(returnData, "tags")
+    // model.checkForAndUpdateTag(formattedData)
   }
+}
 
-  const controlUpdateTag = function (payload, payloadType) {
-    const apiPayload = formatAPIRequestTagPayload(payload, payloadType)
-    const queryObj = {
-      endpoint: API.APIEnum.TAG.PATCH(payload.tag.id),
-      token: model.token.value,
-      sec: null,
-      queryData: apiPayload,
-      actionType: "updateTag",
-      spinner: false,
-      alert: false,
-      type: "PATCH",
-      callBack: controlUpdateTagFallback.bind(null, payload.tag)
-    }
-    API.queryAPI(queryObj)
-
+const controlUpdateTag = function (payload, payloadType) {
+  const apiPayload = formatAPIRequestTagPayload(payload, payloadType)
+  const queryObj = {
+    endpoint: API.APIEnum.TAG.PATCH(payload.tag.id),
+    token: model.token.value,
+    sec: null,
+    queryData: apiPayload,
+    actionType: "updateTag",
+    spinner: false,
+    alert: false,
+    type: "PATCH",
+    callBack: controlUpdateTagFallback.bind(null, payload.tag)
   }
+  API.queryAPI(queryObj)
 
-  const controlAPIDeleteTagFallback = function (tagId, returnData, requestStatus) {
-    if (!requestStatus) {
-      model.diff.tagToDelete.push(tagId)
-      model.persistDiff()
-    }
+}
+
+const controlAPIDeleteTagFallback = function (tagId, returnData, requestStatus) {
+  if (!requestStatus) {
+    model.diff.tagToDelete.push(tagId)
+    model.persistDiff()
   }
+}
 
-  const controlDeleteTag = function (tagId) {
-    const queryObj = {
-      endpoint: API.APIEnum.TAG.DELETE(tagId),
-      token: model.token.value,
-      sec: null,
-      actionType: "deleteTag",
-      spinner: false,
-      alert: false,
-      type: "DELETE",
-      callBack: controlAPIDeleteTagFallback.bind(null, tagId)
-    }
-    API.queryAPI(queryObj)
-
-    model.deleteTag(tagId)
+const controlDeleteTag = function (tagId) {
+  const queryObj = {
+    endpoint: API.APIEnum.TAG.DELETE(tagId),
+    token: model.token.value,
+    sec: null,
+    actionType: "deleteTag",
+    spinner: false,
+    alert: false,
+    type: "DELETE",
+    callBack: controlAPIDeleteTagFallback.bind(null, tagId)
   }
+  API.queryAPI(queryObj)
 
-  const controlDeleteTableItem = function (
-    payload,
-    filter = undefined,
-    updateUI = true
-  ) {
-    let tableItems;
-    model.deleteTableItem(payload);
-    const currentTable = model.getCurrentTable();
+  model.deleteTag(tagId)
+}
 
-    filter
-      ? (tableItems = filter(currentTable.tableItems))
-      : (tableItems = currentTable.tableItems);
+const controlDeleteTableItem = function (
+  payload,
+  filter = undefined,
+  updateUI = true
+) {
+  let tableItems;
+  model.deleteTableItem(payload);
+  const currentTable = model.getCurrentTable();
 
-    if (tableItems && !Array.isArray(tableItems)) tableItems = [tableItems];
+  filter
+    ? (tableItems = filter(currentTable.tableItems))
+    : (tableItems = currentTable.tableItems);
 
-    //render current table
-    updateUI ? tableComponentView.renderTableItem(tableItems) : pass();
-  };
+  if (tableItems && !Array.isArray(tableItems)) tableItems = [tableItems];
 
-  const controlDuplicateTableItem = function (payload, updateUI = true) {
-    model.duplicateTableItem(payload);
-    const currentTable = model.getCurrentTable();
-    updateUI
-      ? tableComponentView.renderTableItem(currentTable.tableItems)
-      : pass();
-  };
+  //render current table
+  updateUI ? tableComponentView.renderTableItem(tableItems) : pass();
+};
 
-  const controlLogin = function (loginComponentCallBack, token) {
-    const loader = new Loader(DEFAULT_LOGIN_PAGE_TIMEOUT)
-    loader.component()
+const controlDuplicateTableItem = function (payload, updateUI = true) {
+  model.duplicateTableItem(payload);
+  const currentTable = model.getCurrentTable();
+  updateUI
+    ? tableComponentView.renderTableItem(currentTable.tableItems)
+    : pass();
+};
 
-    //set model token
-    model.token.value = token
-    model.persistToken()
+const controlLogin = function (loginComponentCallBack, token) {
+  const loader = new Loader(DEFAULT_LOGIN_PAGE_TIMEOUT)
+  loader.component()
 
-    //remove auth components
-    loginComponentCallBack()
+  //set model token
+  model.token.value = token
+  model.persistToken()
 
-    //switch template
-    init();
-    loader.remove()
-  }
+  //remove auth components
+  loginComponentCallBack()
 
-  const controlAddTemplate = function (templateType) {
-    if (templateType === "login") {
-      document.body.classList.remove("journal-template")
-      document.body.classList.add("login-template")
-      document.body.innerHTML = LoginTemplate.template();
-      LoginTemplate.templateStyling();
-      Login.addEventListeners(controlLogin)
-    }
-
-    if (templateType === "journal") {
-      console.log("loading emp")
-      document.body.innerHTML = ""
-      document.body.classList.remove("login-template")
-      document.body.classList.add("journal-template")
-      document.body.innerHTML = JournalTemplate.template();
-      JournalTemplate.templateStyling();
-    }
-  }
-
-  const controlLoadUI = function () {
-    const infoControllers = {
-      controlGetJournalName,
-      controlUpdateJournalInfo,
-    };
-
-    const tableControllers = {
-      controlAddNewTable,
-      controlGetTableHeads,
-      controlGetTable,
-      controlGetJournalName,
-      controlSetCurrentTable,
-    };
-
-    const tableItemControllers = {
-      controlAddTableItem,
-      controlDeleteTableItem,
-      controlUpdateTableItem,
-      controlGetTableItem,
-      controlGetTableItemWithMaxTags,
-      controlDuplicateTableItem,
-      controlAddTag,
-      controlDeleteTag,
-      controlUpdateTag
-    };
-
-    const optionControllers = {
-      controlRenameOption,
-      controlDuplicateOption,
-      controlDeleteOption,
-    };
-
-    const componentControllers = {
-      tableControllers,
-      tableItemControllers,
-      optionControllers,
-    };
-
-    const [tableHeads, currentTable] = [
-      controlGetTableHeads(),
-      model.getCurrentTable(),
-    ];
-
-    //create module objects
-    importTableBodyContainerListener.object = importTableBodyContainerListener.import()
-
-    contentContainerListener = importContentContainerListener.object = importContentContainerListener.import()
-
-    journalInfoComponentView = importJournalInfoComponentView.object = importJournalInfoComponentView.import()
-
-    //init the componentOptionsView
-    importComponentOptionsView.object = importComponentOptionsView.import()
-
-    sidebarComponentView = importSideBarComponentView.object = importSideBarComponentView.import();
-
-    tableComponentView = importTableComponentView.object = importTableComponentView.import()
-
-    contentContainerListener.init(journalInfoComponentView, tableComponentView)
-    // contentContainerListener.activateListener();
-
-    sidebarComponentView.init(controlAddSideBar);
-
-    journalInfoComponentView.init(controlAddJournalInfo);
-
-    tableComponentView.init(
-      controlAddTable,
-      controlSetCurrentTable,
-      tableHeads,
-      currentTable,
-    );
-
-    sidebarComponentView.addComponentHandlers(componentControllers);
-    journalInfoComponentView.addComponentHandlers(infoControllers);
-    tableComponentView.addComponentHandlers(componentControllers);
-    //componentGlobalState inherits all controller methods all components have
-    componentGlobalState.eventHandlers = {
-      infoControllers,
-      tableControllers,
-      tableItemControllers,
-      optionControllers,
-      componentControllers,
-    };
-  }
-
-  const init = function (loadTemplate = true) {
-    model.loadToken()
-    if (model.token.value) {
-      if (loadTemplate) {
-        controlAddTemplate("journal")
-        model.init(init)
-      }
-
-      if (!loadTemplate) controlLoadUI()
-
-    }
-    if (!model.token.value) controlAddTemplate("login")
-  };
+  //switch template
   init();
+  loader.remove()
+}
+
+const controlAddTemplate = function (templateType) {
+  if (templateType === "login") {
+    document.body.classList.remove("journal-template")
+    document.body.classList.add("login-template")
+    document.body.innerHTML = LoginTemplate.template();
+    LoginTemplate.templateStyling();
+    Login.addEventListeners(controlLogin)
+  }
+
+  if (templateType === "journal") {
+    console.log("loading emp")
+    document.body.innerHTML = ""
+    document.body.classList.remove("login-template")
+    document.body.classList.add("journal-template")
+    document.body.innerHTML = JournalTemplate.template();
+    JournalTemplate.templateStyling();
+  }
+}
+
+const controlLoadUI = function () {
+  const infoControllers = {
+    controlGetJournalName,
+    controlUpdateJournalInfo,
+  };
+
+  const tableControllers = {
+    controlAddNewTable,
+    controlGetTableHeads,
+    controlGetTable,
+    controlGetJournalName,
+    controlSetCurrentTable,
+  };
+
+  const tableItemControllers = {
+    controlAddTableItem,
+    controlDeleteTableItem,
+    controlUpdateTableItem,
+    controlGetTableItem,
+    controlGetTableItemWithMaxTags,
+    controlDuplicateTableItem,
+    controlAddTag,
+    controlDeleteTag,
+    controlUpdateTag
+  };
+
+  const optionControllers = {
+    controlRenameOption,
+    controlDuplicateOption,
+    controlDeleteOption,
+  };
+
+  const componentControllers = {
+    tableControllers,
+    tableItemControllers,
+    optionControllers,
+  };
+
+  const [tableHeads, currentTable] = [
+    controlGetTableHeads(),
+    model.getCurrentTable(),
+  ];
+
+  //create module objects
+  importTableBodyContainerListener.object = importTableBodyContainerListener.import()
+
+  contentContainerListener = importContentContainerListener.object = importContentContainerListener.import()
+
+  journalInfoComponentView = importJournalInfoComponentView.object = importJournalInfoComponentView.import()
+
+  //init the componentOptionsView
+  importComponentOptionsView.object = importComponentOptionsView.import()
+
+  sidebarComponentView = importSideBarComponentView.object = importSideBarComponentView.import();
+
+  tableComponentView = importTableComponentView.object = importTableComponentView.import()
+
+  contentContainerListener.init(journalInfoComponentView, tableComponentView)
+  // contentContainerListener.activateListener();
+
+  sidebarComponentView.init(controlAddSideBar);
+
+  journalInfoComponentView.init(controlAddJournalInfo);
+
+  tableComponentView.init(
+    controlAddTable,
+    controlSetCurrentTable,
+    tableHeads,
+    currentTable,
+  );
+
+  sidebarComponentView.addComponentHandlers(componentControllers);
+  journalInfoComponentView.addComponentHandlers(infoControllers);
+  tableComponentView.addComponentHandlers(componentControllers);
+  //componentGlobalState inherits all controller methods all components have
+  componentGlobalState.eventHandlers = {
+    infoControllers,
+    tableControllers,
+    tableItemControllers,
+    optionControllers,
+    componentControllers,
+  };
+}
+
+const init = function (loadTemplate = true) {
+  model.loadToken()
+  if (model.token.value) {
+    if (loadTemplate) {
+      controlAddTemplate("journal")
+      model.init(init)
+    }
+
+    if (!loadTemplate) controlLoadUI()
+
+  }
+  if (!model.token.value) controlAddTemplate("login")
+};
+init();

@@ -329,6 +329,43 @@ export const formatAPIResp = function (APIResp, type) {
   return formattedData
 }
 
+const getSubModelField = (submodel) => {
+  if (submodel !== "grateful_for")
+    return submodel.slice(0, submodel.length - 1)
+  return submodel
+}
+
+const createSubModelPayload = function (payload, submodel) {
+  let formattedRequest = {}
+  const subModelField = getSubModelField(submodel)
+  console.log("the submodele fields", subModelField)
+  //submodel value
+  formattedRequest[submodel] = {
+    activity: payload.itemId,
+    update: {
+      id: payload?.modelProperty?.property?.update?.propertyId.length > 0 ? payload?.modelProperty?.property?.update?.propertyId : null
+    },
+    update_and_create: payload?.modelProperty?.property?.updateAndAddProperty,
+    update_only: payload?.modelProperty?.updateProperty,
+    type: submodel
+  }
+  //add subfield value
+  formattedRequest[submodel].update[subModelField] = payload?.modelProperty?.property?.update?.value //FIXME: check for edgecase for the conditional
+
+  //add create value
+  payload?.modelProperty.property.create ? formattedRequest[submodel].create = {
+    relative_instance: payload?.modelProperty?.property?.create?.relativeProperty,
+  } : formattedRequest[submodel].create = null
+
+  if (formattedRequest[submodel].create) {
+    formattedRequest[submodel].create[subModelField] = payload?.modelProperty?.property?.create?.value
+
+  }
+
+  return formattedRequest
+}
+
+
 export const formatAPIRequestUpdateTableItemPayload = function (payload, type) {
   let formattedRequest;
   if (type === "title") {
@@ -345,27 +382,18 @@ export const formatAPIRequestUpdateTableItemPayload = function (payload, type) {
     }
   }
 
-  if (type === "intentions") {
+  if (type === "intentions")
+    formattedRequest = createSubModelPayload(payload, "intentions")
 
-    formattedRequest = {
-      intentions: {
-        intention: payload?.modelProperty?.property?.create?.value ?? payload.modelProperty.property.update.value,
-        activity: payload.itemId,
-        create: {
-          relative_instance: payload?.modelProperty?.property?.create?.relativeProperty,
-          intention: payload?.modelProperty?.property?.create?.value
-        },
-        update: {
-          intention: payload.modelProperty.property.update.value,
-          id: payload?.modelProperty?.property?.update?.propertyId
-        },
-        update_and_create: payload?.modelProperty?.property?.updateAndAddProperty,
-        update_only: payload?.modelProperty?.property.updateProperty
-      }
-    }
-    //add the payload actionType for the fallback
-    payload.actionType = formattedRequest.intentions.create ? "create" : "update"
-  }
+  if (type === "happenings")
+    formattedRequest = createSubModelPayload(payload, "happenings")
+
+  if (type === "actionItems") //TODO: add checkbox data
+    formattedRequest = createSubModelPayload(payload, "action_items")
+
+  if (type === "gratefulFor")
+    formattedRequest = createSubModelPayload(payload, "grateful_for")
+
   return formattedRequest
 }
 

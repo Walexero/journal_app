@@ -10,7 +10,7 @@ export default class ContainerSidePeekComponentView {
   _componentHandler = importComponentOptionsView.object
   _state;
   _events = ["click", "keyup", "keydown"];
-  _delayRequestActive = false;
+  _updateAndAddTriggeredBeforeUpdateDelay = false;
 
   constructor(state) {
     this._state = state;
@@ -451,7 +451,8 @@ export default class ContainerSidePeekComponentView {
   }
 
   _handleInputUpdateAndAddEvent(e) {
-    // debugger;
+    debugger;
+    console.log("triggered update add event")
     const inputType = this._getInputType(e);
 
     const [inputContainer, checkedValue, updateVal, updateId] =
@@ -478,10 +479,10 @@ export default class ContainerSidePeekComponentView {
       inputContainsCheckbox,
       checkedValue
     );
-
-    const update = inputSelectionExists
-      ? this._constructUpdateProperty(updateVal, inputModelKey, updateId)
-      : null;
+    console.log("the input selection exists", inputSelectionExists)
+    //FIXME: add an update for new value to create an empty list with id
+    const update = this._constructUpdateProperty(updateVal, inputModelKey, updateId)
+    //FIXME: check change value doesn't affect output
 
     const payload = {
       itemId: this._state.itemId,
@@ -501,6 +502,7 @@ export default class ContainerSidePeekComponentView {
 
       },
     };
+    this._updateAndAddTriggeredBeforeUpdateDelay = true;
 
     console.log("payload updatee and create", payload)
     //update the item
@@ -525,7 +527,7 @@ export default class ContainerSidePeekComponentView {
       inputSelectionExists || nextElInput
         ? document
           .querySelector(`[data-id="${updateId}"]`)
-          ?.nextElementSibling.querySelector(`.slide-${inputType}-input`)
+          ?.nextElementSibling?.querySelector(`.slide-${inputType}-input`)
         : null;
 
     //focus on the relative or last element on content refresh
@@ -553,18 +555,30 @@ export default class ContainerSidePeekComponentView {
 
   _clearPreviousTimer() {
     clearInterval(this._timer)
+    console.log("cleared... ")
     this._timer = null
   }
 
   _handleInputUpdateEventDelay(e) {
+    //TODO: prevent update from delay if the update and createe is triggered
     if (this._timer) this._clearPreviousTimer()
+    console.log("input update event")
+    this._timer = setTimeout(() => {
+      if (!this._updateAndAddTriggeredBeforeUpdateDelay) {
+        this._handleInputUpdateEvent(e)
+        this._updateAndAddTriggeredBeforeUpdateDelay = false
+      }
 
-    this._timer = setTimeout(() => this._handleInputUpdateEvent(e), 0.5 * 1000)
+      if (this._updateAndAddTriggeredBeforeUpdateDelay) {
+        clearInterval(this._timer)
+        this._updateAndAddTriggeredBeforeUpdateDelay = false
+      }
+    }, 2 * 1000)
   }
 
   _handleInputUpdateEvent(e) {
-    //TODO: add delay to capture input
     // debugger;
+    console.log("triggered update event")
     const inputType = this._getInputType(e);
     const [inputContainer, checkedValue, updateVal, updateId] =
       this._getInputAndChecked(e, inputType);

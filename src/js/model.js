@@ -496,6 +496,7 @@ export const updateTableItem = function (payload) {
         );
         //add the update item id to the payload
         payload.updatedItemId = updateValue.propertyId
+        //FIXME: check against the updatedItem being null to add as create for the diff
 
         propertyToUpdate.text = updateValue.value;
         propertyToUpdate.checkbox
