@@ -38,7 +38,8 @@ export let diff = {
   tableItemToDelete: [],
   tagToDelete: [],
   tagsToUpdate: [],
-
+  submodelToCreate: [],
+  submodelToUpdate: [],
 }
 
 export let token = {}
@@ -493,6 +494,8 @@ export const updateTableItem = function (payload) {
         const propertyToUpdate = itemToUpdate[updateValue.key].find(
           (propItem) => propItem.id === updateValue.propertyId
         );
+        //add the update item id to the payload
+        payload.updatedItemId = updateValue.propertyId
 
         propertyToUpdate.text = updateValue.value;
         propertyToUpdate.checkbox
@@ -509,6 +512,8 @@ export const updateTableItem = function (payload) {
           id: uuid4(),
           text: payloadValue.value,
         };
+        //add the create submodel id to the payload for the diff
+        payload.createdItemId = updateObj.id
 
         const hasCheckbox = payload.modelProperty.checkedProperty.checkbox;
 

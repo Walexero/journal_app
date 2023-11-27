@@ -346,10 +346,25 @@ export const formatAPIRequestUpdateTableItemPayload = function (payload, type) {
   }
 
   if (type === "intentions") {
+
     formattedRequest = {
-      "intention": payload.modelProperty.property.update.value,
-      // "activity": payload.itemId
+      intentions: {
+        intention: payload?.modelProperty?.property?.create?.value ?? payload.modelProperty.property.update.value,
+        activity: payload.itemId,
+        create: {
+          relative_instance: payload?.modelProperty?.property?.create?.relativeProperty,
+          intention: payload?.modelProperty?.property?.create?.value
+        },
+        update: {
+          intention: payload.modelProperty.property.update.value,
+          id: payload?.modelProperty?.property?.update?.propertyId
+        },
+        update_and_create: payload?.modelProperty?.property?.updateAndAddProperty,
+        update_only: payload?.modelProperty?.property.updateProperty
+      }
     }
+    //add the payload actionType for the fallback
+    payload.actionType = formattedRequest.intentions.create ? "create" : "update"
   }
   return formattedRequest
 }
@@ -364,4 +379,8 @@ export const getAPICreatedTagFromModel = function (apiPayload, payload, state, t
       if (objExistInTableTags) apiPayload.tags.push(objExistInTableTags.id)
     })
   }
+}
+
+export const isoDate = function () {
+  return new Date(Date.now()).toISOString()
 }

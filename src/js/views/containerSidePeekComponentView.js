@@ -10,6 +10,7 @@ export default class ContainerSidePeekComponentView {
   _componentHandler = importComponentOptionsView.object
   _state;
   _events = ["click", "keyup", "keydown"];
+  _delayRequestActive = false;
 
   constructor(state) {
     this._state = state;
@@ -30,7 +31,7 @@ export default class ContainerSidePeekComponentView {
       }</div>`;
 
     const strikeThroughMarkup = `<s>${inputMarkup}</s>`;
-
+    //TODO: check that the submodel id gets rendered with the UI
     return `
       <li data-id="${type?.id ?? ""}">
         ${checkbox ? checkboxMarkup : ""}
@@ -241,13 +242,17 @@ export default class ContainerSidePeekComponentView {
     });
   }
 
+  _delayRequestTimer() {
+
+  }
+
   _handleEvents(e) {
     if (this._updateTitleMatchStrategy(e)) this._handleUpdateTitleEvent(e);
     if (this._copyToClipboardMatchStrategy(e))
       this._handleCopyToClipboardEvent(e);
     if (this._tagAddMatchStrategy(e)) this._handleTagAddEvent(e);
     if (this._inputAddMatchStrategy(e)) this._handleInputUpdateAndAddEvent(e);
-    if (this._inputUpdateMatchStrategy(e)) this._handleInputUpdateEvent(e);
+    if (this._inputUpdateMatchStrategy(e)) this._handleInputUpdateEventDelay(e)//this._handleInputUpdateEvent(e);
 
     if (this._inputDeleteMatchStrategy(e)) this._handleInputDeleteEvent(e);
 
@@ -446,7 +451,7 @@ export default class ContainerSidePeekComponentView {
   }
 
   _handleInputUpdateAndAddEvent(e) {
-    debugger;
+    // debugger;
     const inputType = this._getInputType(e);
 
     const [inputContainer, checkedValue, updateVal, updateId] =
@@ -493,16 +498,18 @@ export default class ContainerSidePeekComponentView {
           key: inputModelKey,
           updateAndAddProperty: true,
         },
+
       },
     };
 
+    console.log("payload updatee and create", payload)
     //update the item
-    debugger;
+    // debugger;
     this._state.eventHandlers.tableItemControllers.controlUpdateTableItem(
       payload,
       null,
       null,
-      false
+      payload.modelProperty.property.key
     );
 
     const tableItemData =
@@ -544,8 +551,20 @@ export default class ContainerSidePeekComponentView {
     }
   }
 
+  _clearPreviousTimer() {
+    clearInterval(this._timer)
+    this._timer = null
+  }
+
+  _handleInputUpdateEventDelay(e) {
+    if (this._timer) this._clearPreviousTimer()
+
+    this._timer = setTimeout(() => this._handleInputUpdateEvent(e), 0.5 * 1000)
+  }
+
   _handleInputUpdateEvent(e) {
-    debugger;
+    //TODO: add delay to capture input
+    // debugger;
     const inputType = this._getInputType(e);
     const [inputContainer, checkedValue, updateVal, updateId] =
       this._getInputAndChecked(e, inputType);
