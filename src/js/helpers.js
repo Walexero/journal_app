@@ -343,7 +343,7 @@ const createSubModelPayload = function (payload, submodel) {
   formattedRequest[submodel] = {
     activity: payload.itemId,
     update: {
-      id: payload?.modelProperty?.property?.update?.propertyId.length > 0 ? payload?.modelProperty?.property?.update?.propertyId : null
+      id: payload?.modelProperty?.property?.update?.propertyId.length > 0 ? Number(payload?.modelProperty?.property?.update?.propertyId) : null
     },
     update_and_create: payload?.modelProperty?.property?.updateAndAddProperty,
     update_only: payload?.modelProperty?.updateProperty,

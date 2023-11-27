@@ -283,6 +283,7 @@ const controlUpdateTableItemFallback = function (addTableItemParam, returnData, 
     }
 
 
+
     //TODO: switch save type payloadType to diff
     //tableItems
     if (addTableItemParam.payloadType === tableItems.find(item => item === addTableItemParam.payloadType)) {
@@ -292,22 +293,23 @@ const controlUpdateTableItemFallback = function (addTableItemParam, returnData, 
         model.diff.tableItemToUpdate.push({ table: currentTable.id, item: addTableItemParam.itemId, date: isoDate() })
       }
 
-      model.persistDiff()
     }
-
-    if (requestStatus) {
-      const formattedData = formatAPITableItems(Array.isArray(returnData) ? returnData : [returnData])
-      model.updateAPITableItem(formattedData[0], null, currentTable.id)
-    }
-
-    addTableItemParam.currentTable = currentTable
-    filterSortRenderTableItem(addTableItemParam, null, addTableItemParam.updateUI ? true : null)
-
-    //free mem
-    addTableItemParam = {}
-
+    model.persistDiff()
   }
+
+  if (requestStatus) {
+    const formattedData = formatAPITableItems(Array.isArray(returnData) ? returnData : [returnData])
+    model.updateAPITableItem(formattedData[0], true, currentTable.id)
+    console.log("state model", model.state)
+  }
+  //callback for the sidepeekinput
+  if (addTableItemParam.payload.refreshCallBack) addTableItemParam.payload.refreshCallBack()
+  addTableItemParam.currentTable = currentTable
+  filterSortRenderTableItem(addTableItemParam, null, addTableItemParam.updateUI ? true : null)
+  //free mem
+  addTableItemParam = {}
 }
+
 const controlAddSubModelItem = function (payload, payloadType = undefined) {
 
 }

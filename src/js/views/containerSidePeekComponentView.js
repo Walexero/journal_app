@@ -36,7 +36,7 @@ export default class ContainerSidePeekComponentView {
       <li data-id="${type?.id ?? ""}">
         ${checkbox ? checkboxMarkup : ""}
         ${type?.checked ? strikeThroughMarkup : inputMarkup}
-      </li> 
+      </li>
     `;
   }
 
@@ -451,7 +451,6 @@ export default class ContainerSidePeekComponentView {
   }
 
   _handleInputUpdateAndAddEvent(e) {
-    debugger;
     console.log("triggered update add event")
     const inputType = this._getInputType(e);
 
@@ -505,6 +504,9 @@ export default class ContainerSidePeekComponentView {
     this._updateAndAddTriggeredBeforeUpdateDelay = true;
 
     console.log("payload updatee and create", payload)
+    //callback after update
+    payload.refreshCallBack = this._refreshAndUpdateUICallBack.bind(this, inputSelectionExists, nextElInput, inputType, updateId)
+
     //update the item
     // debugger;
     this._state.eventHandlers.tableItemControllers.controlUpdateTableItem(
@@ -514,6 +516,10 @@ export default class ContainerSidePeekComponentView {
       payload.modelProperty.property.key
     );
 
+  }
+
+  _refreshAndUpdateUICallBack(inputSelectionExists, nextElInput, inputType, updateId) {
+    debugger;
     const tableItemData =
       this._state.eventHandlers.tableItemControllers.controlGetTableItem(
         this._state.tableId,

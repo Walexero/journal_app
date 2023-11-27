@@ -386,11 +386,20 @@ export const updateAPITableItem = function (payload, api = true, tableId) {
 
   if (updateSingleItem) {
     //logic runs for single item update
+    if (api) {
+      //FIXME: make sure implementation doesn't contradict with any other interfacee implementation
+      //replace value with api value
+      const tableAPIItem = getItemFromTableItems(tableToUpdate, payload.id, true, true)
+      tableToUpdate.tableItems.splice(tableAPIItem, 1)
+      tableToUpdate.tableItems.splice(tableAPIItem, 0, payload)
+      persistData()
+      return
+    }
+
     const itemToUpdate = getTableItem(tableToUpdate, payload.id);
     payload?.itemTitle ? (itemToUpdate.itemTitle = payload.itemTitle) : pass();
 
     payload?.itemTags ? (itemToUpdate.itemTags = payload.itemTags) : pass();
-
 
     //create new tag object if it doesn't exist in the tag table
     //TODO: use the createtagendpoint to update the journal tags or a fallback
@@ -476,7 +485,8 @@ export const updateTableItem = function (payload) {
 
   if (updateSingleItem) {
     //logic runs for single item update
-    const itemToUpdate = getTableItem(tableToUpdate, payload.itemId);
+    let itemToUpdate = getTableItem(tableToUpdate, payload.itemId);
+
     payload?.title ? (itemToUpdate.itemTitle = payload.title) : pass();
 
     const formattedTags = payload?.tags
