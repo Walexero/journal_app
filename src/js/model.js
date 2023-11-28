@@ -412,14 +412,15 @@ export const updateAPITableItem = function (payload, api = true, tableId) {
         const propertyToUpdate = itemToUpdate[updateValue.key].find(
           (propItem) => propItem.id === updateValue.propertyId
         );
-
-        propertyToUpdate.text = updateValue.value;
-        propertyToUpdate.checkbox
-          ? (propertyToUpdate.checkbox =
-            payload.modelProperty.checkedProperty.checkbox) &&
-          (propertyToUpdate.checked =
-            payload.modelProperty.checkedProperty.checked)
-          : pass();
+        if (propertyToUpdate) {
+          propertyToUpdate.text = updateValue.value;
+          propertyToUpdate.checkbox
+            ? (propertyToUpdate.checkbox =
+              payload.modelProperty.checkedProperty.checkbox) &&
+            (propertyToUpdate.checked =
+              payload.modelProperty.checkedProperty.checked)
+            : pass();
+        }
       }
 
       if (payload.modelProperty.property.create) {
@@ -507,14 +508,15 @@ export const updateTableItem = function (payload) {
         //add the update item id to the payload
         payload.updatedItemId = updateValue.propertyId
         //FIXME: check against the updatedItem being null to add as create for the diff
-
-        propertyToUpdate.text = updateValue.value;
-        propertyToUpdate.checkbox
-          ? (propertyToUpdate.checkbox =
-            payload.modelProperty.checkedProperty.checkbox) &&
-          (propertyToUpdate.checked =
-            payload.modelProperty.checkedProperty.checked)
-          : pass();
+        if (propertyToUpdate) {
+          propertyToUpdate.text = updateValue.value;
+          propertyToUpdate.checkbox
+            ? (propertyToUpdate.checkbox =
+              payload.modelProperty.checkedProperty.checkbox) &&
+            (propertyToUpdate.checked =
+              payload.modelProperty.checkedProperty.checked)
+            : pass();
+        }
       }
 
       if (payload.modelProperty.property.create) {
@@ -552,8 +554,12 @@ export const updateTableItem = function (payload) {
         const propertyToUpdate = itemToUpdate[updateValue.key].find(
           (propItem) => propItem.id === updateValue.propertyId
         );
-        propertyToUpdate.text = updateValue.value;
-        propertyToUpdate.checked = updateValue.checked;
+        if (propertyToUpdate) {
+          //TODO: make sure values are getting updated
+          propertyToUpdate.text = updateValue.value;
+          propertyToUpdate.checked = updateValue.checked;
+
+        }
       }
     }
   }

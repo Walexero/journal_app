@@ -292,7 +292,7 @@ export const formatAPIResp = function (APIResp, type) {
       "id": APIResp.id,
       "text": APIResp.action_item,
       "checkbox": true,
-      "checked": APIResp.cheecked
+      "checked": APIResp.checked
     }
   }
 
@@ -349,6 +349,12 @@ const createSubModelPayload = function (payload, submodel) {
     update_only: payload?.modelProperty?.updateProperty,
     type: submodel
   }
+
+  //add update value
+  payload?.modelProperty.property.update ? formattedRequest[submodel].update = {
+    id: payload?.modelProperty?.property?.update?.propertyId.length > 0 ? Number(payload?.modelProperty?.property?.update?.propertyId) : null
+  } : null
+
   //add subfield value
   formattedRequest[submodel].update[subModelField] = payload?.modelProperty?.property?.update?.value //FIXME: check for edgecase for the conditional
 
@@ -359,6 +365,19 @@ const createSubModelPayload = function (payload, submodel) {
 
   if (formattedRequest[submodel].create) {
     formattedRequest[submodel].create[subModelField] = payload?.modelProperty?.property?.create?.value
+
+  }
+
+  //add action item checkbox
+  if (payload?.modelProperty.property.updateActionItem) {
+    formattedRequest[submodel].update_action_item_checked = {
+      checked: payload?.modelProperty.property.updateActionItem.checked,
+      key: payload?.modelProperty.property.updateActionItem.key,
+      id: Number(payload?.modelProperty.property.updateActionItem.propertyId),
+      update_checked: true,
+      type: "action_items"
+      //TODO: decide to add the field value
+    }
 
   }
 

@@ -709,7 +709,10 @@ export default class ContainerSidePeekComponentView {
 
     //update the item intentions
     this._state.eventHandlers.tableItemControllers.controlUpdateTableItem(
-      payload
+      payload,
+      null,
+      null,
+      "actionItems"
     );
   }
 
