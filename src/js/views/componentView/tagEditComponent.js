@@ -198,11 +198,16 @@ export default class TagEditComponent {
   }
 
   _updateElClassAndText(inputVal, colorVal, el, tag) {
+    debugger;
     el.forEach((elm) => {
       if (elm) {
         elm.classList.remove(tag.color);
         elm.classList.add(colorVal);
-        elm.textContent = inputVal.value.trim();
+        const elmDeleteIcon = elm.querySelector(".row-tag-icon")
+        elm.textContent = inputVal.value.trim()
+        if (elmDeleteIcon)
+          elm.insertAdjacentElement("beforeend", elmDeleteIcon);
+
       }
     });
   }
