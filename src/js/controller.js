@@ -326,8 +326,6 @@ const controlUpdateTableItem = function (
   debugger
   console.log('the upd payload', payload)
   if (!payload) return
-  //TODO: add payload typee to every interface that calls this func
-  //FIXME: make sure the payload is updated to capture other payload types apart from title update
   const apiPayload = formatAPIRequestUpdateTableItemPayload(payload, payloadType)
   getAPICreatedTagFromModel(apiPayload, payload, model.state, payloadType)
   console.log("the api payload", apiPayload)
@@ -404,12 +402,39 @@ const controlDeleteTag = function (tagId) {
   model.deleteTag(tagId)
 }
 
+const controlDeleteTableItemFallback = function (deleteTableItemParam, returnData, requestStatus = false) {
+  if (!requestStatus) {
+    model.diff.submodelToDelete.push({ subModel: deleteTableItemParam.payloadType, id: deleteTableItemParam.payload[deleteTableItemParam.payloadType].delete.id })
+
+    model.persistDiff()
+  }
+  //free mem
+  deleteTableItemParam = {}
+}
+
 const controlDeleteTableItem = function (
   payload,
   filter = undefined,
+  payloadType = undefined,
   updateUI = true
 ) {
+  debugger;
   let tableItems;
+  if (!payload) return
+  const apiPayload = formatAPIRequestUpdateTableItemPayload(payload, payloadType)
+  const queryObj = {
+    endpoint: API.getSubmodelEndpoint(payloadType, "DELETE", apiPayload[payloadType].delete.id),
+    token: model.token.value,
+    sec: null,
+    actionType: "deleteTableItem",
+    spinner: false,
+    alert: false,
+    type: "DELETE",
+    callBack: controlDeleteTableItemFallback.bind(null, { payload: apiPayload, filter, payloadType }),
+    callBackParam: true
+  }
+  API.queryAPI(queryObj)
+
   model.deleteTableItem(payload);
   const currentTable = model.getCurrentTable();
 

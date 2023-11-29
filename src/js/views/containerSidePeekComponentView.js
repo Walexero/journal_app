@@ -11,6 +11,7 @@ export default class ContainerSidePeekComponentView {
   _state;
   _events = ["click", "keyup", "keydown"];
   _updateAndAddTriggeredBeforeUpdateDelay = false;
+  _deleteEventActivated = false
 
   constructor(state) {
     this._state = state;
@@ -31,7 +32,6 @@ export default class ContainerSidePeekComponentView {
       }</div>`;
 
     const strikeThroughMarkup = `<s>${inputMarkup}</s>`;
-    //TODO: check that the submodel id gets rendered with the UI
     return `
       <li data-id="${type?.id ?? ""}">
         ${checkbox ? checkboxMarkup : ""}
@@ -242,8 +242,12 @@ export default class ContainerSidePeekComponentView {
     });
   }
 
-  _delayRequestTimer() {
+  setDeleteActivatedState(value) {
+    this._deleteEventActivated = value;
+  }
 
+  getDeleteActivatedState() {
+    return this._deleteEventActivated;
   }
 
   _handleEvents(e) {
@@ -494,7 +498,6 @@ export default class ContainerSidePeekComponentView {
       modelProperty: {
         checkedProperty,
         property: {
-          //TODO: using anchor to determine create value as well
           create: {
             value: this._setPayloadCreateValue(inputSelection, inputSelectionExists, selectionAnchorOffset),
             relativeProperty: createRelativeProperty,
@@ -620,6 +623,11 @@ export default class ContainerSidePeekComponentView {
 
   _handleInputUpdateEvent(e) {
     // debugger;
+    if (this.getDeleteActivatedState()) {
+      //prevent an update event from being triggered after a delete event
+      this.setDeleteActivatedState(false)
+      return
+    }
 
     console.log("triggered update event")
     const inputType = this._getInputType(e);
@@ -662,6 +670,7 @@ export default class ContainerSidePeekComponentView {
   }
 
   _handleInputDeleteEvent(e) {
+    this.setDeleteActivatedState(true);
     const inputType = this._formatInputType(
       e.target
         .closest(".slide-options")
@@ -679,6 +688,14 @@ export default class ContainerSidePeekComponentView {
     const nextElInput = inputContainer?.nextElementSibling?.querySelector(
       `.slide-${inputType}-input`
     );
+    const allInputTypeLength = Array.from(document.querySelectorAll(`.slide-${inputType}-input`)).length
+
+    //prevent delete of last and only item except updating it
+    if (allInputTypeLength === 1) {
+      this.setDeleteActivatedState(false)
+      return
+    }
+
 
     const payload = {
       itemId: this._state.itemId,
@@ -699,9 +716,9 @@ export default class ContainerSidePeekComponentView {
       this._state.eventHandlers.tableItemControllers.controlDeleteTableItem(
         payload,
         null,
+        inputType.trim(),
         false
       );
-
     if (!previousElInput && !nextElInput) return;
 
     if (previousElInput) {

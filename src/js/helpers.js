@@ -338,55 +338,54 @@ const getSubModelField = (submodel) => {
 const createSubModelPayload = function (payload, submodel) {
   let formattedRequest = {}
   const subModelField = getSubModelField(submodel)
-  console.log("the submodele fields", subModelField)
+
   //submodel value
   formattedRequest[submodel] = {
     activity: payload.itemId,
-    // update: {
-    //   id: payload?.modelProperty?.property?.update?.propertyId.length > 0 ? Number(payload?.modelProperty?.property?.update?.propertyId) : null
-    // },
     update_and_create: payload?.modelProperty?.property?.updateAndAddProperty,
     update_only: payload?.modelProperty?.updateProperty,
-    type: submodel
+    type: submodel,
+    delete_only: payload?.modelProperty?.property?.delete ? true : false
   }
 
   //add update value
-  payload?.modelProperty.property.update ? formattedRequest[submodel].update = {
+  payload?.modelProperty?.property?.update ? formattedRequest[submodel].update = {
     id: payload?.modelProperty?.property?.update?.propertyId.length > 0 ? Number(payload?.modelProperty?.property?.update?.propertyId) : null
   } : null
 
   //add subfield value
-  formattedRequest[submodel].update[subModelField] = payload?.modelProperty?.property?.update?.value //FIXME: check for edgecase for the conditional
+  if (formattedRequest[submodel].update)
+    formattedRequest[submodel].update[subModelField] = payload?.modelProperty?.property?.update?.value ?? null
 
   //add create value
-  payload?.modelProperty.property.create ? formattedRequest[submodel].create = {
+  payload?.modelProperty?.property?.create ? formattedRequest[submodel].create = {
     relative_item: payload?.modelProperty?.property?.create?.relativeProperty,
     ordering: payload?.modelProperty?.property?.create?.ordering,
   } : formattedRequest[submodel].create = null
 
-  if (formattedRequest[submodel].create) {
+  if (formattedRequest[submodel]?.create) {
     formattedRequest[submodel].create[subModelField] = payload?.modelProperty?.property?.create?.value
-
-
   }
 
   //add ordering list value
   if (payload?.modelProperty?.property?.orderingList)
     formattedRequest[submodel].ordering_list = payload.modelProperty.property.orderingList
 
-
-
   //add action item checkbox
-  if (payload?.modelProperty.property.updateActionItem) {
+  if (payload?.modelProperty?.property?.updateActionItem) {
     formattedRequest[submodel].update_action_item_checked = {
       checked: payload?.modelProperty.property.updateActionItem.checked,
       key: payload?.modelProperty.property.updateActionItem.key,
       id: Number(payload?.modelProperty.property.updateActionItem.propertyId),
       update_checked: true,
       type: "action_items"
-      //TODO: decide to add the field value
     }
+  }
 
+  if (payload?.modelProperty?.property?.delete) {
+    formattedRequest[submodel].delete = {
+      id: payload.modelProperty.property.delete.propertyId,
+    }
   }
 
   return formattedRequest
@@ -415,7 +414,7 @@ export const formatAPIRequestUpdateTableItemPayload = function (payload, type) {
   if (type === "happenings")
     formattedRequest = createSubModelPayload(payload, "happenings")
 
-  if (type === "actionItems") //TODO: add checkbox data
+  if (type === "actionItems")
     formattedRequest = createSubModelPayload(payload, "action_items")
 
   if (type === "gratefulFor")

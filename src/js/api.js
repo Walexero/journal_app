@@ -71,14 +71,10 @@ export class API {
         SUBMODEL: {
             CREATE: ((subModel, subModelId) => `journal/${subModel}/`),
             LIST: ((subModel, subModelId) => `journal/${subModel}/`),
-            GET: ((subModel, subModelId) => `journal/
-            ${subModel}/${subModelId}/`),
-            PUT: ((subModel, subModelId) => `journal/
-            ${subModel}/${subModelId}/`),
-            PATCH: ((subModel, subModelId) => `journal/
-            ${subModel}/${subModelId}/`),
-            DELETE: ((subModel, subModelId) => `journal/
-            ${subModel}/${subModelId}/`),
+            GET: ((subModel, subModelId) => `journal/${subModel}/${subModelId}/`),
+            PUT: ((subModel, subModelId) => `journal/${subModel}/${subModelId}/`),
+            PATCH: ((subModel, subModelId) => `journal/${subModel}/${subModelId}/`),
+            DELETE: ((subModel, subModelId) => `journal/${subModel}/${subModelId}/`),
         },
     }
     static timeout = 20 //timeout in 20s

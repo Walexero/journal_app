@@ -40,6 +40,7 @@ export let diff = {
   tagsToUpdate: [],
   submodelToCreate: [],
   submodelToUpdate: [],
+  submodelToDelete: [],
 }
 
 export let token = {}
