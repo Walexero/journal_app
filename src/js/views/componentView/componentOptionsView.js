@@ -141,10 +141,10 @@ class ComponentOptionsView {
       }
 
       //logic to rerender the side-peek content
-      if (componentObj.refreshCaller) {
-        const updatedData = componentObj.getUpdatedData();
-        componentObj.refreshCaller(updatedData);
-      }
+      // if (componentObj.refreshCaller) {
+      // const updatedData = componentObj.getUpdatedData();
+      // componentObj.refreshCaller(updatedData);
+      // }
     }
 
     //reset overlayCount relative to the overlays on page

@@ -224,6 +224,7 @@ export default class ContainerSidePeekComponentView {
 
   render() {
     const cls = this;
+
     this._state.markup = this._generateMarkup(this._state.itemData);
 
     //implement url change
@@ -244,6 +245,10 @@ export default class ContainerSidePeekComponentView {
 
   setDeleteActivatedState(value) {
     this._deleteEventActivated = value;
+  }
+
+  setItemDataState(value) {
+    this._state.itemData = value;
   }
 
   getDeleteActivatedState() {
@@ -421,6 +426,8 @@ export default class ContainerSidePeekComponentView {
     const updateObj = {
       tableId: cls._state.tableId,
       itemId: cls._state.itemId,
+      refreshCallBack: this.refreshContent.bind(cls), //add the callback for the controlUpdateTableItemFallback to call after updating model
+      getUpdatedData: true
     };
 
     const componentObj = {
@@ -442,7 +449,7 @@ export default class ContainerSidePeekComponentView {
           cls._state.itemId
         ),
       eventHandlers: this._state.eventHandlers,
-      refreshCaller: this.refreshContent.bind(cls),
+      // refreshCaller: this.refreshContent.bind(cls),
       updateTag: true,
       updateObj: updateObj,
       tagItems: cls._state.itemData.itemTags,
@@ -451,11 +458,11 @@ export default class ContainerSidePeekComponentView {
       tagsColors: cls._state.tagsColors,
     };
 
-    const component = new tagOptionComponent(componentObj).render();
+    const component = new tagOptionComponent(componentObj)
+    component.render();
   }
 
   _handleInputUpdateAndAddEvent(e) {
-    debugger;
     console.log("triggered update add event")
     const inputType = this._getInputType(e);
 
@@ -557,7 +564,6 @@ export default class ContainerSidePeekComponentView {
   }
 
   _refreshAndUpdateUICallBack(inputSelectionExists, nextElInput, inputType, updateId) {
-    debugger;
     const tableItemData =
       this._state.eventHandlers.tableItemControllers.controlGetTableItem(
         this._state.tableId,
@@ -905,8 +911,12 @@ export default class ContainerSidePeekComponentView {
   }
 
   refreshContent(updatedData) {
+    //reset component itemData value
+    this.setItemDataState(updatedData)
+
     debugger;
     const itemPropertyContainer = document.querySelector(".slide-content");
+    console.log("the itemProperty container", itemPropertyContainer)
     const contentContainer = document.querySelector(".container-slide-content");
 
     const tableItemTags = this._generateSlideTagsMarkup(updatedData);

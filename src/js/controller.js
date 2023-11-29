@@ -303,7 +303,10 @@ const controlUpdateTableItemFallback = function (addTableItemParam, returnData, 
     console.log("state model", model.state)
   }
   //callback for the sidepeekinput
-  if (addTableItemParam.payload.refreshCallBack) addTableItemParam.payload.refreshCallBack()
+  if (addTableItemParam.payload.refreshCallBack) {
+    addTableItemParam.payload.getUpdatedData ? addTableItemParam.payload.refreshCallBack(controlGetTableItem(addTableItemParam.payload.tableId, addTableItemParam.payload.itemId)) : addTableItemParam.payload.refreshCallBack()
+  }
+
   addTableItemParam.currentTable = currentTable
   filterSortRenderTableItem(addTableItemParam, null, addTableItemParam.updateUI ? true : null)
   //free mem
