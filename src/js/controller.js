@@ -313,10 +313,6 @@ const controlUpdateTableItemFallback = function (addTableItemParam, returnData, 
   addTableItemParam = {}
 }
 
-const controlAddSubModelItem = function (payload, payloadType = undefined) {
-
-}
-
 
 const controlUpdateTableItem = function (
   payload,
@@ -350,18 +346,18 @@ const controlUpdateTableItem = function (
 };
 
 const controlUpdateTagFallback = function (payload, returnData, requestStatus) {
+  debugger
   console.log(model.state.tags)
   if (!requestStatus) {
     model.checkForAndUpdateTag(payload)
     model.diff.tagsToUpdate.push(payload)
     model.persistDiff()
-
   }
 
   if (requestStatus) {
     //val updated from thee tagEdit comp
-    // const formattedData = formatAPIResp(returnData, "tags")
-    // model.checkForAndUpdateTag(formattedData)
+    const formattedData = formatAPIResp(returnData, "tags")
+    model.checkForAndUpdateTag(formattedData)
   }
 }
 
