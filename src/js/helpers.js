@@ -342,9 +342,9 @@ const createSubModelPayload = function (payload, submodel) {
   //submodel value
   formattedRequest[submodel] = {
     activity: payload.itemId,
-    update: {
-      id: payload?.modelProperty?.property?.update?.propertyId.length > 0 ? Number(payload?.modelProperty?.property?.update?.propertyId) : null
-    },
+    // update: {
+    //   id: payload?.modelProperty?.property?.update?.propertyId.length > 0 ? Number(payload?.modelProperty?.property?.update?.propertyId) : null
+    // },
     update_and_create: payload?.modelProperty?.property?.updateAndAddProperty,
     update_only: payload?.modelProperty?.updateProperty,
     type: submodel
@@ -360,13 +360,21 @@ const createSubModelPayload = function (payload, submodel) {
 
   //add create value
   payload?.modelProperty.property.create ? formattedRequest[submodel].create = {
-    relative_instance: payload?.modelProperty?.property?.create?.relativeProperty,
+    relative_item: payload?.modelProperty?.property?.create?.relativeProperty,
+    ordering: payload?.modelProperty?.property?.create?.ordering,
   } : formattedRequest[submodel].create = null
 
   if (formattedRequest[submodel].create) {
     formattedRequest[submodel].create[subModelField] = payload?.modelProperty?.property?.create?.value
 
+
   }
+
+  //add ordering list value
+  if (payload?.modelProperty?.property?.orderingList)
+    formattedRequest[submodel].ordering_list = payload.modelProperty.property.orderingList
+
+
 
   //add action item checkbox
   if (payload?.modelProperty.property.updateActionItem) {
