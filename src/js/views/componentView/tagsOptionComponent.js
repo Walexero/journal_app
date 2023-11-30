@@ -20,11 +20,11 @@ export default class TagOptionComponent {
 
   pass() { }
 
-  _createAPITag(payload) {
-    this._state.eventHandlers.tableItemControllers.controlAddTag(payload)
+  _createAPITag(payload, refreshCallBack) {
+    this._state.eventHandlers.tableItemControllers.controlAddTag(payload, refreshCallBack)
   }
 
-  _createTagForCurrentItem(tag) {
+  _createTagForCurrentItem(tag, refreshCallBack) {
     const tagClass = Array.from(tag.classList).find((cls) =>
       cls.startsWith("color")
     );
@@ -39,15 +39,18 @@ export default class TagOptionComponent {
     };
 
 
+    const createTagMarkup = this._generateTagAddMarkup(tagObj, true);
     if (!tagObj.id) {
       const tagAPIRequestPayload = formatTagRequestBody(tagObj)
 
-      this._createAPITag(tagAPIRequestPayload)
+      this._createAPITag(tagAPIRequestPayload, refreshCallBack.bind(null, createTagMarkup))
     }
 
-    const createTagMarkup = this._generateTagAddMarkup(tagObj, true);
+    if (tagObj.id)
+      refreshCallBack()
+    //TODO: add callback for if UI reload not needed
 
-    return { createTagMarkup, tagObj };
+    // return { createTagMarkup, tagObj };
   }
 
 
@@ -136,12 +139,20 @@ export default class TagOptionComponent {
     //restrict the item tags markup to only when the itemId is provided
     let tagItemsMarkup = "";
     if (tagItems) {
-      tagItemsMarkup =
-        tagItems.length > 0
-          ? tagItems
-            .map((tagItem) => this._generateTagAddMarkup(tagItem, true))
-            .join("")
-          : "";
+      const tagItemsExists = tagItems.length > 0
+      if (tagItemsExists) {
+        tagItemsMarkup = tagItems.map((tag, i) => {
+          const tagProperty = componentGlobalState.tags.find(modelTag => modelTag.id === tag)
+          if (!tagProperty || tagProperty === -1) {
+            tagItems.splice(i, 1)
+            return ""
+          }
+
+          return this._generateTagAddMarkup(tagProperty, true)
+
+        }).join("")
+      }
+      if (!tagItemsExists) tagItemsMarkup = ""
     }
 
     const tagInputMarkup = this._state.disableInput
@@ -165,6 +176,7 @@ export default class TagOptionComponent {
 
   render() {
     const cls = this;
+    debugger;
     this._state.markup = this._generateMarkup(
       this._state.tagItems,
       this._state.itemId
@@ -343,9 +355,13 @@ export default class TagOptionComponent {
     inputContainer.value = "";
     // e.target.closest(".tag-tag")
     const tagContainer = e.currentTarget.querySelector(".tag-create .tag-tag");
+
     const { createTagMarkup: createdTagItem, tagObj } =
-      this._createTagForCurrentItem(tagContainer);
-    this._tagItemAdder(e, createdTagItem);
+      this._createTagForCurrentItem(tagContainer, this._tagsOptionsMarkupReRender.bind(this, tagsAvailableContainer));
+  }
+
+  _tagsOptionsMarkupReRender(tagsAvailableContainer, createdTagItem) {
+    this._tagItemAdder(createdTagItem);
 
     //update the _tags obj with the newly created tag
     // this._state.tags.push(tagObj);
@@ -458,15 +474,15 @@ export default class TagOptionComponent {
     component.render();
   }
 
-  _tagItemAdder(e, createdItemTag) {
-    const tagsAddContainer = e.currentTarget.querySelector(".tags-items");
+  _tagItemAdder(createdItemTag) {
+    const tagsAddContainer = document.querySelector(".tags-items");
     //clone input
-    const tagAddInputClone = e.currentTarget
+    const tagAddInputClone = document
       .querySelector(".tag-input-input")
       .cloneNode(true);
 
     //remove input
-    e.currentTarget.querySelector(".tag-input-input").remove();
+    document.querySelector(".tag-input-input").remove();
 
     //add tag and cloned input
     tagsAddContainer.insertAdjacentHTML("beforeend", createdItemTag);

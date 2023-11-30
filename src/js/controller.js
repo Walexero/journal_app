@@ -169,15 +169,18 @@ const controlAddTableItemFallback = function (addTableItemParam, returnData, req
   }
 }
 
-const controlAPIAddTagFallback = function (returnData, requestState = false) {
+const controlAPIAddTagFallback = function (callBack, returnData, requestState = false) {
   if (requestState) {
-    const formattedData = formatAPISub(Array.isArray(returnData) ? returnData : [returnData], "tags")
+    debugger;
+    const formattedData = formatAPISub(Array.isArray(returnData) ? returnData : [returnData], "apiTags")
     model.state.tags.push(...formattedData)
   }
+  //TODO: add fallback handling for failure in creating tags
+  callBack()
 
 }
 
-const controlAddTag = function (payload) {
+const controlAddTag = function (payload, callBack) {
   const queryObj = {
     endpoint: API.APIEnum.TAG.CREATE,
     token: model.token.value,
@@ -187,7 +190,7 @@ const controlAddTag = function (payload) {
     spinner: false,
     alert: false,
     type: "POST",
-    callBack: controlAPIAddTagFallback
+    callBack: controlAPIAddTagFallback.bind(null, callBack)
   }
   API.queryAPI(queryObj)
 }

@@ -646,6 +646,7 @@ const replaceStateJournalDataWithAPIData = function (formattedAPIData, type) {
   }
 
   if (type === "journalTables") {
+    state.tables.splice(0, state.tables.length)
     state.tables.push(...formattedAPIData)
   }
 }

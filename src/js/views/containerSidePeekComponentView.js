@@ -166,11 +166,16 @@ export default class ContainerSidePeekComponentView {
   }
 
   _generateSlideTagsMarkup(tableItem) {
-    return tableItem.itemTags.length > 0
-      ? tableItem.itemTags
-        .map((tag) => tagOptionComponent.prototype._generateTagAddMarkup(tag))
-        .join("")
-      : "Empty";
+    const tagExists = tableItem.itemTags.length > 0
+    if (tagExists) {
+      const markup = tableItem.itemTags.map((tag) => {
+        const tagProperties = componentGlobalState.tags.find(modelTag => modelTag.id === tag)
+        return tagOptionComponent.prototype._generateTagAddMarkup(tagProperties)
+      }).join("")
+      return markup
+    }
+
+    if (!tagExists) return "Empty"
   }
 
   _generateMarkup(tableItem = undefined) {
@@ -224,7 +229,6 @@ export default class ContainerSidePeekComponentView {
 
   render() {
     const cls = this;
-
     this._state.markup = this._generateMarkup(this._state.itemData);
 
     //implement url change

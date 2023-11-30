@@ -236,7 +236,6 @@ export const formatAPIRequestTagPayload = function (payload, type) {
 }
 
 export const formatAPITableItems = function (APIResp, type) {
-  debugger;
   let formattedData = [];
   if (APIResp.length > 0) {
     APIResp.forEach(resp => {
@@ -267,11 +266,11 @@ export const formatAPIResp = function (APIResp, type) {
       "description": APIResp.journal_description,
       "tableHeads": APIResp.journal_tables,
       "currentTable": APIResp.current_table,
-      "tags": formatAPISub(APIResp.tags, "tags")
+      "tags": formatAPISub(APIResp.tags, "apiTags")
     }
   }
 
-  if (type === "tags") {
+  if (type === "apiTags") {
     formattedData = {
       "id": APIResp.id,
       "text": APIResp.tag_name,
@@ -318,12 +317,14 @@ export const formatAPIResp = function (APIResp, type) {
   }
 
   if (type === "tags") {
-    formattedData = {
-      "id": APIResp.id,
-      "color": APIResp.tag_class,
-      "text": APIResp.tag_name,
-      // "color_value": APIResp.tag_class
-    }
+    formattedData = APIResp.id
+
+    // formattedData = {
+    // "id": APIResp.id,
+    // "color": APIResp.tag_class,
+    // "text": APIResp.tag_name,
+    // "color_value": APIResp.tag_class
+    // }
   }
 
   return formattedData

@@ -773,10 +773,15 @@ class TableBodyProcessorView {
 
     //get item tags markup
     if (tagsExist)
-      tags.forEach((tag) => {
-        itemTagsMarkup += `
-          <div class="tag-tag ${tag.color}">
-            ${tag.text}
+      tags.forEach((tag, i) => {
+        const tagProperty = this._tags.find(modelTag => modelTag.id === tag) //tag is an id
+        if (!tagProperty || tagProperty === -1) {
+          tags.splice(i, 1)
+        }
+        if (tagProperty || tagProperty > 0)
+          itemTagsMarkup += `
+          <div class="tag-tag ${tagProperty.color}">
+            ${tagProperty.text}
           </div>
       `;
       });
