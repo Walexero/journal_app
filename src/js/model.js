@@ -16,6 +16,7 @@ import {
   dynamicArithmeticOperator,
   indexVal,
   formatAPIResp,
+  formatAPITableItems,
 
 } from "./helpers.js";
 
@@ -618,6 +619,15 @@ const getPersistedData = () => {
 export const loadToken = () => {
   const storedToken = localStorage.getItem("token")
   if (storedToken) token = JSON.parse(storedToken)
+}
+
+export const replaceTableItemWithAPITableItem = function (tableItem) {
+  const currentTable = getCurrentTable()
+  const currentTableTableItemIndex = getItemFromTableItems(currentTable, tableItem.id, true)
+  const formatAPITableItem = formatAPITableItems(tableItem, "activities")
+  currentTable.tableItems.splice(currentTableTableItemIndex, 1)
+  currentTable.tableItems.splice(currentTableTableItemIndex, 0, formatAPITableItem)
+
 }
 
 // const replace

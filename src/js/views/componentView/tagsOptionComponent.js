@@ -46,11 +46,7 @@ export default class TagOptionComponent {
       this._createAPITag(tagAPIRequestPayload, refreshCallBack.bind(null, createTagMarkup))
     }
 
-    if (tagObj.id)
-      refreshCallBack()
-    //TODO: add callback for if UI reload not needed
-
-    // return { createTagMarkup, tagObj };
+    return { createTagMarkup, tagObj };
   }
 
 
@@ -408,13 +404,16 @@ export default class TagOptionComponent {
 
     const tagItemsContainer = document.querySelector(".tags-items");
 
+    debugger;
     const addedTagItems = Array.from(tagItemsContainer.children)
       .map((tagItem) => tagItem.textContent.trim())
       .filter((tagItem) => tagItem.length > 0);
 
-    const { createTagMarkup: createdItemTag, tagObj } =
-      this._createTagForCurrentItem(tagToAdd);
+    // const { createTagMarkup: createdItemTag, tagObj } =
+    // this._createTagForCurrentItem(tagToAdd);
 
+    const { createTagMarkup: createdTagItem, tagObj } =
+      this._createTagForCurrentItem(tagToAdd, this._tagsOptionsMarkupReRender.bind(this, tagsAvailableContainer));
     //check if tag in addedTags
     const duplicateCheck =
       addedTagItems.length > 0 &&
@@ -426,7 +425,7 @@ export default class TagOptionComponent {
     if (!duplicateCheck) {
       inputContainer.value = "";
 
-      this._tagItemAdder(e, createdItemTag);
+      this._tagItemAdder(createdTagItem);
       const tagsMarkup = this._generateTagsOptions(this._state.tags);
       tagsAvailableContainer.innerHTML = "";
       tagsAvailableContainer.insertAdjacentHTML("beforeend", tagsMarkup);
@@ -497,7 +496,7 @@ export default class TagOptionComponent {
         null,
         componentGlobalState.filterMethod,
         componentGlobalState.sortMethod,
-        "tags"
+        this._state.payloadType ?? "tags"
       );
       this._state.updateModel = updateModel;
     }
@@ -507,7 +506,7 @@ export default class TagOptionComponent {
         null,
         componentGlobalState.filterMethod,
         componentGlobalState.sortMethod,
-        "tags"
+        this._state.payloadType ?? "tags"
       );
       this._state.updateModel = updateModel;
     }
@@ -517,7 +516,7 @@ export default class TagOptionComponent {
         null,
         componentGlobalState.filterMethod,
         componentGlobalState.sortMethod,
-        "tags"
+        this._state.payloadType ?? "tags"
       );
       this._state.updateModel = updateModel;
     }

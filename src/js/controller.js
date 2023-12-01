@@ -250,11 +250,12 @@ const controlGetTableItemWithMaxTags = function (tableId, itemsId) {
 const controlUpdateTableItemFallback = function (addTableItemParam, returnData, requestStatus = false) {
   debugger;
   const currentTable = model.getCurrentTable();
+  const batchItems = ["selectTags", "deleteActivities"]
   if (!requestStatus) {
     const subModels = ["intentions", "happenings", "actionItems", "gratefulFor"]
     model.updateTableItem(addTableItemParam.payload);
     const tableItems = ["tags", "title"]
-
+    //TODO: add fallback imp for batch actions
     //submodels
     if (addTableItemParam.payloadType === subModels.find(sub => sub === addTableItemParam.payloadType)) {
       const updateAndCreate = addTableItemParam?.payload?.modelProperty?.property?.updateAndAddProperty
@@ -301,8 +302,14 @@ const controlUpdateTableItemFallback = function (addTableItemParam, returnData, 
   }
 
   if (requestStatus) {
+    //TODO: add fallback imp for batch actions
+
     const formattedData = formatAPITableItems(Array.isArray(returnData) ? returnData : [returnData])
-    model.updateAPITableItem(formattedData[0], true, currentTable.id)
+    const batchTypes = addTableItemParam.payloadType === batchItems.find(item => item === addTableItemParam.payloadType)
+    if (!batchTypes)
+      model.updateAPITableItem(formattedData[0], true, currentTable.id)
+    if (batchTypes) formattedData.forEach(data => model.replaceTableItemWithAPITableItem(data))
+
     console.log("state model", model.state)
   }
   //callback for the sidepeekinput
@@ -331,18 +338,37 @@ const controlUpdateTableItem = function (
   const apiPayload = formatAPIRequestUpdateTableItemPayload(payload, payloadType)
   getAPICreatedTagFromModel(apiPayload, payload, model.state, payloadType)
   console.log("the api payload", apiPayload)
-  const queryObj = {
-    endpoint: API.APIEnum.ACTIVITIES.PATCH(payload.itemId),
-    token: model.token.value,
-    sec: null,
-    queryData: apiPayload,
-    actionType: "updateTableItem",
-    spinner: false,
-    alert: false,
-    type: "PATCH",
-    callBack: controlUpdateTableItemFallback.bind(null, { payload, filter, sort, updateUI, payloadType }),
-    callBackParam: true
-  }
+  const batchTypes = ["selectTags"]
+  const batchAction = payloadType === batchTypes.find(type => type === payloadType)
+  let queryObj;
+
+  if (batchAction)
+    queryObj = {
+      endpoint: API.getBatchEndpoint(payloadType),
+      token: model.token.value,
+      sec: null,
+      queryData: apiPayload,
+      actionType: "batchAddTags",
+      spinner: false,
+      alert: false,
+      type: "PATCH",
+      callBack: controlUpdateTableItemFallback.bind(null, { payload, filter, sort, updateUI, payloadType }),
+      callBackParam: true
+    }
+
+  if (!batchAction)
+    queryObj = {
+      endpoint: API.APIEnum.ACTIVITIES.PATCH(payload.itemId),
+      token: model.token.value,
+      sec: null,
+      queryData: apiPayload,
+      actionType: "updateTableItem",
+      spinner: false,
+      alert: false,
+      type: "PATCH",
+      callBack: controlUpdateTableItemFallback.bind(null, { payload, filter, sort, updateUI, payloadType }),
+      callBackParam: true
+    }
   // debugger;
 
   API.queryAPI(queryObj)
@@ -406,8 +432,11 @@ const controlDeleteTag = function (tagId) {
 
 const controlDeleteTableItemFallback = function (deleteTableItemParam, returnData, requestStatus = false) {
   if (!requestStatus) {
-    model.diff.submodelToDelete.push({ subModel: deleteTableItemParam.payloadType, id: deleteTableItemParam.payload[deleteTableItemParam.payloadType].delete.id })
-
+    if (deleteTableItemParam.payloadType === "deleteTableItems") {
+      model.tableItemToDelete.push(...deleteTableItemParam.payload.delete_list)
+    } else {
+      model.diff.submodelToDelete.push({ subModel: deleteTableItemParam.payloadType, id: deleteTableItemParam.payload[deleteTableItemParam.payloadType].delete.id })
+    }
     model.persistDiff()
   }
   //free mem
@@ -423,9 +452,11 @@ const controlDeleteTableItem = function (
   debugger;
   let tableItems;
   if (!payload) return
+  const batchType = ["deleteTableItems"] //(s)
+
   const apiPayload = formatAPIRequestUpdateTableItemPayload(payload, payloadType)
   const queryObj = {
-    endpoint: API.getSubmodelEndpoint(payloadType, "DELETE", apiPayload[payloadType].delete.id),
+    endpoint: payloadType === "deleteTableItems" ? API.getBatchEndpoint(payloadType) : API.getSubmodelEndpoint(payloadType, "DELETE", apiPayload[payloadType].delete.id),
     token: model.token.value,
     sec: null,
     actionType: "deleteTableItem",
@@ -435,6 +466,7 @@ const controlDeleteTableItem = function (
     callBack: controlDeleteTableItemFallback.bind(null, { payload: apiPayload, filter, payloadType }),
     callBackParam: true
   }
+  if (payloadType === "deleteTableItems") queryObj["queryData"] = apiPayload
   API.queryAPI(queryObj)
 
   model.deleteTableItem(payload);

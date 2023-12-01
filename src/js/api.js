@@ -63,8 +63,8 @@ export class API {
             GET: ((activityId) => `journal/activities/${activityId}/`),
             PUT: ((activityId) => `journal/activities/${activityId}/`),
             PATCH: ((activityId) => `journal/activities/${activityId}/`),
-            // BATCH_UPDATE_ORDERING: "todo/todos/batch_update_ordering/",
-            // BATCH_UPDATE: "todo/todos/batch_update/",
+            BATCH_UPDATE_ACTIVITIES: "journal/activities/batch_update_activities/",
+            BATCH_DELETE_ACTIVITIES: "journal/activities/batch_delete_activities/",
             DELETE: ((activityId) => `journal/activities/${activityId}/`),
         },
 
@@ -81,6 +81,12 @@ export class API {
 
     static getSubmodelEndpoint(subModel, method, subModelId = undefined) {
         return API.APIEnum.SUBMODEL[method](subModel, subModelId)
+    }
+
+    static getBatchEndpoint(type) {
+        if (type === "selectTags") return API.APIEnum.ACTIVITIES.BATCH_UPDATE_ACTIVITIES
+
+        if (type === "deleteTableItems") return API.APIEnum.ACTIVITIES.BATCH_DELETE_ACTIVITIES
     }
 
     static queryAPI(queryObj) {

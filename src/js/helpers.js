@@ -392,6 +392,10 @@ const createSubModelPayload = function (payload, submodel) {
   return formattedRequest
 }
 
+const getIdsFromTagsDiv = (tags) => {
+  const tagsWithId = tags.map(tag => tag?.dataset?.id ? +tag.dataset.id : pass()).filter(tag => tag)
+  return tagsWithId
+}
 
 export const formatAPIRequestUpdateTableItemPayload = function (payload, type) {
   let formattedRequest;
@@ -403,9 +407,23 @@ export const formatAPIRequestUpdateTableItemPayload = function (payload, type) {
   }
 
   if (type === "tags") {
-    const tagsWithId = payload.tags.map(tag => tag?.dataset?.id ? +tag.dataset.id : pass()).filter(tag => tag)
+
+    formattedRequest = getIdsFromTagsDiv(payload.tags)
+  }
+
+  if (type === "selectTags") {
     formattedRequest = {
-      tags: tagsWithId//formatTagPayload(tagsWithId, type)
+      "activities_list": [{
+        "ids": payload.itemIds.map(id => +id),
+        "tags": getIdsFromTagsDiv(payload.tags)
+      }
+      ]
+    }
+  }
+
+  if (type === "deleteTableItems") {
+    formattedRequest = {
+      "delete_list": payload.items.map(id => +id)
     }
   }
 

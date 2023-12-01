@@ -454,10 +454,11 @@ class TableBodyProcessorView {
     };
 
     //check if filterMethod exists
-    const filter = componentGlobalState.filterMethod ?? null;
+    // const filter = componentGlobalState.filterMethod ?? null;
     this._eventHandlers.tableItemControllers.controlDeleteTableItem(
       updateObj,
-      filter
+      componentGlobalState.filterMethod,
+      "deleteTableItems"
     );
 
     //remove checkbox options container
@@ -496,7 +497,7 @@ class TableBodyProcessorView {
 
     //clear the checkedInput
     this._checkedInputs.length = 0;
-
+    debugger;
     const selectedTableItems = Array.from(
       document.querySelectorAll(".highlight-rows")
     ).map(
@@ -529,6 +530,7 @@ class TableBodyProcessorView {
       tagItems: getTableItemWithMaxTags.itemTags,
       tags: this._tags,
       tagsColors: this._tagsColor,
+      payloadType: "selectTags"
     };
 
     const component = new tagOptionComponent(componentObj);
