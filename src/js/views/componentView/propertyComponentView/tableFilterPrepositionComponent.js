@@ -77,7 +77,6 @@ export default class TableFilterPrepositionComponent {
   }
 
   _handlePrepositionSelectEvent(e) {
-    debugger;
     const prepositionRemovesFilterInput = ["Is empty", "Is not empty"];
 
     const prepositionContainer = document.querySelector(

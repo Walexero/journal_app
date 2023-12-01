@@ -159,7 +159,6 @@ export default class TableFilterRuleComponent {
   }
 
   _insertFilterRuleInput() {
-    debugger;
     const filterRuleInputParentContainer = document.querySelector(
       ".filter-input-content-box"
     );
@@ -294,7 +293,6 @@ export default class TableFilterRuleComponent {
   }
 
   _handleFilterRuleInputEvent(e) {
-    debugger;
     const filterRuleBoxRuleAdded = document.querySelector(".filter-added-rule");
     const filterRuleInput = e.target.closest(".filter-value");
 
@@ -320,7 +318,6 @@ export default class TableFilterRuleComponent {
   }
 
   _handleFilterRuleTagAdd(e) {
-    debugger;
     const filterRuleBoxRuleAdded = document.querySelector(".filter-added-rule");
 
     const tagToAdd =
@@ -479,7 +476,6 @@ export default class TableFilterRuleComponent {
 
   _queryConditionalTags(conditional, property, input) {
     let filterMethod;
-    debugger;
     if (conditional === "contains") {
       filterMethod = (property, input, tableItems) =>
         tableItems.filter((items) =>
