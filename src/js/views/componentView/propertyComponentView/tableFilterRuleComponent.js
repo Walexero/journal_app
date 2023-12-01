@@ -159,6 +159,7 @@ export default class TableFilterRuleComponent {
   }
 
   _insertFilterRuleInput() {
+    debugger;
     const filterRuleInputParentContainer = document.querySelector(
       ".filter-input-content-box"
     );
@@ -293,6 +294,7 @@ export default class TableFilterRuleComponent {
   }
 
   _handleFilterRuleInputEvent(e) {
+    debugger;
     const filterRuleBoxRuleAdded = document.querySelector(".filter-added-rule");
     const filterRuleInput = e.target.closest(".filter-value");
 
@@ -318,6 +320,7 @@ export default class TableFilterRuleComponent {
   }
 
   _handleFilterRuleTagAdd(e) {
+    debugger;
     const filterRuleBoxRuleAdded = document.querySelector(".filter-added-rule");
 
     const tagToAdd =
@@ -346,6 +349,8 @@ export default class TableFilterRuleComponent {
 
       if (!componentGlobalState.filterTagList)
         componentGlobalState.filterTagList = [];
+
+      console.log("the component glob filertaglist", componentGlobalState.filterTagList)
 
       componentGlobalState.filterTagList.push(tagObj);
 
@@ -479,7 +484,7 @@ export default class TableFilterRuleComponent {
       filterMethod = (property, input, tableItems) =>
         tableItems.filter((items) =>
           items[property].find((tag) =>
-            input.find((filteredTag) => filteredTag.text === tag.text)
+            input.find((filteredTag) => Number(filteredTag.id) === tag)
           )
         );
     }
@@ -489,7 +494,7 @@ export default class TableFilterRuleComponent {
         tableItems.filter(
           (items) =>
             !items[property].find((tag) =>
-              input.find((filteredTag) => filteredTag.text === tag.text)
+              input.find((filteredTag) => Number(filteredTag.id) === tag)
             )
         );
     }
