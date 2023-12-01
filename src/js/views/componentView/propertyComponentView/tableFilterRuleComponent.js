@@ -474,6 +474,7 @@ export default class TableFilterRuleComponent {
 
   _queryConditionalTags(conditional, property, input) {
     let filterMethod;
+    debugger;
     if (conditional === "contains") {
       filterMethod = (property, input, tableItems) =>
         tableItems.filter((items) =>

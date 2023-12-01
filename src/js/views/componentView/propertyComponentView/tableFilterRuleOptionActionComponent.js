@@ -117,6 +117,7 @@ export default class TableFilterRuleOptionActionComponent extends optionActionCo
   }
 
   _handleDeleteFilterRuleEvent(e) {
+    const cls = this
     this._state.component.remove();
     this._events.forEach((ev) =>
       this._state.component.removeEventListener(ev, cls._handleEvents, true)
