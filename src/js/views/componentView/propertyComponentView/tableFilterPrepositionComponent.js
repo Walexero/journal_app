@@ -1,4 +1,3 @@
-// import componentOptionsView from "../componentOptionsView.js";
 import { importComponentOptionsView } from "../componentOptionsView.js";
 import { componentGlobalState } from "../componentGlobalState.js";
 
@@ -78,6 +77,7 @@ export default class TableFilterPrepositionComponent {
   }
 
   _handlePrepositionSelectEvent(e) {
+    debugger;
     const prepositionRemovesFilterInput = ["Is empty", "Is not empty"];
 
     const prepositionContainer = document.querySelector(
@@ -97,6 +97,8 @@ export default class TableFilterPrepositionComponent {
       (prep) => prep.toLowerCase() === selectPrepositionValue.toLowerCase()
     );
 
+    console.log("the filter tag list comp glob", componentGlobalState.filterTagList)
+
     const filterInputToExecute =
       this._state.property.text.toLowerCase() === "tags"
         ? componentGlobalState.filterTagList
@@ -113,11 +115,16 @@ export default class TableFilterPrepositionComponent {
     }
 
     if (removeFilterInput && filterRuleInput) {
+      //clear the filteredTagList from the global component state
+      componentGlobalState.filterTagList.length = 0;
+
       filterRuleInput.remove();
       this._state.parent._handleEvents(e, null, true);
     }
 
     if (removeFilterInput && !filterRuleInput) {
+      //clear the filteredTagList from the global component state
+      componentGlobalState.filterTagList.length = 0;
       // this._state.executeFilter(null);
       this._state.parent._handleEvents(e, null, true);
     }
