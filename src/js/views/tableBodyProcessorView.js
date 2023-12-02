@@ -466,7 +466,6 @@ class TableBodyProcessorView {
   }
 
   _handleCheckboxDuplicateEvent(e) {
-    debugger;
     const currentTable = document.querySelector(".table-row-active");
     const checkboxOptionsContainer = e.target.closest(".checkbox-options");
     checkboxOptionsContainer.remove();
@@ -500,7 +499,7 @@ class TableBodyProcessorView {
 
     //clear the checkedInput
     this._checkedInputs.length = 0;
-    debugger;
+
     const selectedTableItems = Array.from(
       document.querySelectorAll(".highlight-rows")
     ).map(
