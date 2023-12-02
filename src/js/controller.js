@@ -1,5 +1,5 @@
 import * as model from "./model.js";
-import { swapItemIndex, formatAPITableItems, formatAPIRequestUpdateTableItemPayload, formatAPISub, getAPICreatedTagFromModel, formatAPIRequestTagPayload, formatAPIResp, isoDate } from "./helpers.js";
+import { swapItemIndex, formatAPITableItems, formatAPIRequestUpdateTableItemPayload, formatAPISub, getAPICreatedTagFromModel, formatAPIRequestTagPayload, formatAPIResp, isoDate, createTableItemAPIRequestPayload } from "./helpers.js";
 import { LoginTemplate } from "./templates/loginTemplate.js"
 import { JournalTemplate } from "./templates/journalTemplate.js"
 
@@ -209,10 +209,8 @@ const controlAddTableItem = function (
   callBack = false,
 ) {
   const currentTableBeforeUpdate = model.getCurrentTable()
-  const apiPayload = {
-    "name": "",
-    "journal_table": currentTableBeforeUpdate.id,
-  }
+  const apiPayload = createTableItemAPIRequestPayload(currentTableBeforeUpdate, relativeItem)
+
   const queryObj = {
     endpoint: API.APIEnum.ACTIVITIES.CREATE,
     token: model.token.value,

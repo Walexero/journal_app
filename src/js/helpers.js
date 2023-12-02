@@ -464,3 +464,28 @@ export const getAPICreatedTagFromModel = function (apiPayload, payload, state, t
 export const isoDate = function () {
   return new Date(Date.now()).toISOString()
 }
+
+export const tableItemOrdering = function (createRelativeProperty) {
+  let incrementOrderingIndex = false
+  let createItemOrdering = null
+  const itemsOrdering = Array.from(document.querySelectorAll(`.row-actions-handler-container`)).map((item, i) => {
+    if (createRelativeProperty && Number(item.dataset.id) === createRelativeProperty) {
+      incrementOrderingIndex = true
+      createItemOrdering = i + 2
+      return { id: Number(item.dataset.id), ordering: i + 1 }
+    }
+    return { id: Number(item.dataset.id), ordering: incrementOrderingIndex ? i + 2 : i + 1 }
+  })
+
+  return { create_item_ordering: createItemOrdering, table_items_ordering: itemsOrdering }
+}
+
+export const createTableItemAPIRequestPayload = function (currentTable, relativeItem = false) {
+  debugger;
+  const payload = {
+    "name": "",
+    "journal_table": currentTable.id
+  }
+  if (relativeItem) payload["ordering_list"] = tableItemOrdering(relativeItem)
+  return payload
+}

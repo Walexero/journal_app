@@ -413,7 +413,7 @@ class TableBodyProcessorView {
   _handleHoverActionAddEvent(e) {
     const targetContainer = e.target.closest(
       ".row-actions-handler"
-    ).previousElementSibling;
+    )
 
     this._eventHandlers.tableItemControllers.controlAddTableItem(
       null,
@@ -610,12 +610,15 @@ class TableBodyProcessorView {
     const tableItemContainer = e.target.closest(`[role="tablecontent"]`);
     const tableContentContainer =
       tableItemContainer.querySelector(`[role="rowgroup"]`);
+    const tableItemRowId = tableContentContainer.children[0].dataset.id
 
     const sliderTriggerEl = tableContentContainer.querySelector(
       ".row-actions-render"
     );
 
     sliderTriggerEl.classList.remove("hidden");
+
+    hoverEl.dataset.id = tableItemRowId;
 
     tableContentContainer.insertAdjacentElement("beforeend", hoverEl);
 
@@ -820,9 +823,9 @@ class TableBodyProcessorView {
     `;
   }
 
-  _generateHoverMarkupAndCreateElement() {
+  _generateHoverMarkupAndCreateElement(rowId) {
     const hoverMarkup = `
-        <div class="row-actions-handler">
+        <div class="row-actions-handler" data-id="${rowId}">
           <div class="row-actions-icon row-add-icon hover">
             ${svgMarkup("row-icon", "plus")}
           </div>
