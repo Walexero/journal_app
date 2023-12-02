@@ -427,6 +427,13 @@ export const formatAPIRequestUpdateTableItemPayload = function (payload, type) {
     }
   }
 
+  if (type === "duplicateTableItems") {
+    //TODO: add format duplicateeTableItems payload
+    formattedRequest = {
+      "duplicate_list": [{ "ids": payload.items.map(id => +id) }]
+    }
+  }
+
   if (type === "intentions")
     formattedRequest = createSubModelPayload(payload, "intentions")
 

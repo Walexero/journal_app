@@ -37,6 +37,7 @@ export let diff = {
   tableItemToCreate: [],
   tableItemToUpdate: [],
   tableItemToDelete: [],
+  tableItemToDuplicate: [],
   tagToDelete: [],
   tagsToUpdate: [],
   submodelToCreate: [],
@@ -585,16 +586,21 @@ export const updateTableItem = function (payload) {
 
 export const duplicateTableItem = function (payload) {
   const tableToDuplicateItem = getCurrentTable(payload.tableId);
+  const duplicateCreateList = []
   payload.items.forEach((item) => {
     const itemToDuplicate = cloneDeep(
       getItemFromTableItems(tableToDuplicateItem, item)
     );
 
     itemToDuplicate.id = Date.now();
+    //list to be returned to the controller
+    duplicateCreateList.push(itemToDuplicate)
+
     tableToDuplicateItem.tableItems.push(itemToDuplicate);
   });
 
   persistData();
+  return duplicateCreateList
 };
 
 const persistData = () => {

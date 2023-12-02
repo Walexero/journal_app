@@ -482,12 +482,48 @@ const controlDeleteTableItem = function (
   updateUI ? tableComponentView.renderTableItem(tableItems) : pass();
 };
 
-const controlDuplicateTableItem = function (payload, updateUI = true) {
-  model.duplicateTableItem(payload);
-  const currentTable = model.getCurrentTable();
-  updateUI
-    ? tableComponentView.renderTableItem(currentTable.tableItems)
-    : pass();
+const controlDuplicateTableItemFallback = function (duplicateTableItemParam, returnData, requestStatus = false) {
+  if (!requestStatus) {
+
+    const duplicates = model.duplicateTableItem(payload);
+    duplicateTableItemParam.payload.duplicate_list[0].ids.forEach((duplicate, i) => {
+
+      model.tableItemToDuplicate.push({ "originalId": duplicate, "duplicateId": duplicates[i].id })
+    })
+    model.persistDiff()
+  }
+
+  if (requestStatus) {
+    const formattedData = formatAPITableItems(Array.isArray(returnData) ? returnData : [returnData])
+    const currentTable = model.getCurrentTable()
+    currentTable.tableItems.push(...formattedData)
+    duplicateTableItemParam.currentTable = currentTable
+    filterSortRenderTableItem(duplicateTableItemParam, null, duplicateTableItemParam.updateUI ? true : null)
+  }
+  //free mem
+  duplicateTableItemParam = {}
+}
+
+const controlDuplicateTableItem = function (
+  payload,
+  filter = undefined,
+  sort = undefined,
+  updateUI = true) {
+  const apiPayload = formatAPIRequestUpdateTableItemPayload(payload, "duplicateTableItems")
+  const queryObj = {
+    endpoint: API.APIEnum.ACTIVITIES.BATCH_DUPLICATE_ACTIVITIES,
+    token: model.token.value,
+    sec: null,
+    queryData: apiPayload,
+    actionType: "duplicateTableItems",
+    spinner: false,
+    alert: false,
+    type: "POST",
+    callBack: controlDuplicateTableItemFallback.bind(null, { apiPayload, filter, sort, updateUI }),
+    callBackParam: true
+  }
+
+  API.queryAPI(queryObj)
 };
 
 const controlLogin = function (loginComponentCallBack, token) {

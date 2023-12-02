@@ -466,6 +466,7 @@ class TableBodyProcessorView {
   }
 
   _handleCheckboxDuplicateEvent(e) {
+    debugger;
     const currentTable = document.querySelector(".table-row-active");
     const checkboxOptionsContainer = e.target.closest(".checkbox-options");
     checkboxOptionsContainer.remove();
@@ -481,7 +482,9 @@ class TableBodyProcessorView {
     };
 
     this._eventHandlers.tableItemControllers.controlDuplicateTableItem(
-      updateObj
+      updateObj,
+      componentGlobalState.filterMethod,
+      componentGlobalState.sortMethod
     );
   }
 

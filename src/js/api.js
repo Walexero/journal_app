@@ -65,6 +65,7 @@ export class API {
             PATCH: ((activityId) => `journal/activities/${activityId}/`),
             BATCH_UPDATE_ACTIVITIES: "journal/activities/batch_update_activities/",
             BATCH_DELETE_ACTIVITIES: "journal/activities/batch_delete_activities/",
+            BATCH_DUPLICATE_ACTIVITIES: "journal/activities/batch_duplicate_activities/",
             DELETE: ((activityId) => `journal/activities/${activityId}/`),
         },
 
