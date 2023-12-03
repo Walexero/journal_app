@@ -1,4 +1,3 @@
-// import componentOptionsView from "./componentOptionsView.js";
 import { importComponentOptionsView } from "./componentOptionsView.js";
 import { TABLE_NOT_FOUND_RESPONSE } from "../../config.js";
 import tableHeadProcessorView from "../tableHeadProcessorView.js";
