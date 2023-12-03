@@ -184,10 +184,22 @@ const controlDeleteOption = function (journalId) {
   controlRenderUpdatedTableHeads(tableHeads[0][1]);
 };
 
-const controlAddNewTable = function () {
-  const tableId = model.addNewTable();
+const controlAPIAddNewTableFallback = function (callBack, returnData, requestState) {
+  let tableId;
+
+  if (!requestState)
+    tableId = model.addNewTable();
+
+
+  if (requestState) {
+    const formattedData = formatAPIResp(returnData, "journalTables")
+    tableId = formattedData.id
+    model.state.tables.push(formattedData)
+  }
+
   const tableHeads = controlGetTableHeads();
 
+  if (callBack) callBack()
   if (tableHeads.length <= 4) {
     const table = model.getCurrentTable(tableId);
     tableComponentView.render(tableHeads);
@@ -195,6 +207,24 @@ const controlAddNewTable = function () {
   }
 
   if (tableHeads.length > 4) controlRenderUpdatedTableHeads(tableId);
+}
+
+const controlAddNewTable = function (callBack) {
+  const apiPayload = {
+    "journal": model.state.id
+  }
+  const queryObj = {
+    endpoint: API.APIEnum.JOURNAL_TABLES.CREATE,
+    token: model.token.value,
+    sec: null,
+    queryData: apiPayload,
+    actionType: "createNewTable",
+    spinner: false,
+    alert: false,
+    type: "POST",
+    callBack: controlAPIAddNewTableFallback.bind(null, callBack)
+  }
+  API.queryAPI(queryObj)
 };
 
 const filterSortRenderTableItem = function (addTableItemParam, renderAddedItem = false, renderUpdatedItem = false) {//currentTable, filter, sort, itemId) {
