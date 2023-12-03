@@ -43,6 +43,10 @@ export let diff = {
   submodelToCreate: [],
   submodelToUpdate: [],
   submodelToDelete: [],
+  tableToUpdate: [],
+  tableToCreate: [],
+  tableToDuplicate: [],
+  tableToDelete: []
 }
 
 export let token = {}
@@ -659,6 +663,7 @@ const replaceStateJournalDataWithAPIData = function (formattedAPIData, type) {
     state.tableHeads = formattedAPIData.tableHeads
     state.currentTable = formattedAPIData.currentTable
     state.tags = formattedAPIData.tags
+    state.id = formattedAPIData.id
   }
 
   if (type === "journalTables") {

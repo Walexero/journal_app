@@ -87,17 +87,97 @@ const controlAddTable = function () {
   );
 };
 
+const controlRenameOptionFallback = function (payload, returnData, requestStatus) {
+  debugger;
+  if (!requestStatus) {
+    const tableToUpdateExists = model.tableToUpdate.find(table => table.id === payload.journal)
+    if (tableToUpdateExists && tableToUpdate !== -1) {
+      tableToUpdateExists["tableName"] = payload.table_name
+    }
+    if (tableToUpdateExists === -1)
+      model.tableToUpdate.push({ id: payload.journal, tableName: payload.table_name })
+  }
+  // if (requestStatus) { }
+}
+
 const controlRenameOption = function (...args) {
+  const apiPayload = {
+    "table_name": args[0],
+    "journal": args[1]
+  }
+  const queryObj = {
+    endpoint: API.APIEnum.JOURNAL_TABLES.PATCH(apiPayload.journal),
+    token: model.token.value,
+    sec: null,
+    queryData: apiPayload,
+    actionType: "updateTableName",
+    spinner: false,
+    alert: false,
+    type: "PATCH",
+    callBack: controlRenameOptionFallback.bind(null, apiPayload),
+    callBackParam: true
+  }
+  API.queryAPI(queryObj)
+
   const updateTableName = model.updateTableName(...args);
 };
 
-const controlDuplicateOption = function (tableId) {
-  const duplicateTableId = model.duplicateJournal(tableId);
+const controlAPIDuplicateTableFallback = function (payload, returnData, requestStatus) {
+  debugger;
+  if (!requestStatus) {
+    const duplicateTableId = model.duplicateJournal(payload.journal_table);
+    model.tableToCreate.push(duplicateTableId)
+    controlRenderUpdatedTableHeads(duplicateTableId);
+  }
+  if (requestStatus) {
+    const formattedData = formatAPIResp(returnData, "journalTables")
+    model.state.tables.push(formattedData)
+    controlRenderUpdatedTableHeads(returnData.id);
+  }
+}
 
-  controlRenderUpdatedTableHeads(duplicateTableId);
+const controlDuplicateOption = function (tableId) {
+  debugger;
+  const apiPayload = {
+    "journal_table": tableId,
+    "journal": model.state.id,
+    "duplicate": true
+  }
+  const queryObj = {
+    endpoint: API.APIEnum.JOURNAL_TABLES.CREATE,
+    token: model.token.value,
+    sec: null,
+    queryData: apiPayload,
+    actionType: "duplicateTable",
+    spinner: false,
+    alert: false,
+    type: "POST",
+    callBack: controlAPIDuplicateTableFallback.bind(null, apiPayload),
+    callBackParam: true
+  }
+  API.queryAPI(queryObj)
 };
 
+const controlAPIDeleteTableFallback = function (tableId, returnData, requestStatus) {
+  if (!requestStatus) {
+    model.tableToDelete.push(tableId)
+  }
+}
+
 const controlDeleteOption = function (journalId) {
+  const queryObj = {
+    endpoint: API.APIEnum.JOURNAL_TABLES.DELETE(journalId),
+    token: model.token.value,
+    sec: null,
+    actionType: "deleteTable",
+    spinner: false,
+    alert: false,
+    type: "DELETE",
+    callBack: controlAPIDeleteTableFallback.bind(null, journalId),
+    callBackParam: true
+  }
+  API.queryAPI(queryObj)
+
   model.deleteJournal(journalId);
   const tableHeads = controlGetTableHeads();
 
