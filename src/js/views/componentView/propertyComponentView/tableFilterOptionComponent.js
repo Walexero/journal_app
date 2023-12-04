@@ -6,7 +6,6 @@ import { importSignals } from "../../../signals.js";//allows signals to be sent 
 import { componentGlobalState } from "../componentGlobalState.js";
 import containerSidePeekComponentView from "../../containerSidePeekComponentView.js";
 import { TableFuncMixin } from "./tableFuncMixin.js";
-
 export default class TableFilterOptionComponent extends propertyOptionsComponent {
   _componentHandler = importComponentOptionsView.object;
   _state;
@@ -58,12 +57,13 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
         props: TABLE_PROPERTIES,
       })
 
+      this._state.conditional = this._getFunc("filter").conditional
+
       const filterRuleBoxRuleAdded = document.querySelector(".filter-added-rule");
-      filterRuleBoxRuleAdded.textContent = this._getFunc("filter").value
+      filterRuleBoxRuleAdded.textContent = this._setFilterRuleBoxAddedValue(filterRuleBoxRuleAdded)
 
-      this._state.conditional = this._getFunc("filter").type
 
-      this._state.filterMethod = componentGlobalState.filterMethod = tableFilterRuleComponent.prototype._queryConditional(this._getFunc("filter").conditional, this._state.conditional, this._getFunc("filter").value)
+      this._state.filterMethod = componentGlobalState.filterMethod = tableFilterRuleComponent.prototype._queryConditional(this._state.conditional, this._getFunc("filter").type, this._getFunc("filter").value)
 
       const table = this._state.eventHandlers.tableControllers.controlGetTable(this._getFunc("filter").tableId)
 
@@ -381,14 +381,16 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
   remove() {
     const cls = this;
     const filterContainer = document.querySelector(".filter-action-container");
-    //TODO: can click on the overlay to remove
-    // this._state.component.remove();
-    // this._state.overlay.remove();
-    this._state.overlay.click();
+
+    this._state?.overlay?.click();
     this._events.forEach((ev) =>
-      this._state.component.removeEventListener(ev, cls._handleEvents, true)
+      this._state?.component?.removeEventListener(ev, cls._handleEvents, true)
     );
     filterContainer.remove();
+
+    const fnActive = this._checkTableFuncActive("filter")
+    if (fnActive) this._removeComponentTableFunc("filter")
+
 
     //unsubscribe from signal events
     this._signals.unsubscribe(this);

@@ -8,9 +8,8 @@ import tableFilterPrepositionComponent from "./tableFilterPrepositionComponent.j
 import tableFilterRuleOptionActionComponent from "./tableFilterRuleOptionActionComponent.js";
 import { componentGlobalState } from "../componentGlobalState.js";
 import { importSignals } from "../../../signals.js";
-import { svgMarkup } from "../../../helpers.js";
+import { svgMarkup, capitalize } from "../../../helpers.js";
 import { TableFuncMixin } from "./tableFuncMixin.js";
-
 export default class TableFilterRuleComponent {
   _componentHandler = importComponentOptionsView.object;
   _state;
@@ -81,7 +80,7 @@ export default class TableFilterRuleComponent {
             <div class="filter-input-text">${property}</div>
             <div class="filter-input-filter hover">
               <div class="filter-input-filter-text">
-                ${conditional.condition ?? conditional}
+                ${conditional.condition ?? capitalize(conditional)}
               </div>
               <div class="added-rule-icon">
                 ${svgMarkup(
@@ -546,6 +545,8 @@ export default class TableFilterRuleComponent {
   // _renderFilteredTableItems(filteredItems, filterPlaceHolder = false) {
   // importTableComponentView.object.renderTableItem(filteredItems, null, filterPlaceHolder);
   // }
+
+
 
   _addMixin() {
     const { constructor, ...prototypePatch } = Object.getOwnPropertyDescriptors(TableFuncMixin.prototype)

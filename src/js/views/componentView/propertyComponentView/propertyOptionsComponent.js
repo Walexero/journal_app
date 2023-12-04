@@ -116,7 +116,7 @@ export default class PropertyOptionsComponent {
 
   _handlePropertyOptionsOption(e, options) {
     debugger;
-    const clickedProperty = this._getClickedProperty({ e, closest: ".action-property-content" })
+    const clickedProperty = this._getClickedProperty({ e, closest: ".action-property-content" }, options.property)
 
     const propertyContainer = document.querySelector(`.property-actions`);
     const selectedProperty = options.props.properties.find(
@@ -147,7 +147,7 @@ export default class PropertyOptionsComponent {
     if (this._state.ruleBoxActive) this._state.ruleBoxActive = false; //sets the component active state back to not just rendered
   }
 
-  _getClickedProperty(eProps = undefined) {
+  _getClickedProperty(eProps = undefined, type = undefined) {
     let clickedProperty;
 
     if (eProps.e) {
@@ -161,9 +161,15 @@ export default class PropertyOptionsComponent {
     }
     if (!eProps || !eProps.e) {
 
-      const persistedFilter = this._state.eventHandlers.tableControllers.controlGetPersistedTableFunc().filter
-      return persistedFilter.type === "itemTitle" ? "name" : "tags"
+      const persistedFilter = this._state.eventHandlers.tableControllers.controlGetPersistedTableFunc()[type]
+      // return persistedFilter.type === "itemTitle" ? "name" : "tags"
+      return this._clickedPropertyType(persistedFilter.type, type)
     }
+  }
+
+  _clickedPropertyType(typeValue, propertyType) {
+    if (propertyType === "filter") return typeValue === "itemTitle" ? "name" : "tags"
+    if (propertyType === "sort") return typeValue.toLowerCase() === "name" ? "name" : "tags"
   }
 
   _getFunc(fnType) {

@@ -84,6 +84,11 @@ const controlGetPersistedTableFunc = function () {
   return model.tableFunc
 }
 
+const controlRemovePersistedTableFunc = function (fnType) {
+  model.tableFunc[fnType] = {}
+  model.persistFunc()
+}
+
 const controlGetTable = function (tableId = undefined) {
   return model.getCurrentTable(tableId);
 };
@@ -692,6 +697,7 @@ const controlLoadUI = function () {
     controlSetCurrentTable,
     controlPersistTableFunc,
     controlGetPersistedTableFunc,
+    controlRemovePersistedTableFunc,
   };
 
   const tableItemControllers = {

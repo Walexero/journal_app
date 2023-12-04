@@ -14,6 +14,9 @@ const pass = () => { };
 //     });
 //   });
 // };
+export const capitalize = (value) => {
+  return value.slice(0, 1).toUpperCase() + value.slice(1)
+}
 
 export const timeout = (sec, actionType, fn = undefined) => {
   return new Promise((_, reject) => {

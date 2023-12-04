@@ -222,6 +222,7 @@ export default class TableSortRuleComponent {
   }
 
   _executeSortRule(sortType, optionObj = undefined) {
+    debugger;
     let filteredTableItems;
     const currentTable = document.querySelector(".table-row-active");
 
@@ -239,7 +240,7 @@ export default class TableSortRuleComponent {
       this._state.sortMethod;
 
     //persist the sort properties
-    this._state.eventHandlers.tableControllers.controlPersistTableFunc({ tableId: +currentTable.dataset.id, type: sortType.toLowerCase(), property: this._state.parentState.property.text }, "sort")
+    this._state.eventHandlers.tableControllers.controlPersistTableFunc({ tableId: +currentTable.dataset.id, type: this._state.parentState.property.text, value: sortType.toLowerCase(), property: this._state.parentState.property }, "sort")
 
     if (table.tableItems.length > 0) {
       //check if filter methods exist

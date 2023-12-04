@@ -1,4 +1,6 @@
 import { importTableComponentView } from "../../tableComponentView"
+import { capitalize } from "../../../helpers.js";
+
 
 export class TableFuncMixin {
     _checkTableFuncActive(fnType) {
@@ -7,9 +9,29 @@ export class TableFuncMixin {
         console.log("the fn", fn)
         const fnProps = Object.keys(fn).map(fnKey => fn[fnKey] ? true : false)
         fnActive = fnProps.find(prop => prop === true) ? true : false
-        // return fnActive
+        return fnActive
         return false
     }
+
+    _removeComponentTableFunc(fnType) {
+        this._state.eventHandlers.tableControllers.controlRemovePersistedTableFunc(fnType)
+    }
+
+    _setFilterRuleBoxAddedValue(el) {
+        const filterValue = this._getFunc("filter").value
+        const filterValueExists = filterValue?.length > 0
+
+        if (filterValueExists) return filterValue
+        if (!filterValueExists) {
+            const conditionalsAllowedAsValue = ["Is empty", "Is not empty"]
+            const conditionalValue = this._getFunc("filter").conditional
+            const conditionalInConditionalsAllowedAsValue = conditionalsAllowedAsValue.find(value => value.toLowerCase() === conditionalValue.toLowerCase()) ? true : false
+
+            if (conditionalInConditionalsAllowedAsValue) return capitalize(conditionalValue)
+            else return ""
+        }
+    }
+
 
     _renderFiltered(table) {
         if (table.tableItems.length > 0) {
