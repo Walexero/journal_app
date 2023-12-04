@@ -5,7 +5,6 @@ import { componentGlobalState } from "./componentView/componentGlobalState.js";
 import containerSidePeekComponentView from "./containerSidePeekComponentView.js";
 import alertComponent from "./componentView/alertComponent.js";
 import { COPY_ALERT } from "../config.js";
-// import componentOptionsView from "./componentView/componentOptionsView.js";
 import {
   importComponentOptionsView
 } from "./componentView/componentOptionsView.js";

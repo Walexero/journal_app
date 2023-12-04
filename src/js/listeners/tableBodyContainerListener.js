@@ -1,5 +1,4 @@
 import tableBodyProcessorView from "../views/tableBodyProcessorView";
-// import signals from "../signals";
 import { importSignals } from "../signals";
 class TableBodyContainerListener {
   _parentElement;

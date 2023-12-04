@@ -1,6 +1,4 @@
-// import componentOptionsView from "../componentOptionsView.js";
 import { importComponentOptionsView } from "../componentOptionsView.js";
-// import tableComponentView from "../../tableComponentView.js";
 import { importTableComponentView } from "../../tableComponentView.js";
 import {
   PREPOSITIONS,
@@ -9,7 +7,6 @@ import {
 import tableFilterPrepositionComponent from "./tableFilterPrepositionComponent.js";
 import tableFilterRuleOptionActionComponent from "./tableFilterRuleOptionActionComponent.js";
 import { componentGlobalState } from "../componentGlobalState.js";
-// import signals from "../../../signals.js";
 import { importSignals } from "../../../signals.js";
 import { svgMarkup } from "../../../helpers.js";
 
@@ -392,9 +389,12 @@ export default class TableFilterRuleComponent {
       +currentTable.dataset.id
     );
 
+
+    const filterType = this._getPropertyType()
+
     this._state.filterMethod = this._queryConditional(
       conditionalValue.toLowerCase(),
-      this._getPropertyType(),
+      filterType,
       input
     );
 
@@ -404,6 +404,9 @@ export default class TableFilterRuleComponent {
 
     this._state.parentState.conditional = componentGlobalState.conditional =
       conditionalValue;
+
+    //persist the filter properties
+    this._state.eventHandlers.tableControllers.controlPersistTableFunc({ tableId: +currentTable.dataset.id, type: filterType, conditional: conditionalValue.toLowerCase(), value: input, tags: componentGlobalState.filterTagList, property: this._state.property.text.toLowerCase() }, "filter")
 
     if (table.tableItems.length > 0) {
       //filter the tablebody

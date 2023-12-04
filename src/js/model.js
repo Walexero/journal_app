@@ -49,6 +49,12 @@ export let diff = {
   tableToDelete: []
 }
 
+export let tableFunc = {
+  filter: {}, //filterTagList in the filter,table value
+  sort: {},
+
+}
+
 export let token = {}
 
 const pass = () => { };
@@ -621,6 +627,16 @@ export const persistDiff = () => {
   console.log("saveed diff", diff)
 };
 
+export const persistFunc = () => {
+  localStorage.setItem("funcState", JSON.stringify(tableFunc));
+  console.log("saveed func", tableFunc)
+};
+
+const getPersistedFunc = () => {
+  const funcFromDb = localStorage.getItem("funcState");
+  return JSON.parse(funcFromDb)
+}
+
 const getPersistedData = () => {
   const stateFromDb = localStorage.getItem("userJournal");
   return JSON.parse(stateFromDb);
@@ -743,6 +759,13 @@ export const init = function (controllerInit = undefined, loadController = false
     }
   }
 
-  if (loadController) controllerInit(false)
+  if (loadController) {
+    //load the table persisted func
+    const funcState = getPersistedFunc()
+    if (funcState) tableFunc = funcState
+
+    //load the UI
+    controllerInit(false)
+  }
 };
 // init();

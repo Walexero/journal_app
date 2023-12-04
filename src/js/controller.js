@@ -75,6 +75,11 @@ const controlSetCurrentTable = function (
   if (tableToDisplayId) controlRenderUpdatedTableHeads(tableToDisplayId);
 };
 
+const controlPersistTableFunc = function (fnProps, fnType) {
+  model.tableFunc[fnType] = fnProps;
+  model.persistFunc()
+}
+
 const controlGetTable = function (tableId = undefined) {
   return model.getCurrentTable(tableId);
 };
@@ -681,6 +686,7 @@ const controlLoadUI = function () {
     controlGetTable,
     controlGetJournalName,
     controlSetCurrentTable,
+    controlPersistTableFunc,
   };
 
   const tableItemControllers = {

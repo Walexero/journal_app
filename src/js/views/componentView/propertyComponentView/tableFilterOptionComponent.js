@@ -1,5 +1,4 @@
 import propertyOptionsComponent from "./propertyOptionsComponent.js";
-// import componentOptionsView from "../componentOptionsView.js";
 import { importComponentOptionsView } from "../componentOptionsView.js";
 import { TABLE_PROPERTIES } from "../../../config.js";
 import tableFilterRuleComponent from "./tableFilterRuleComponent.js";

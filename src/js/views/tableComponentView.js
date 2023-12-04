@@ -14,7 +14,6 @@ import tableHeadProcessorView from "./tableHeadProcessorView.js";
 
 import tableActionsProcessorView from "./tableActionsProcessorView.js";
 import tableBodyProcessorView from "./tableBodyProcessorView.js";
-// import signals from "../signals.js"; //passes events from one component to another
 
 class TableComponentView {
   _parentElement = document.querySelector(".content-container");

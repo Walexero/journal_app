@@ -1,4 +1,3 @@
-// import componentOptionsView from "../componentOptionsView.js";
 import { importComponentOptionsView } from "../componentOptionsView.js";
 import tagOptionComponent from "../tagsOptionComponent.js";
 import { componentGlobalState } from "../componentGlobalState.js";

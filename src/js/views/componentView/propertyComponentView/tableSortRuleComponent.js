@@ -1,6 +1,4 @@
-// import componentOptionsView from "../componentOptionsView.js";
 import { importComponentOptionsView } from "../componentOptionsView.js";
-// import tableComponentView from "../../tableComponentView.js";
 import { importTableComponentView } from "../../tableComponentView.js";
 import { TABLE_SORT_TYPE } from "../../../config.js";
 import { svgMarkup } from "../../../helpers.js";
@@ -239,6 +237,9 @@ export default class TableSortRuleComponent {
 
     componentGlobalState.sortMethod = this._state.parentState.sortMethod =
       this._state.sortMethod;
+
+    //persist the sort properties
+    this._state.eventHandlers.tableControllers.controlPersistTableFunc({ tableId: +currentTable.dataset.id, type: sortType.toLowerCase(), property: this._state.parentState.property.text }, "sort")
 
     if (table.tableItems.length > 0) {
       //check if filter methods exist
