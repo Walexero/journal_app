@@ -1,6 +1,10 @@
 import { svgMarkup } from "../../../helpers.js";
+import { TableFuncMixin } from "./tableFuncMixin.js";
+
 
 export default class PropertyOptionsComponent {
+  _mixinActive = false
+
   _generateOptions(properties, propertyComponent) {
     let propertiesMarkup = "";
 
@@ -29,15 +33,13 @@ export default class PropertyOptionsComponent {
                 <div class="property-rule-icon">
                   ${svgMarkup("property-added-rule-icon", `${property.icon}`)}
                 </div>
-                <div class="${propertyComponent}-added-rule-name property-added-rule-name">${
-                  property.text
-                }:</div>
+                <div class="${propertyComponent}-added-rule-name property-added-rule-name">${property.text
+      }:</div>
               </div>
-              ${
-                propertyComponent === "filter"
-                  ? this._generateAddedRuleMarkup(propertyComponent)
-                  : ""
-              }
+              ${propertyComponent === "filter"
+        ? this._generateAddedRuleMarkup(propertyComponent)
+        : ""
+      }
               <div class="added-rule-icon">
                 ${svgMarkup("rule-icon icon-sm", "arrow-down")}
               </div>
@@ -113,12 +115,14 @@ export default class PropertyOptionsComponent {
   }
 
   _handlePropertyOptionsOption(e, options) {
-    const clickedProperty = e.target.closest(".action-property-content");
+    debugger;
+    const clickedProperty = this._getClickedProperty({ e, closest: ".action-property-content" })
+
     const propertyContainer = document.querySelector(`.property-actions`);
     const selectedProperty = options.props.properties.find(
       (property) =>
         property.text.toLowerCase() ===
-        clickedProperty.textContent.replace(":", "").trim().toLowerCase()
+        clickedProperty
     );
     const propertyOptionsOptionMarkup = this._generateRuleMarkup(
       selectedProperty,
@@ -131,7 +135,7 @@ export default class PropertyOptionsComponent {
     );
 
     options.state.property = selectedProperty;
-    options.callBack(selectedProperty, options.state);
+    if (options.callBack) options.callBack(selectedProperty, options.state);
   }
 
   _handleRemoveRuleBoxEvent(e) {
@@ -141,5 +145,38 @@ export default class PropertyOptionsComponent {
     }
 
     if (this._state.ruleBoxActive) this._state.ruleBoxActive = false; //sets the component active state back to not just rendered
+  }
+
+  _getClickedProperty(eProps = undefined) {
+    let clickedProperty;
+
+    if (eProps.e) {
+      if (eProps.closest && eProps.selector)
+        clickedProperty = eProps.e.target.closest(eProps.closest).querySelector(eProps.selector)
+
+      if (eProps.closest && !eProps.selector)
+        clickedProperty = eProps.e.target.closest(eProps.closest)
+
+      return clickedProperty.textContent.replace(":", "").trim().toLowerCase()
+    }
+    if (!eProps || !eProps.e) {
+
+      const persistedFilter = this._state.eventHandlers.tableControllers.controlGetPersistedTableFunc().filter
+      return persistedFilter.type === "itemTitle" ? "name" : "tags"
+    }
+  }
+
+  _getFunc(fnType) {
+    return this._state.eventHandlers.tableControllers.controlGetPersistedTableFunc()[fnType]
+  }
+
+  _addMixin() {
+    //copy mixin props
+    const { constructor, ...prototypePatch } = Object.getOwnPropertyDescriptors(TableFuncMixin.prototype)
+
+    //add copied props to instance proto
+    Object.defineProperties(Object.getPrototypeOf(this).__proto__, prototypePatch)
+
+    this._mixinActive = true
   }
 }

@@ -1,5 +1,6 @@
 import { importComponentOptionsView } from "../componentOptionsView.js";
 import { componentGlobalState } from "../componentGlobalState.js";
+import { TableFuncMixin } from "./tableFuncMixin.js";
 
 export default class TableFilterPrepositionComponent {
   _componentHandler = importComponentOptionsView.object;
@@ -42,6 +43,7 @@ export default class TableFilterPrepositionComponent {
 
   render() {
     const cls = this;
+
     this._state.markup = this._generateMarkup(this._state.conditional);
 
     const { overlay, overlayInterceptor, component } =
@@ -62,6 +64,7 @@ export default class TableFilterPrepositionComponent {
     this._events.forEach((ev) => {
       component.addEventListener(ev, this._handleEvents.bind(cls));
     });
+
   }
 
   _handleEvents(e) {

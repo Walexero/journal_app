@@ -80,6 +80,10 @@ const controlPersistTableFunc = function (fnProps, fnType) {
   model.persistFunc()
 }
 
+const controlGetPersistedTableFunc = function () {
+  return model.tableFunc
+}
+
 const controlGetTable = function (tableId = undefined) {
   return model.getCurrentTable(tableId);
 };
@@ -687,6 +691,7 @@ const controlLoadUI = function () {
     controlGetJournalName,
     controlSetCurrentTable,
     controlPersistTableFunc,
+    controlGetPersistedTableFunc,
   };
 
   const tableItemControllers = {

@@ -9,12 +9,14 @@ import tableFilterRuleOptionActionComponent from "./tableFilterRuleOptionActionC
 import { componentGlobalState } from "../componentGlobalState.js";
 import { importSignals } from "../../../signals.js";
 import { svgMarkup } from "../../../helpers.js";
+import { TableFuncMixin } from "./tableFuncMixin.js";
 
 export default class TableFilterRuleComponent {
   _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click", "keyup"];
   _signals = importSignals.object
+  _mixinActive = false
 
   constructor(state) {
     this._state = state;
@@ -104,6 +106,8 @@ export default class TableFilterRuleComponent {
   }
 
   render() {
+    debugger;
+    if (!this._mixinActive) this._addMixin()
     const cls = this;
     this._state.conditional = PREPOSITIONS.filter(
       (preposition) =>
@@ -114,6 +118,10 @@ export default class TableFilterRuleComponent {
       this._state.property.text.toLowerCase() !== "tags"
         ? this._state.parentState.inputValue
         : componentGlobalState.filterTagList;
+
+    // const fnActive = this._checkTableFuncActive("filter")
+
+    // if (!fnActive) {
     this._state.markup = this._generateMarkup(
       this._state.parentState.conditional ??
       this._state.conditional[0].condition,
@@ -122,9 +130,7 @@ export default class TableFilterRuleComponent {
     );
 
     //set parent state conditional value if it doesn't exist
-    if (!this._state.parentState.conditional)
-      this._state.parentState.conditional =
-        this._state.conditional[0].condition;
+    this._setConditional()
 
     //disables the click interceptor|Allows click to be detected in background
     this._state.disableOverlayInterceptor = true;
@@ -150,7 +156,13 @@ export default class TableFilterRuleComponent {
     this._events.forEach((ev) => {
       component.addEventListener(ev, this._handleEvents.bind(cls));
     });
+    // }
 
+    // if (fnActive) {
+    // set parent state conditional value if it doesn't exist
+    // this._setConditional()
+    // this._executeFilterRule() //add filter rule input
+    // }
     //register for events from tag Options
     this._signals.subscribe({ component: this, source: ["tagadd"] });
   }
@@ -378,6 +390,7 @@ export default class TableFilterRuleComponent {
   }
 
   _executeFilterRule(input) {
+    debugger;
     const currentTable = document.querySelector(".table-row-active");
 
     const conditionalValue = document
@@ -408,14 +421,16 @@ export default class TableFilterRuleComponent {
     //persist the filter properties
     this._state.eventHandlers.tableControllers.controlPersistTableFunc({ tableId: +currentTable.dataset.id, type: filterType, conditional: conditionalValue.toLowerCase(), value: input, tags: componentGlobalState.filterTagList, property: this._state.property.text.toLowerCase() }, "filter")
 
-    if (table.tableItems.length > 0) {
-      //filter the tablebody
-      const filteredTableItems = this._state.filterMethod(table.tableItems);
+    //filter and render the table
+    this._renderFiltered(table)
+    // if (table.tableItems.length > 0) {
+    //   //filter the tablebody
+    //   const filteredTableItems = this._state.filterMethod(table.tableItems);
 
-      this._renderFilteredTableItems(filteredTableItems, true);
-    }
+    //   this._renderFilteredTableItems(filteredTableItems, true);
+    // }
 
-    if (!table.tableItems.length > 0) this._renderFilteredTableItems([], true);
+    // if (!table.tableItems.length > 0) this._renderFilteredTableItems([], true);
   }
 
   _queryConditional(conditional, property, input) {
@@ -522,8 +537,23 @@ export default class TableFilterRuleComponent {
     }
   }
 
-  _renderFilteredTableItems(filteredItems, filterPlaceHolder = false) {
-    importTableComponentView.object.renderTableItem(filteredItems, null, filterPlaceHolder);
+  _setConditional() {
+    if (!this._state.parentState.conditional)
+      this._state.parentState.conditional =
+        this._state.conditional[0].condition;
+  }
+
+  // _renderFilteredTableItems(filteredItems, filterPlaceHolder = false) {
+  // importTableComponentView.object.renderTableItem(filteredItems, null, filterPlaceHolder);
+  // }
+
+  _addMixin() {
+    const { constructor, ...prototypePatch } = Object.getOwnPropertyDescriptors(TableFuncMixin.prototype)
+
+    //add copied props to instance proto
+    Object.defineProperties(Object.getPrototypeOf(this).__proto__, prototypePatch)
+
+    this._mixinActive = true
   }
 
   remove(reset = true, parentRemove = false) {

@@ -5,6 +5,7 @@ import tableFilterRuleComponent from "./tableFilterRuleComponent.js";
 import { importSignals } from "../../../signals.js";//allows signals to be sent to required component
 import { componentGlobalState } from "../componentGlobalState.js";
 import containerSidePeekComponentView from "../../containerSidePeekComponentView.js";
+import { TableFuncMixin } from "./tableFuncMixin.js";
 
 export default class TableFilterOptionComponent extends propertyOptionsComponent {
   _componentHandler = importComponentOptionsView.object;
@@ -18,31 +19,57 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
   }
 
   render() {
+    if (!this._mixinActive) this._addMixin()
     const cls = this;
     const propertiesToRender = TABLE_PROPERTIES.properties.filter(
       (property) => property.text.toLowerCase() !== "created"
     );
-    this._state.markup = this._generateMarkup(propertiesToRender, "filter");
 
-    const { overlay, overlayInterceptor, component } =
-      this._componentHandler._componentOverlay(this._state);
+    const fnActive = this._checkTableFuncActive("filter")
+    if (!fnActive) {
 
-    this._state = { ...this._state, overlay, overlayInterceptor, component };
+      this._state.markup = this._generateMarkup(propertiesToRender, "filter");
 
-    //overlay component handles its event
-    overlayInterceptor.addEventListener(
-      "click",
-      function (e) {
-        cls._componentHandler._componentRemover(cls._state);
-      },
-      { once: true }
-    );
+      const { overlay, overlayInterceptor, component } =
+        this._componentHandler._componentOverlay(this._state);
 
-    //component handles its event
-    this._events.forEach((ev) => {
-      component.addEventListener(ev, this._handleEvents.bind(cls));
-    });
+      this._state = { ...this._state, overlay, overlayInterceptor, component };
 
+      //overlay component handles its event
+      overlayInterceptor.addEventListener(
+        "click",
+        function (e) {
+          cls._componentHandler._componentRemover(cls._state);
+        },
+        { once: true }
+      );
+
+      //component handles its event
+      this._events.forEach((ev) => {
+        component.addEventListener(ev, this._handleEvents.bind(cls));
+      });
+    }
+    if (fnActive) {
+      //generate filter rule markup
+      this._handlePropertyOptionsOption(null, {
+        property: "filter",
+        state: this._state,
+        callBack: null,
+        props: TABLE_PROPERTIES,
+      })
+
+      const filterRuleBoxRuleAdded = document.querySelector(".filter-added-rule");
+      filterRuleBoxRuleAdded.textContent = this._getFunc("filter").value
+
+      this._state.conditional = this._getFunc("filter").type
+
+      this._state.filterMethod = componentGlobalState.filterMethod = tableFilterRuleComponent.prototype._queryConditional(this._getFunc("filter").conditional, this._state.conditional, this._getFunc("filter").value)
+
+      const table = this._state.eventHandlers.tableControllers.controlGetTable(this._getFunc("filter").tableId)
+
+      //filter and render the table
+      this._renderFiltered(table)
+    }
     //register the component as an observer
     this._signals.subscribe({ component: this, source: ["tablebody", "content"] });
   }
@@ -182,14 +209,13 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
 
   _handleFilterAddRuleBoxEvent(e) {
     //should be called by the options option to add the rulebox
-    const clickedProperty = e.target
-      .closest(".filter-added-rule-box")
-      .querySelector(".filter-added-rule-name");
+
+    const clickedProperty = this._getClickedProperty({ e, closest: ".filter-added-rule-box", selector: ".filter-added-rule-name" })
 
     const selectedProperty = TABLE_PROPERTIES.properties.find(
       (property) =>
         property.text.toLowerCase() ===
-        clickedProperty.textContent.replace(":", "").trim().toLowerCase()
+        clickedProperty
     );
 
     this._renderFilterRuleComponent(selectedProperty);
@@ -311,6 +337,7 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
     };
 
     const component = new tableFilterRuleComponent(componentObj);
+    debugger;
     this._state.inputValue = this._state.inputValue ?? "";
     this._state.children.push(component);
     component.render();
