@@ -545,7 +545,8 @@ const controlUpdateTableItem = function (
   debugger
   console.log('the upd payload', payload)
   if (!payload) return
-  const apiPayload = formatAPIRequestUpdateTableItemPayload(payload, payloadType)
+  let apiPayload = formatAPIRequestUpdateTableItemPayload(payload, payloadType)
+  if (payloadType === "tags") apiPayload = { "tags": apiPayload }
   getAPICreatedTagFromModel(apiPayload, payload, model.state, payloadType)
   console.log("the api payload", apiPayload)
   const batchTypes = ["selectTags"]

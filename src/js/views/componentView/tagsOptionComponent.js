@@ -1,10 +1,8 @@
-// import componentOptionsView from "./componentOptionsView.js";
 import { importComponentOptionsView } from "./componentOptionsView.js";
 import tagEditComponent from "./tagEditComponent.js";
 import { componentGlobalState } from "./componentGlobalState.js";
-import { formatTagRequestBody } from "../../helpers.js";
+import { formatTagRequestBody, svgMarkup, formatTagRenderedText } from "../../helpers.js";
 import { importSignals } from "../../signals.js";
-import { svgMarkup } from "../../helpers.js";
 import { API } from "../../api.js";
 
 export default class TagOptionComponent {
@@ -59,7 +57,7 @@ export default class TagOptionComponent {
     return `
       <div class=" ${addXmark ? "tag-tag" : "row-tag-tag"} ${tag.color
       }" data-id=${tag.id}>
-        ${tag.text}
+        ${formatTagRenderedText(tag.text)}
 
         ${addXmark
         ? `
@@ -78,7 +76,7 @@ export default class TagOptionComponent {
       <div class="tag-create">
         Create 
         <div class="tag-tag ${this._getRandomColor()}">
-          ${inputVal}
+          ${formatTagRenderedText(inputVal)}
         </div>
       </div>
     `;

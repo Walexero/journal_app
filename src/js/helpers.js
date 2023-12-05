@@ -1,4 +1,4 @@
-import { LOCALE_TIME } from "./config.js";
+import { LOCALE_TIME, TAG_TEXT_RENDER_LENGTH } from "./config.js";
 import icons from "url:../icons.svg";
 import { TAGS_COLORS } from "./config.js";
 
@@ -16,6 +16,11 @@ const pass = () => { };
 // };
 export const capitalize = (value) => {
   return value.slice(0, 1).toUpperCase() + value.slice(1)
+}
+
+export const formatTagRenderedText = (tagText) => {
+  if (tagText.length > TAG_TEXT_RENDER_LENGTH) return tagText.slice(0, TAG_TEXT_RENDER_LENGTH) + "..."
+  return tagText
 }
 
 export const createNewTableFunc = (tableId, tableFuncModel) => {

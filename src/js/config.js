@@ -165,6 +165,7 @@ export const TABLE_SORT_TYPE = [
   { text: "Descending", icon: "descend-icon" },
 ];
 
+export const TAG_TEXT_RENDER_LENGTH = 36;
 export const DEFAULT_ALERT_TIMEOUT = 10;
 export const DEFAULT_LOGIN_PAGE_TIMEOUT = 5;
 export const DEFAULT_REQUEST_TIMEOUT = 5;
