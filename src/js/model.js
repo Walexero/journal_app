@@ -38,6 +38,7 @@ export let diff = {
   tableItemToUpdate: [],
   tableItemToDelete: [],
   tableItemToDuplicate: [],
+  journalInfoToUpdate: [],
   tagToDelete: [],
   tagsToUpdate: [],
   submodelToCreate: [],

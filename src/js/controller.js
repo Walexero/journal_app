@@ -27,8 +27,38 @@ const controlGetJournalName = function () {
   return model.state.name;
 };
 
+const controlAPIUpdateJournalInfo = function (payload, returnData, requestState) {
+  if (!requestState) {
+    const key = Object.keys(payload)
+    model.diff.journalInfoToUpdate[key] = payload[key]
+    model.persistDiff()
+  }
+
+  if (requestState) {
+    model.updateJournalInfo(payload);
+  }
+}
+
 const controlUpdateJournalInfo = function (updateVal) {
-  model.updateJournalInfo(updateVal);
+
+  const apiPayload = {
+  }
+  if (updateVal.name) apiPayload.journal_name = updateVal.name
+  if (updateVal.journal_description) apiPayload.journal_description = updateVal.description
+
+  const queryObj = {
+    endpoint: API.APIEnum.JOURNAL.PATCH(model.state.id),
+    token: model.token.value,
+    sec: null,
+    queryData: apiPayload,
+    actionType: "updateJournalInfo",
+    spinner: false,
+    alert: false,
+    type: "PATCH",
+    callBack: controlAPIUpdateJournalInfo.bind(null, updateVal),
+    callBackParam: true
+  }
+  API.queryAPI(queryObj)
 };
 
 const controlGetModel = function () {
