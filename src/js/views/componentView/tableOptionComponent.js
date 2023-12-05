@@ -1,12 +1,15 @@
-import componentOptionsView from "./componentOptionsView.js";
+// import componentOptionsView from "./componentOptionsView.js";
+import { importComponentOptionsView } from "./componentOptionsView.js";
 import { componentGlobalState } from "./componentGlobalState.js";
-import sidebarComponentView from "../sidebarComponentView.js";
+// import sidebarComponentView from "../sidebarComponentView.js";
+import { importSideBarComponentView } from "../sidebarComponentView.js";
 import { svgMarkup } from "../../helpers.js";
 
 export default class TableOptionComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click"];
+  _sidebarComponentView = importSideBarComponentView.object
 
   constructor(state) {
     this._state = state;
@@ -86,6 +89,7 @@ export default class TableOptionComponent {
   }
 
   _handleEvents(e) {
+    debugger;
     if (this._renameMatchStrategy(e)) this._handleRenameEvent(e);
     if (this._deleteMatchStrategy(e)) this._handleDeleteEvent(e);
     if (this._duplicateMatchStrategy(e)) this._handleDuplicateEvent(e);
@@ -129,13 +133,10 @@ export default class TableOptionComponent {
     renameInput.value = state.table.dataset.name;
 
     renameInputForm.addEventListener("submit", function (e) {
-      console.log("added eevent list");
       e.preventDefault();
       //format form data
       let formData = new FormData(e.target);
       [formData] = [...formData];
-
-      console.log(formData);
 
       //set table UI value if exists
       state.updateUI(state.table, renameInput.value);
@@ -155,7 +156,7 @@ export default class TableOptionComponent {
         const sidebarJournalContainer = document.querySelector(
           ".nav-options-journal"
         );
-        sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
+        this._sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
       }
     });
   }
@@ -170,11 +171,12 @@ export default class TableOptionComponent {
       const sidebarJournalContainer = document.querySelector(
         ".nav-options-journal"
       );
-      sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
+      this._sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
     }
   }
 
   _handleDuplicateEvent(e) {
+    debugger
     const state = this._state;
     this.remove();
     state.duplicate(+state.table.dataset.id);
@@ -184,7 +186,7 @@ export default class TableOptionComponent {
       const sidebarJournalContainer = document.querySelector(
         ".nav-options-journal"
       );
-      sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
+      this._sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
     }
   }
 

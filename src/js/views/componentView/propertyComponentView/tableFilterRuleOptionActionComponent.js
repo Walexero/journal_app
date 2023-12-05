@@ -1,11 +1,11 @@
-import componentOptionsView from "../componentOptionsView.js";
+import { importComponentOptionsView } from "../componentOptionsView.js";
 import tagOptionComponent from "../tagsOptionComponent.js";
 import { componentGlobalState } from "../componentGlobalState.js";
 import optionActionComponent from "./optionActionComponent.js";
 import { svgMarkup } from "../../../helpers.js";
 
 export default class TableFilterRuleOptionActionComponent extends optionActionComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click"];
 
@@ -51,9 +51,9 @@ export default class TableFilterRuleOptionActionComponent extends optionActionCo
               >
                 <div class="filter-option-icon">
                   ${svgMarkup(
-                    "filter-icon icon-md nav-icon-active",
-                    "trashcan-icon"
-                  )}
+      "filter-icon icon-md nav-icon-active",
+      "trashcan-icon"
+    )}
                 </div>
                 <div class="filter-option-text">Delete Filter</div>
               </div>
@@ -116,6 +116,7 @@ export default class TableFilterRuleOptionActionComponent extends optionActionCo
   }
 
   _handleDeleteFilterRuleEvent(e) {
+    const cls = this
     this._state.component.remove();
     this._events.forEach((ev) =>
       this._state.component.removeEventListener(ev, cls._handleEvents, true)

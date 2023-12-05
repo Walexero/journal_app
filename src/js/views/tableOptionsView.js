@@ -74,7 +74,7 @@ class TableOptionsView extends optionsView {
 
   _handleRenameOption(tableAttribs) {
     const cls = this;
-
+    debugger;
     const renameInputContainer = document.querySelector(".edit-content-form");
     const renameInputForm = document.querySelector("#table-rename-form");
     const renameInput = document.querySelector(".table-rename");

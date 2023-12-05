@@ -1,14 +1,15 @@
 import propertyOptionsComponent from "./propertyOptionsComponent.js";
-import componentOptionsView from "../componentOptionsView.js";
+import { importComponentOptionsView } from "../componentOptionsView.js";
 import { TABLE_PROPERTIES } from "../../../config.js";
-import signals from "../../../signals.js"; //allows signals to be sent to required component
+import { importSignals } from "../../../signals.js";//allows signals to be sent to required component
 import { componentGlobalState } from "../componentGlobalState.js";
 import tableSortRuleComponent from "./tableSortRuleComponent.js";
 
 export default class TableSortOptionComponent extends propertyOptionsComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click", "keyup"];
+  _signals = importSignals.object
 
   constructor(state) {
     super();
@@ -16,43 +17,75 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
   }
 
   render() {
+    if (!this._mixinActive) this._addMixin()
     const cls = this;
     const propertiesToRender = TABLE_PROPERTIES.properties.filter(
       (property) => property.text.toLowerCase() !== "created"
     );
-    this._state.markup = this._generateMarkup(propertiesToRender, "sort");
+    const fnActive = this._checkTableFuncActive("sort")
 
-    const { overlay, overlayInterceptor, component } =
-      this._componentHandler._componentOverlay(this._state);
+    if (!fnActive) {
+      this._state.markup = this._generateMarkup(propertiesToRender, "sort");
 
-    this._state = { ...this._state, overlay, overlayInterceptor, component };
+      const { overlay, overlayInterceptor, component } =
+        this._componentHandler._componentOverlay(this._state);
 
-    //overlay component handles its event
-    overlayInterceptor.addEventListener(
-      "click",
-      function (e) {
-        cls._componentHandler._componentRemover(cls._state);
-      },
-      { once: true }
-    );
+      this._state = { ...this._state, overlay, overlayInterceptor, component };
 
-    //component handles its event
-    this._events.forEach((ev) => {
-      component.addEventListener(ev, this._handleEvents.bind(cls));
-    });
+      //overlay component handles its event
+      overlayInterceptor.addEventListener(
+        "click",
+        function (e) {
+          cls._componentHandler._componentRemover(cls._state);
+        },
+        { once: true }
+      );
 
-    //listen for reuse events
-    component.addEventListener("reuse", cls._reuseComponentListener.bind(cls));
+      //component handles its event
+      this._events.forEach((ev) => {
+        component.addEventListener(ev, this._handleEvents.bind(cls));
+      });
+
+      //listen for reuse events
+      component.addEventListener("reuse", cls._reuseComponentListener.bind(cls));
+    }
+
+    if (fnActive) {
+      //generate sort rule markup
+      this._handlePropertyOptionsOption(null, {
+        property: "sort",
+        state: this._state,
+        callBack: null,
+        props: TABLE_PROPERTIES,
+      })
+
+      this._state.property = this._getFunc("sort").property
+
+      // const filterRuleBoxRuleAdded = document.querySelector(".filter-added-rule");
+      // filterRuleBoxRuleAdded.textContent = this._setFilterRuleBoxAddedValue(filterRuleBoxRuleAdded)
+
+
+      this._state.sortMethod = componentGlobalState.sortMethod = tableSortRuleComponent.prototype._querySort(this._state.property.text, this._getFunc("sort").type)
+
+      const table = this._state.eventHandlers.tableControllers.controlGetTable(this._getFunc("sort").tableId)
+
+      //sort and render the table
+      this._renderSorted(table)
+
+      //remove persistedSort
+      // this._removeComponentTableFunc("sort")
+
+    }
 
     //register for events from the body
-    if (!componentGlobalState.sortMethod) {
-      //prevent subscribing multiple times if already subscribeed
-      signals.subscribe({ component: this, source: ["tablebody", "content"] });
+    if (!componentGlobalState.sortMethod || fnActive) {
+      //prevent subscribing multiple times if already subscribeed  or if fnActive subscribe for events
+      this._signals.subscribe({ component: this, source: ["tablebody", "content"] });
     }
   }
 
-  _handleEvents(e, signal = false) {
-    if (!signal) {
+  _handleEvents(e, signal = false, childEvent = false) {
+    if (!signal && !childEvent) {
       if (this._propertyOptionFormStrategy(e, "sort"))
         this._handlePropertyOptionsForm(TABLE_PROPERTIES.properties, "sort");
 
@@ -72,6 +105,8 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
 
       if (this._sortHoverAddStrategy(e)) this._handleSortHoverAddEvent(e);
     }
+
+    if (childEvent) this._reuseComponentListener(childEvent)
   }
 
   _sortAddRuleBoxStrategy(e) {
@@ -199,6 +234,7 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
       (this._state.width = width),
       (this._state.height = height);
 
+    this._removeComponentTableFunc("sort")
     this.render();
     this._state.reuseCallBack = (value, parentState) => {
       e.detail.callBack(value, parentState);
@@ -213,13 +249,17 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
       ".sort-action-container "
     );
     delete this;
-    this._state.overlay.remove();
-    this._state.overlay.remove();
+    this._state?.overlay?.remove();
+    this._state?.overlay?.remove();
     this._events.forEach((ev) =>
-      this._state.component.removeEventListener(ev, cls._handleEvents, true)
+      this._state?.component?.removeEventListener(ev, cls._handleEvents, true)
     );
-    this._state.component.remove();
+    this._state?.component?.remove();
     sortActionContainer?.remove();
     componentGlobalState.sortMethod = null;
+
+    const fnActive = this._checkTableFuncActive("sort")
+    if (fnActive) this._removeComponentTableFunc("sort")
+
   }
 }

@@ -1,14 +1,17 @@
-import componentOptionsView from "../componentOptionsView.js";
-import tableComponentView from "../../tableComponentView.js";
+import { importComponentOptionsView } from "../componentOptionsView.js";
+import { importTableComponentView } from "../../tableComponentView.js";
 import { TABLE_SORT_TYPE } from "../../../config.js";
 import { svgMarkup } from "../../../helpers.js";
 import { componentGlobalState } from "../componentGlobalState.js";
 import tableSortRuleOptionActionComponent from "./tableSortRuleOptionActionComponent.js";
+import { TableFuncMixin } from "./tableFuncMixin.js";
+
 
 export default class TableSortRuleComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click"];
+  _mixinActive = false
 
   constructor(state) {
     this._state = state;
@@ -24,16 +27,16 @@ export default class TableSortRuleComponent {
                     <div class="sort-select sort-property-options-box">
                       <div class="sort-sort-icon">
                         ${svgMarkup(
-                          "sort-icon icon-active icon-md",
-                          `${property.icon}`
-                        )}
+      "sort-icon icon-active icon-md",
+      `${property.icon}`
+    )}
                       </div>
                       <div class="action-filter-text">${property.text}</div>
                       <div class="sort-dropdown-icon">
                         ${svgMarkup(
-                          "sort-icon icon-active icon-sm",
-                          "arrow-down"
-                        )}
+      "sort-icon icon-active icon-sm",
+      "arrow-down"
+    )}
                       </div>
                     </div>
                   </div>
@@ -43,9 +46,9 @@ export default class TableSortRuleComponent {
                         <div class="action-filter-text">${sortType}</div>
                         <div class="sort-dropdown-icon">
                           ${svgMarkup(
-                            "sort-icon icon-active icon-sm",
-                            "arrow-down"
-                          )}
+      "sort-icon icon-active icon-sm",
+      "arrow-down"
+    )}
                         </div>
                       </div>
                     </div>
@@ -68,6 +71,7 @@ export default class TableSortRuleComponent {
   }
 
   render() {
+    if (!this._mixinActive) this._addMixin()
     const cls = this;
 
     this._state.markup = this._generateMarkup(
@@ -142,17 +146,19 @@ export default class TableSortRuleComponent {
   }
 
   _handleSortPropertySelectEvent(e) {
+    debugger;
     const setPropertySelector = this._setPropertySelectValue.bind(this);
     const propertySelectPosition = document
       .querySelector(".sort-property-options-box")
       .getBoundingClientRect();
-    const reuseEvent = new CustomEvent("reuse", {
+    const eventDetails = {
       detail: {
         callBack: setPropertySelector,
         positioner: propertySelectPosition,
-      },
-    });
-    this._state.parentState.component.dispatchEvent(reuseEvent);
+      }
+    }
+    const reuseEvent = new CustomEvent("reuse", eventDetails);
+    this._state?.parentState?.component?.dispatchEvent(reuseEvent) ?? this._state.parent._handleEvents(null, null, eventDetails);
   }
 
   _handleSortTypeSelectEvent(e) {
@@ -207,8 +213,8 @@ export default class TableSortRuleComponent {
               ? -1
               : 1
             : a.itemTitle > d.itemTitle
-            ? -1
-            : 1;
+              ? -1
+              : 1;
         });
     }
 
@@ -222,6 +228,7 @@ export default class TableSortRuleComponent {
   }
 
   _executeSortRule(sortType, optionObj = undefined) {
+    debugger;
     let filteredTableItems;
     const currentTable = document.querySelector(".table-row-active");
 
@@ -237,6 +244,9 @@ export default class TableSortRuleComponent {
 
     componentGlobalState.sortMethod = this._state.parentState.sortMethod =
       this._state.sortMethod;
+
+    //persist the sort properties
+    this._state.eventHandlers.tableControllers.controlPersistTableFunc({ tableId: +currentTable.dataset.id, type: this._state.parentState.property.text, value: sortType.toLowerCase(), property: this._state.parentState.property }, "sort")
 
     if (table.tableItems.length > 0) {
       //check if filter methods exist
@@ -277,13 +287,22 @@ export default class TableSortRuleComponent {
     this._executeSortRule(sortTypeContainer.textContent.trim());
   }
 
-  _renderSortedTableItems(sortedItems, filterPlaceHolder = false) {
-    tableComponentView.renderTableItem(sortedItems, null);
+  _addMixin() {
+    const { constructor, ...prototypePatch } = Object.getOwnPropertyDescriptors(TableFuncMixin.prototype)
+
+    //add copied props to instance proto
+    Object.defineProperties(Object.getPrototypeOf(this).__proto__, prototypePatch)
+
+    this._mixinActive = true
   }
+
+  // _renderSortedTableItems(sortedItems, filterPlaceHolder = false) {
+  // importTableComponentView.object.renderTableItem(sortedItems, null);
+  // }
 
   remove(reset = true) {
     const cls = this;
-    this._state.overlay.remove();
+    this._state?.overlay?.remove();
     this._events.forEach((ev) =>
       this._state.component.removeEventListener(ev, cls._handleEvents, true)
     );

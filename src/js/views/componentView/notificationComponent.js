@@ -1,11 +1,12 @@
-import componentOptionsView from "./componentOptionsView.js";
+// import componentOptionsView from "./componentOptionsView.js";
+import { importComponentOptionsView } from "./componentOptionsView.js";
 import {
   NOTIFICATION_CONF_MSG,
   NOTIFICATION_DELETE_MSG,
 } from "../../config.js";
 
 export default class NotificationComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click"];
 

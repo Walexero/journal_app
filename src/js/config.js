@@ -1,3 +1,5 @@
+export const BASE_API_URL = "http://0.0.0.0:9008/api/"
+const subModelEndpoints = ["grateful-for", "happenings", "action-items", "intentions"];
 export const USER = "Strapchay Proj";
 export const DEFAULT_JOURNAL_DESC = `
 Document your life - daily happenings, special occasions,
@@ -70,19 +72,19 @@ export const TABLE_TAGS = {
 export const TAGS_COLORS = {
   colors: [
     {
-      color: "Off gray",
+      color: "Off Gray",
       color_value: "color-gray",
     },
     {
-      color: "Midnight green",
+      color: "Midnight Green",
       color_value: "color-green",
     },
     {
-      color: "Wine red",
+      color: "Wine Red",
       color_value: "color-red",
     },
     {
-      color: "Army green",
+      color: "Army Green",
       color_value: "color-army-green",
     },
     {
@@ -90,7 +92,7 @@ export const TAGS_COLORS = {
       color_value: "color-yellow",
     },
     {
-      color: "Light blue",
+      color: "Light Blue",
       color_value: "color-blue",
     },
     {
@@ -162,3 +164,22 @@ export const TABLE_SORT_TYPE = [
   },
   { text: "Descending", icon: "descend-icon" },
 ];
+
+export const DEFAULT_ALERT_TIMEOUT = 10;
+export const DEFAULT_LOGIN_PAGE_TIMEOUT = 5;
+export const DEFAULT_REQUEST_TIMEOUT = 5;
+export const PASSWORD_NOT_MATCH_ERROR = "Passwords Do Not Match"
+export const INVALID_NAME_FORMAT = "Space not Expected in Name Field"
+export const INVALID_USERNAME_FORMAT = "Space not Expected in Username Field"
+export const HTTP_204_SUCCESS_NO_CONTENT = 204
+export const ALERT_STATUS_ERRORS = [400, 401, 404]
+export const HTTP_400_RESPONSE_LOGIN_USER = "Email or Password Incorrect";
+export const HTTP_400_RESPONSE_CREATE_USER = "Invalid Data Supplied";
+export const HTTP_200_RESPONSE = {
+  "login": ((placeholder) => "Authentication Successful"), "create": ((placeholder) => "Account Created Successfully"), "loadTodos": ((placeholder) => "Data Loading Completed"), "updatePwd": ((placeholder) => "Password Changed Successfully"), "updateInfo": ((placeholder) => "User Info Updated Successfully"),
+  "resetPwd": ((APIResp) => `${APIResp}\n Please fill in the form with the email details`),
+  "resetConfirmPwd": ((APIResp) => APIResp),
+  "getJournal": ((APIResp) => "Loading completed"),
+  "getActiveTable": ((APIResp) => APIResp),
+}
+export const PREVENT_DESTRUCTURING_FROM_API_ENDPOINT_RESP = ["create", "getJournal", "getActiveTable", "createTableItem", "updateTableItem", "createTag", "deleteTag", "updateTag", "deleteTableItem", "batchAddTags", "batchDeleteActivities", "duplicateTableItems", "updateTableName", "deleteTable", "duplicateTable", "createNewTable", "updateJournal", "updateJournalInfo"]

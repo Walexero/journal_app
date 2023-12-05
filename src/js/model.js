@@ -1,3 +1,4 @@
+import { API } from "./api.js";
 import {
   NEW_JOURNAL_NAME,
   TABLE_DEFAULT_JOURNALS,
@@ -14,6 +15,9 @@ import {
   stringToHash,
   dynamicArithmeticOperator,
   indexVal,
+  formatAPIResp,
+  formatAPITableItems,
+
 } from "./helpers.js";
 
 import cloneDeep from "../../node_modules/lodash-es/cloneDeep.js";
@@ -24,9 +28,38 @@ export let state = {
   name: "",
   description: DEFAULT_JOURNAL_DESC,
   tables: [],
+  tableHeads: [],
   tags: TABLE_TAGS.tags,
   tagsColor: TAGS_COLORS.colors,
 };
+
+export let diff = {
+  tableItemToCreate: [],
+  tableItemToUpdate: [],
+  tableItemToDelete: [],
+  tableItemToDuplicate: [],
+  journalInfoToUpdate: [],
+  tagToDelete: [],
+  tagsToUpdate: [],
+  submodelToCreate: [],
+  submodelToUpdate: [],
+  submodelToDelete: [],
+  tableToUpdate: [],
+  tableToCreate: [],
+  tableToDuplicate: [],
+  tableToDelete: []
+}
+
+export let tableFunc = {
+  // 1:{ //tableId
+  // filter: {}, //filterTagList in the filter,table value
+  // sort: {},
+
+  // }
+
+}
+
+export let token = {}
 
 const pass = () => { };
 
@@ -53,6 +86,7 @@ export const setCurrentTable = (currentTable) => {
   persistData();
 };
 
+//deprc
 const checkForAndAddNewTag = (updateObj) => {
   updateObj.forEach((obj) => {
     const objExistInTableTags = state.tags.find(
@@ -62,6 +96,15 @@ const checkForAndAddNewTag = (updateObj) => {
     if (!objExistInTableTags) state.tags.push(obj);
   });
 };
+
+export const checkForAndUpdateTag = (payload) => {
+  let tagToUpdate = state.tags.find(
+    (tag) => tag.id === payload.id && tag.text.toLowerCase() === payload.text.toLowerCase()
+  );
+
+  //FIXME: make sure obj is replaced
+  if (tagToUpdate) tagToUpdate = payload
+}
 
 const getItemFromTableItems = (table, item, index = false, convert = true) => {
   if (!index)
@@ -287,9 +330,12 @@ export const addNewTable = function () {
   return createdTableId;
 };
 
-export const addTableItem = function (payload, relativeItem = undefined) {
+export const addTableItem = function (payload, relativeItem = undefined, APIResp = false) {
+  let tableItem
   const currentTable = getCurrentTable();
-  const tableItem = createTableItem("", payload);
+  if (!APIResp) tableItem = createTableItem("", payload);
+  if (APIResp) tableItem = payload
+
   if (!relativeItem) currentTable.tableItems.push(tableItem);
   if (relativeItem) {
     const relativeItemIndex = getItemFromTableItems(
@@ -306,6 +352,13 @@ export const addTableItem = function (payload, relativeItem = undefined) {
   persistData();
   return tableItem.id;
 };
+
+export const deleteTag = function (tagId) {
+  const tagToDelete = state.tags.findIndex(
+    (tag) => String(tag.id) === String(tagId)
+  );
+  state.tags.splice(tagToDelete, 1);
+}
 
 export const deleteTableItem = function (payload) {
   const tableToDeleteFrom = getCurrentTable(payload.tableId);
@@ -343,24 +396,32 @@ export const deleteTableItem = function (payload) {
   persistData();
 };
 
-export const updateTableItem = function (payload) {
-  const updateSingleItem = payload?.itemId;
+export const updateAPITableItem = function (payload, api = true, tableId) {
+  const updateSingleItem = payload?.id
   const updateMultipleItems = payload?.itemIds;
-  const tableToUpdate = getCurrentTable(payload?.tableId);
+  const tableToUpdate = getCurrentTable(tableId ?? null);
 
   if (updateSingleItem) {
     //logic runs for single item update
-    const itemToUpdate = getTableItem(tableToUpdate, payload.itemId);
-    payload?.title ? (itemToUpdate.itemTitle = payload.title) : pass();
+    if (api) {
+      //FIXME: make sure implementation doesn't contradict with any other interfacee implementation
+      //replace value with api value
+      const tableAPIItem = getItemFromTableItems(tableToUpdate, payload.id, true, true)
+      tableToUpdate.tableItems.splice(tableAPIItem, 1)
+      tableToUpdate.tableItems.splice(tableAPIItem, 0, payload)
+      persistData()
+      return
+    }
 
-    const formattedTags = payload?.tags
-      ? formatUpdateObjTags(payload?.tags)
-      : pass();
+    const itemToUpdate = getTableItem(tableToUpdate, payload.id);
+    payload?.itemTitle ? (itemToUpdate.itemTitle = payload.itemTitle) : pass();
 
-    formattedTags ? (itemToUpdate.itemTags = formattedTags) : pass();
+    payload?.itemTags ? (itemToUpdate.itemTags = payload.itemTags) : pass();
 
     //create new tag object if it doesn't exist in the tag table
-    payload.tags ? checkForAndAddNewTag(formattedTags) : pass();
+    //TODO: use the createtagendpoint to update the journal tags or a fallback
+    //TODO: implement prev logic with check against model update
+    // payload.tags ? checkForAndAddNewTag(formattedTags) : pass();
 
     if (payload.modelProperty) {
       if (payload.modelProperty.property.update) {
@@ -368,14 +429,15 @@ export const updateTableItem = function (payload) {
         const propertyToUpdate = itemToUpdate[updateValue.key].find(
           (propItem) => propItem.id === updateValue.propertyId
         );
-
-        propertyToUpdate?.text ? propertyToUpdate.text = updateValue.value : pass();
-        propertyToUpdate?.checkbox
-          ? (propertyToUpdate.checkbox =
-            payload.modelProperty.checkedProperty.checkbox) &&
-          (propertyToUpdate.checked =
-            payload.modelProperty.checkedProperty.checked)
-          : pass();
+        if (propertyToUpdate) {
+          propertyToUpdate.text = updateValue.value;
+          propertyToUpdate.checkbox
+            ? (propertyToUpdate.checkbox =
+              payload.modelProperty.checkedProperty.checkbox) &&
+            (propertyToUpdate.checked =
+              payload.modelProperty.checkedProperty.checked)
+            : pass();
+        }
       }
 
       if (payload.modelProperty.property.create) {
@@ -432,43 +494,274 @@ export const updateTableItem = function (payload) {
   }
 
   persistData();
+}
+
+export const updateTableItem = function (payload) {
+  const updateSingleItem = payload?.itemId;
+  const updateMultipleItems = payload?.itemIds;
+  const tableToUpdate = getCurrentTable(payload?.tableId);
+
+  if (updateSingleItem) {
+    //logic runs for single item update
+    let itemToUpdate = getTableItem(tableToUpdate, payload.itemId);
+
+    payload?.title ? (itemToUpdate.itemTitle = payload.title) : pass();
+
+    const formattedTags = payload?.tags
+      ? formatUpdateObjTags(payload?.tags)
+      : pass();
+
+    formattedTags ? (itemToUpdate.itemTags = formattedTags) : pass();
+
+    //create new tag object if it doesn't exist in the tag table
+    payload.tags ? checkForAndAddNewTag(formattedTags) : pass();
+
+    if (payload.modelProperty) {
+      if (payload.modelProperty.property.update) {
+        const updateValue = payload.modelProperty.property.update;
+        const propertyToUpdate = itemToUpdate[updateValue.key].find(
+          (propItem) => propItem.id === updateValue.propertyId
+        );
+        //add the update item id to the payload
+        payload.updatedItemId = updateValue.propertyId
+        //FIXME: check against the updatedItem being null to add as create for the diff
+        if (propertyToUpdate) {
+          propertyToUpdate.text = updateValue.value;
+          propertyToUpdate.checkbox
+            ? (propertyToUpdate.checkbox =
+              payload.modelProperty.checkedProperty.checkbox) &&
+            (propertyToUpdate.checked =
+              payload.modelProperty.checkedProperty.checked)
+            : pass();
+        }
+      }
+
+      if (payload.modelProperty.property.create) {
+        const payloadValue = payload.modelProperty.property.create;
+        const updateObj = {
+          id: uuid4(),
+          text: payloadValue.value,
+        };
+        //add the create submodel id to the payload for the diff
+        payload.createdItemId = updateObj.id
+
+        const hasCheckbox = payload.modelProperty.checkedProperty.checkbox;
+
+        hasCheckbox
+          ? (updateObj.checkbox = true) && (updateObj.checked = false)
+          : pass();
+
+        if (payloadValue.relativeProperty) {
+          const relativePropertyIndex = itemToUpdate[
+            payload.modelProperty.property.key
+          ].findIndex(
+            (property) => property.id === payloadValue.relativeProperty
+          );
+
+          itemToUpdate[payload.modelProperty.property.key].splice(
+            relativePropertyIndex + 1,
+            0,
+            updateObj
+          );
+        } else itemToUpdate[payload.modelProperty.property.key].push(updateObj);
+      }
+
+      if (payload.modelProperty.property.updateActionItem) {
+        const updateValue = payload.modelProperty.property.updateActionItem;
+        const propertyToUpdate = itemToUpdate[updateValue.key].find(
+          (propItem) => propItem.id === updateValue.propertyId
+        );
+        if (propertyToUpdate) {
+          //TODO: make sure values are getting updated
+          propertyToUpdate.text = updateValue.value;
+          propertyToUpdate.checked = updateValue.checked;
+
+        }
+      }
+    }
+  }
+
+  if (!updateSingleItem && updateMultipleItems) {
+    const formattedTags = payload?.tags
+      ? formatUpdateObjTags(payload?.tags)
+      : pass();
+
+    //create new tag object if it doesn't exist in the tag table
+    payload?.tags ? checkForAndAddNewTag(formattedTags) : pass();
+
+    const itemsToUpdate = payload.itemIds.map((item) =>
+      getItemFromTableItems(tableToUpdate, Number(item))
+    );
+    itemsToUpdate.forEach((item) => (item.itemTags = [...formattedTags]));
+  }
+
+  persistData();
 };
 
 export const duplicateTableItem = function (payload) {
   const tableToDuplicateItem = getCurrentTable(payload.tableId);
+  const duplicateCreateList = []
   payload.items.forEach((item) => {
     const itemToDuplicate = cloneDeep(
       getItemFromTableItems(tableToDuplicateItem, item)
     );
 
     itemToDuplicate.id = Date.now();
+    //list to be returned to the controller
+    duplicateCreateList.push(itemToDuplicate)
+
     tableToDuplicateItem.tableItems.push(itemToDuplicate);
   });
 
   persistData();
+  return duplicateCreateList
 };
 
 const persistData = () => {
   localStorage.setItem("userJournal", JSON.stringify(state));
+  console.log("saveed state", state)
 };
+
+export const persistToken = function () {
+  localStorage.setItem("token", JSON.stringify(token))
+}
+
+export const persistDiff = () => {
+  localStorage.setItem("diffState", JSON.stringify(diff));
+  console.log("saveed diff", diff)
+};
+
+export const persistFunc = () => {
+  localStorage.setItem("funcState", JSON.stringify(tableFunc));
+  console.log("saveed func", tableFunc)
+};
+
+const getPersistedFunc = () => {
+  const funcFromDb = localStorage.getItem("funcState");
+  return JSON.parse(funcFromDb)
+}
 
 const getPersistedData = () => {
   const stateFromDb = localStorage.getItem("userJournal");
   return JSON.parse(stateFromDb);
 };
 
-const init = function () {
-  const dataLoadedFromDb = getPersistedData();
-  if (dataLoadedFromDb) state = dataLoadedFromDb;
+export const loadToken = () => {
+  const storedToken = localStorage.getItem("token")
+  if (storedToken) token = JSON.parse(storedToken)
+}
 
-  if (!dataLoadedFromDb) {
-    //create default tables
-    TABLE_DEFAULT_JOURNALS.forEach((table, i) =>
-      createTable(table, i, Date.now())
-    );
+export const replaceTableItemWithAPITableItem = function (tableItem) {
+  const currentTable = getCurrentTable()
+  const currentTableTableItemIndex = getItemFromTableItems(currentTable, tableItem.id, true)
+  const formatAPITableItem = formatAPITableItems(tableItem, "activities")
+  currentTable.tableItems.splice(currentTableTableItemIndex, 1)
+  currentTable.tableItems.splice(currentTableTableItemIndex, 0, formatAPITableItem)
 
-    //create ids for tags
-    state.tags.forEach((tag) => (tag.id = stringToHash(tag.text)));
+}
+
+// const replace
+
+const requestJournalTableCallback = function (callBack, journalTableAPIResp, requestState) {
+  let tableItems = [];
+  if (requestState) {
+    journalTableAPIResp.forEach(tableItem => tableItems.push(formatAPIResp(tableItem, "journalTables")))
+    //replace state data with api data
+    replaceStateJournalDataWithAPIData(tableItems, "journalTables")
+
+    //re-call the model init
+    callBack()
+  }
+
+}
+
+const replaceStateJournalDataWithAPIData = function (formattedAPIData, type) {
+  if (type === "journal") {
+
+    state.name = formattedAPIData.name
+    state.description = formattedAPIData.description
+    state.tableHeads = formattedAPIData.tableHeads
+    state.currentTable = formattedAPIData.currentTable
+    state.tags = formattedAPIData.tags
+    state.id = formattedAPIData.id
+
+    tableFunc = formattedAPIData.tableFunc
+  }
+
+  if (type === "journalTables") {
+    state.tables.splice(0, state.tables.length)
+    state.tables.push(...formattedAPIData)
+  }
+}
+
+const requestJournalTableData = function (callBack, journalAPIResp, requestState) {
+  if (requestState) {
+    const queryObjJournalActiveTable = {
+      endpoint: API.APIEnum.JOURNAL_TABLES.LIST, //.GET(journalAPIResp[0].current_table),
+      token: token.value,
+      sec: null,
+      actionType: "getActiveTable",
+      // queryData
+      spinner: true,
+      alert: false,
+      type: "GET",
+      callBack: requestJournalTableCallback.bind(null, callBack),
+      callBackParam: true
+    }
+
+    API.queryAPI(queryObjJournalActiveTable)
+
+    const formattedJournalAPIResp = formatAPIResp(...journalAPIResp, "journal")
+
+    //replace state data for journal
+    replaceStateJournalDataWithAPIData(formattedJournalAPIResp, "journal")
+  }
+}
+
+const requestJournalData = function (callBack) {
+  const queryObjJournal = {
+    endpoint: API.APIEnum.JOURNAL.LIST,
+    token: token.value,
+    sec: null,
+    actionType: "getJournal",
+    spinner: true,
+    alert: true,
+    type: "GET",
+    callBack: requestJournalTableData.bind(null, callBack),
+    callBackParam: true
+  }
+  API.queryAPI(queryObjJournal)
+}
+
+export const init = function (controllerInit = undefined, loadController = false) {
+  if (!loadController) {
+
+    const dataLoadedFromDb = getPersistedData();
+    if (dataLoadedFromDb) {
+      state = dataLoadedFromDb
+      if (!token.value) loadToken()
+      const initCallBack = init.bind(null, controllerInit, true)
+      requestJournalData(initCallBack)
+
+    };
+
+    if (!dataLoadedFromDb) {
+      //create default tables
+      const initCallBack = init.bind(null, controllerInit, true)
+      requestJournalData(initCallBack)
+
+      //create ids for tags
+      state.tags.forEach((tag) => (tag.id = stringToHash(tag.text)));
+    }
+  }
+
+  if (loadController) {
+    //load the table persisted func
+    const funcState = getPersistedFunc()
+    if (funcState) tableFunc = funcState
+
+    //load the UI
+    controllerInit(false)
   }
 };
-init();
+// init();

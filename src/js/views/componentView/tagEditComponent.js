@@ -1,10 +1,10 @@
-import componentOptionsView from "./componentOptionsView.js";
+import { importComponentOptionsView } from "./componentOptionsView.js";
 import notificationComponent from "./notificationComponent.js";
 import cloneDeep from "../../../../node_modules/lodash-es/cloneDeep.js";
 import { svgMarkup } from "../../helpers.js";
 
 export default class TagEditComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click", "keyup"];
 
@@ -193,26 +193,27 @@ export default class TagEditComponent {
   }
 
   _deleteTag(tagId, el) {
-    const tagToDelete = this._state.tags.findIndex(
-      (tag) => String(tag.id) === String(tagId)
-    );
-    //delete the tag
-    //NOTE: this also updates the object in the model
-    this._state.tags.splice(tagToDelete, 1);
+    this._state.eventHandlers.tableItemControllers.controlDeleteTag(tagId)
     this._deleteElFromOptionContainer(el);
   }
 
   _updateElClassAndText(inputVal, colorVal, el, tag) {
+    debugger;
     el.forEach((elm) => {
       if (elm) {
         elm.classList.remove(tag.color);
         elm.classList.add(colorVal);
-        elm.textContent = inputVal.value.trim();
+        const elmDeleteIcon = elm.querySelector(".row-tag-icon")
+        elm.textContent = inputVal.value.trim()
+        if (elmDeleteIcon)
+          elm.insertAdjacentElement("beforeend", elmDeleteIcon);
+
       }
     });
   }
 
   updateTagAndNotifyCallers(deleteTag) {
+    debugger;
     const cls = this;
     let cloneTagBeforeUpdate = null;
 
@@ -295,15 +296,19 @@ export default class TagEditComponent {
         tagBeforeUpdate: cloneTagBeforeUpdate,
       };
 
-      this._state.callBack(
-        {
-          tableId: +this._state.currentTarget.dataset.id,
-          itemId: this._state.itemId,
-          updateObj,
-        }
-        //
-        //
-      );
+
+      this._state.eventHandlers.tableItemControllers.controlUpdateTag(updateObj, "tagsValue")
+      // this._state.callBack(
+      // {
+      // tableId: +this._state.currentTarget.dataset.id,
+      // itemId: this._state.itemId,
+      // updateObj,
+      // },
+      // null,
+      // null,
+      // "tagsValue" //added payload type
+
+      // );
     }
   }
 

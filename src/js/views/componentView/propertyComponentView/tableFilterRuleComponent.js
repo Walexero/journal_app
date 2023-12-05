@@ -1,5 +1,5 @@
-import componentOptionsView from "../componentOptionsView.js";
-import tableComponentView from "../../tableComponentView.js";
+import { importComponentOptionsView } from "../componentOptionsView.js";
+import { importTableComponentView } from "../../tableComponentView.js";
 import {
   PREPOSITIONS,
   FILTER_RULE_CONTAINER_TOP_DIFF,
@@ -7,13 +7,15 @@ import {
 import tableFilterPrepositionComponent from "./tableFilterPrepositionComponent.js";
 import tableFilterRuleOptionActionComponent from "./tableFilterRuleOptionActionComponent.js";
 import { componentGlobalState } from "../componentGlobalState.js";
-import signals from "../../../signals.js";
-import { svgMarkup } from "../../../helpers.js";
-
+import { importSignals } from "../../../signals.js";
+import { svgMarkup, capitalize } from "../../../helpers.js";
+import { TableFuncMixin } from "./tableFuncMixin.js";
 export default class TableFilterRuleComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click", "keyup"];
+  _signals = importSignals.object
+  _mixinActive = false
 
   constructor(state) {
     this._state = state;
@@ -65,9 +67,9 @@ export default class TableFilterRuleComponent {
     const removeFilterInput = ["Is empty", "Is not empty"];
     const filterInputMarkup =
       this._state?.removeFilterInput ||
-      removeFilterInput.find(
-        (filter) => filter.toLowerCase() === conditional?.toLowerCase()
-      )
+        removeFilterInput.find(
+          (filter) => filter.toLowerCase() === conditional?.toLowerCase()
+        )
         ? ""
         : this._generateFilterInput(inpVal, property);
 
@@ -78,21 +80,21 @@ export default class TableFilterRuleComponent {
             <div class="filter-input-text">${property}</div>
             <div class="filter-input-filter hover">
               <div class="filter-input-filter-text">
-                ${conditional.condition ?? conditional}
+                ${conditional.condition ?? capitalize(conditional)}
               </div>
               <div class="added-rule-icon">
                 ${svgMarkup(
-                  "filter-addeed-icon icon-sm nav-icon-active",
-                  "arrow-down"
-                )}
+      "filter-addeed-icon icon-sm nav-icon-active",
+      "arrow-down"
+    )}
               </div>
             </div>
             <div class="div-filler"></div>
             <div class="filter-input-option hover">
               ${svgMarkup(
-                "filter-added-icon icon-md nav-icon-active",
-                "ellipsis"
-              )}
+      "filter-added-icon icon-md nav-icon-active",
+      "ellipsis"
+    )}
             </div>
           </div>
           ${filterInputMarkup}
@@ -103,6 +105,8 @@ export default class TableFilterRuleComponent {
   }
 
   render() {
+    debugger;
+    if (!this._mixinActive) this._addMixin()
     const cls = this;
     this._state.conditional = PREPOSITIONS.filter(
       (preposition) =>
@@ -113,17 +117,19 @@ export default class TableFilterRuleComponent {
       this._state.property.text.toLowerCase() !== "tags"
         ? this._state.parentState.inputValue
         : componentGlobalState.filterTagList;
+
+    // const fnActive = this._checkTableFuncActive("filter")
+
+    // if (!fnActive) {
     this._state.markup = this._generateMarkup(
       this._state.parentState.conditional ??
-        this._state.conditional[0].condition,
+      this._state.conditional[0].condition,
       inputValue,
       this._state.property.text
     );
 
     //set parent state conditional value if it doesn't exist
-    if (!this._state.parentState.conditional)
-      this._state.parentState.conditional =
-        this._state.conditional[0].condition;
+    this._setConditional()
 
     //disables the click interceptor|Allows click to be detected in background
     this._state.disableOverlayInterceptor = true;
@@ -149,9 +155,15 @@ export default class TableFilterRuleComponent {
     this._events.forEach((ev) => {
       component.addEventListener(ev, this._handleEvents.bind(cls));
     });
+    // }
 
+    // if (fnActive) {
+    // set parent state conditional value if it doesn't exist
+    // this._setConditional()
+    // this._executeFilterRule() //add filter rule input
+    // }
     //register for events from tag Options
-    signals.subscribe({ component: this, source: ["tagadd"] });
+    this._signals.subscribe({ component: this, source: ["tagadd"] });
   }
 
   _insertFilterRuleInput() {
@@ -343,6 +355,8 @@ export default class TableFilterRuleComponent {
       if (!componentGlobalState.filterTagList)
         componentGlobalState.filterTagList = [];
 
+      console.log("the component glob filertaglist", componentGlobalState.filterTagList)
+
       componentGlobalState.filterTagList.push(tagObj);
 
       filterRuleBoxRuleAdded.textContent = componentGlobalState.filterTagList
@@ -386,9 +400,12 @@ export default class TableFilterRuleComponent {
       +currentTable.dataset.id
     );
 
+
+    const filterType = this._getPropertyType()
+
     this._state.filterMethod = this._queryConditional(
       conditionalValue.toLowerCase(),
-      this._getPropertyType(),
+      filterType,
       input
     );
 
@@ -399,14 +416,19 @@ export default class TableFilterRuleComponent {
     this._state.parentState.conditional = componentGlobalState.conditional =
       conditionalValue;
 
-    if (table.tableItems.length > 0) {
-      //filter the tablebody
-      const filteredTableItems = this._state.filterMethod(table.tableItems);
+    //persist the filter properties
+    this._state.eventHandlers.tableControllers.controlPersistTableFunc({ tableId: +currentTable.dataset.id, type: filterType, conditional: conditionalValue.toLowerCase(), value: input, tags: componentGlobalState.filterTagList, property: this._state.property.text.toLowerCase() }, "filter")
 
-      this._renderFilteredTableItems(filteredTableItems, true);
-    }
+    //filter and render the table
+    this._renderFiltered(table)
+    // if (table.tableItems.length > 0) {
+    //   //filter the tablebody
+    //   const filteredTableItems = this._state.filterMethod(table.tableItems);
 
-    if (!table.tableItems.length > 0) this._renderFilteredTableItems([], true);
+    //   this._renderFilteredTableItems(filteredTableItems, true);
+    // }
+
+    // if (!table.tableItems.length > 0) this._renderFilteredTableItems([], true);
   }
 
   _queryConditional(conditional, property, input) {
@@ -474,7 +496,7 @@ export default class TableFilterRuleComponent {
       filterMethod = (property, input, tableItems) =>
         tableItems.filter((items) =>
           items[property].find((tag) =>
-            input.find((filteredTag) => filteredTag.text === tag.text)
+            input.find((filteredTag) => Number(filteredTag.id) === tag)
           )
         );
     }
@@ -484,7 +506,7 @@ export default class TableFilterRuleComponent {
         tableItems.filter(
           (items) =>
             !items[property].find((tag) =>
-              input.find((filteredTag) => filteredTag.text === tag.text)
+              input.find((filteredTag) => Number(filteredTag.id) === tag)
             )
         );
     }
@@ -513,8 +535,25 @@ export default class TableFilterRuleComponent {
     }
   }
 
-  _renderFilteredTableItems(filteredItems, filterPlaceHolder = false) {
-    tableComponentView.renderTableItem(filteredItems, null, filterPlaceHolder);
+  _setConditional() {
+    if (!this._state.parentState.conditional)
+      this._state.parentState.conditional =
+        this._state.conditional[0].condition;
+  }
+
+  // _renderFilteredTableItems(filteredItems, filterPlaceHolder = false) {
+  // importTableComponentView.object.renderTableItem(filteredItems, null, filterPlaceHolder);
+  // }
+
+
+
+  _addMixin() {
+    const { constructor, ...prototypePatch } = Object.getOwnPropertyDescriptors(TableFuncMixin.prototype)
+
+    //add copied props to instance proto
+    Object.defineProperties(Object.getPrototypeOf(this).__proto__, prototypePatch)
+
+    this._mixinActive = true
   }
 
   remove(reset = true, parentRemove = false) {
@@ -539,7 +578,7 @@ export default class TableFilterRuleComponent {
     if (reset) this._renderFilteredTableItems(table.tableItems);
 
     //unsubscribe from signals
-    signals.unsubscribe(this);
+    this._signals.unsubscribe(this);
 
     //remove its components
     this._state.component.remove();

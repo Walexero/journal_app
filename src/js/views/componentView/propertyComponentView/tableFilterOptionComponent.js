@@ -1,15 +1,16 @@
 import propertyOptionsComponent from "./propertyOptionsComponent.js";
-import componentOptionsView from "../componentOptionsView.js";
+import { importComponentOptionsView } from "../componentOptionsView.js";
 import { TABLE_PROPERTIES } from "../../../config.js";
 import tableFilterRuleComponent from "./tableFilterRuleComponent.js";
-import signals from "../../../signals.js"; //allows signals to be sent to required component
+import { importSignals } from "../../../signals.js";//allows signals to be sent to required component
 import { componentGlobalState } from "../componentGlobalState.js";
 import containerSidePeekComponentView from "../../containerSidePeekComponentView.js";
-
+import { TableFuncMixin } from "./tableFuncMixin.js";
 export default class TableFilterOptionComponent extends propertyOptionsComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click", "keyup"];
+  _signals = importSignals.object
 
   constructor(state) {
     super();
@@ -17,33 +18,61 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
   }
 
   render() {
+    if (!this._mixinActive) this._addMixin()
     const cls = this;
     const propertiesToRender = TABLE_PROPERTIES.properties.filter(
       (property) => property.text.toLowerCase() !== "created"
     );
-    this._state.markup = this._generateMarkup(propertiesToRender, "filter");
 
-    const { overlay, overlayInterceptor, component } =
-      this._componentHandler._componentOverlay(this._state);
+    const fnActive = this._checkTableFuncActive("filter")
+    if (!fnActive) {
 
-    this._state = { ...this._state, overlay, overlayInterceptor, component };
+      this._state.markup = this._generateMarkup(propertiesToRender, "filter");
 
-    //overlay component handles its event
-    overlayInterceptor.addEventListener(
-      "click",
-      function (e) {
-        cls._componentHandler._componentRemover(cls._state);
-      },
-      { once: true }
-    );
+      const { overlay, overlayInterceptor, component } =
+        this._componentHandler._componentOverlay(this._state);
 
-    //component handles its event
-    this._events.forEach((ev) => {
-      component.addEventListener(ev, this._handleEvents.bind(cls));
-    });
+      this._state = { ...this._state, overlay, overlayInterceptor, component };
 
+      //overlay component handles its event
+      overlayInterceptor.addEventListener(
+        "click",
+        function (e) {
+          cls._componentHandler._componentRemover(cls._state);
+        },
+        { once: true }
+      );
+
+      //component handles its event
+      this._events.forEach((ev) => {
+        component.addEventListener(ev, this._handleEvents.bind(cls));
+      });
+    }
+    if (fnActive) {
+      //generate filter rule markup
+      this._handlePropertyOptionsOption(null, {
+        property: "filter",
+        state: this._state,
+        callBack: null,
+        props: TABLE_PROPERTIES,
+      })
+      const fnData = this._getFunc("filter")
+
+      this._state.conditional = fnData.conditional
+
+      const filterRuleBoxRuleAdded = document.querySelector(".filter-added-rule");
+      filterRuleBoxRuleAdded.textContent = this._setFilterRuleBoxAddedValue(filterRuleBoxRuleAdded)
+
+
+      this._state.filterMethod = componentGlobalState.filterMethod = tableFilterRuleComponent.prototype._queryConditional(this._state.conditional, fnData.type, fnData.value)
+
+      const table = this._state.eventHandlers.tableControllers.controlGetTable(fnData.tableId)
+
+      //filter and render the table
+      this._renderFiltered(table)
+    }
     //register the component as an observer
-    signals.subscribe({ component: this, source: ["tablebody", "content"] });
+    this._signals.subscribe({ component: this, source: ["tablebody", "content"] });
   }
 
   _handleEvents(e, signal = false) {
@@ -181,14 +210,13 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
 
   _handleFilterAddRuleBoxEvent(e) {
     //should be called by the options option to add the rulebox
-    const clickedProperty = e.target
-      .closest(".filter-added-rule-box")
-      .querySelector(".filter-added-rule-name");
+
+    const clickedProperty = this._getClickedProperty({ e, closest: ".filter-added-rule-box", selector: ".filter-added-rule-name" })
 
     const selectedProperty = TABLE_PROPERTIES.properties.find(
       (property) =>
         property.text.toLowerCase() ===
-        clickedProperty.textContent.replace(":", "").trim().toLowerCase()
+        clickedProperty
     );
 
     this._renderFilterRuleComponent(selectedProperty);
@@ -224,7 +252,7 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
 
     const updateAction = this._getConditionalAction(
       this._state.conditional?.toLowerCase() ??
-        componentGlobalState.conditional.toLowerCase()
+      componentGlobalState.conditional.toLowerCase()
     );
 
     const updateObj = {
@@ -238,8 +266,8 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
         updateAction === "createEmpty"
           ? []
           : componentGlobalState.filterTagList?.length > 0
-          ? [componentGlobalState.filterTagList[0]]
-          : [],
+            ? [componentGlobalState.filterTagList[0]]
+            : [],
       //conditional is gotten from the filter rule component
     };
 
@@ -310,6 +338,7 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
     };
 
     const component = new tableFilterRuleComponent(componentObj);
+    debugger;
     this._state.inputValue = this._state.inputValue ?? "";
     this._state.children.push(component);
     component.render();
@@ -353,17 +382,19 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
   remove() {
     const cls = this;
     const filterContainer = document.querySelector(".filter-action-container");
-    //TODO: can click on the overlay to remove
-    // this._state.component.remove();
-    // this._state.overlay.remove();
-    this._state.overlay.click();
+
+    this._state?.overlay?.click();
     this._events.forEach((ev) =>
-      this._state.component.removeEventListener(ev, cls._handleEvents, true)
+      this._state?.component?.removeEventListener(ev, cls._handleEvents, true)
     );
     filterContainer.remove();
 
+    const fnActive = this._checkTableFuncActive("filter")
+    if (fnActive) this._removeComponentTableFunc("filter")
+
+
     //unsubscribe from signal events
-    signals.unsubscribe(this);
+    this._signals.unsubscribe(this);
     componentGlobalState.filterMethod = null;
   }
 }

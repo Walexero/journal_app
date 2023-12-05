@@ -1,17 +1,20 @@
-import signals from "../signals";
+import { importSignals } from "../signals";
 import { valueEclipser, svgMarkup } from "../helpers";
 
 class JournalInfoComponentView {
   _parentElement = document.querySelector(".container-main-content .row");
   _eventHandlers;
   _events = ["keyup", "click"];
+  _timer;
+  //init import of signal
+  _signals = importSignals.object = importSignals.import()
 
   //signals to route sidebarclose event to sidebar component
   init(modelHandler) {
     modelHandler();
   }
 
-  pass() {}
+  pass() { }
 
   addComponentHandlers(handlers) {
     this._eventHandlers = handlers;
@@ -26,11 +29,11 @@ class JournalInfoComponentView {
 
   _handleEvents(e) {
     if (this._journalNameChangeMatchStrategy(e))
-      this._handleJournalNameChangeEvent(e);
+      this._handleJournalEventDelay(this._handleJournalNameChangeEvent.bind(this, e))//this._handleJournalNameChangeEvent(e);
     if (this._journalDescChangeMatchStrategy(e))
-      this._handleJournalDescChangeEvent(e);
+      this._handleJournalEventDelay(this._handleJournalDescChangeEvent.bind(this, e));//this._handleJournalDescChangeEvent(e);
 
-    signals.observe(e, "journalInfo");
+    this._signals.observe(e, "journalInfo");
   }
 
   _journalNameChangeMatchStrategy(e) {
@@ -49,6 +52,21 @@ class JournalInfoComponentView {
         e.target.closest(".content-description-input");
       return matchStrategy;
     }
+  }
+
+  _clearPreviousTimer() {
+    clearInterval(this._timer)
+    console.log("cleared... ")
+    this._timer = null
+  }
+
+  _handleJournalEventDelay(eventToTrigger) {
+    if (this._timer) this._clearPreviousTimer()
+    console.log("input update event")
+    this._timer = setTimeout(() => {
+      eventToTrigger()
+
+    }, 2 * 1000)
   }
 
   _handleJournalNameChangeEvent(e) {
@@ -85,9 +103,8 @@ class JournalInfoComponentView {
               ${svgMarkup("journal-icon icon", "journal-icon")}
             </div>
 
-            <div class="nav-options-text">${
-              journal.name.length > 0 ? journal.name : "Untitled"
-            }</div>
+            <div class="nav-options-text">${journal.name.length > 0 ? journal.name : "Untitled"
+      }</div>
         </div>
     `;
   }
@@ -130,4 +147,8 @@ class JournalInfoComponentView {
     this._parentElement.insertAdjacentHTML("afterbegin", contentInfoMarkup);
   }
 }
-export default new JournalInfoComponentView();
+// export const importJournalInfoComponentView = (() => new JournalInfoComponentView());
+
+export const importJournalInfoComponentView = {
+  import: (() => new JournalInfoComponentView()), object: null
+}

@@ -2,10 +2,10 @@ import tableViewOptionComponent from "./componentView/tableViewOptionComponent.j
 import tableHeadProcessorView from "./tableHeadProcessorView.js";
 import tableFilterOptionComponent from "./componentView/propertyComponentView/tableFilterOptionComponent.js";
 import tableSortOptionComponent from "./componentView/propertyComponentView/tableSortOptionComponent.js";
-import tableComponentView from "./tableComponentView.js";
-import sidebarComponentView from "./sidebarComponentView.js";
 import containerSidePeekComponentView from "./containerSidePeekComponentView.js";
 import { componentGlobalState } from "./componentView/componentGlobalState.js";
+import { importSideBarComponentView } from "./sidebarComponentView.js";
+import { importTableComponentView } from "./tableComponentView.js";
 
 class TableActionsProcessorView {
   _tableHeadProcessor = tableHeadProcessorView;
@@ -112,17 +112,20 @@ class TableActionsProcessorView {
     component.render();
   }
 
-  _handleAddTableJournal() {
-    this._eventHandlers.tableControllers.controlAddNewTable();
-
+  _updateSideBarList() {
     //update sidebar tables if open
     if (componentGlobalState.sideBarListActive) {
       const sidebarJournalContainer = document.querySelector(
         ".nav-options-journal"
       );
-      sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
+      importSideBarComponentView.object._renderSideBarList(null, sidebarJournalContainer);
     }
   }
+
+  _handleAddTableJournal() {
+    this._eventHandlers.tableControllers.controlAddNewTable(this._updateSideBarList.bind(this));
+  }
+
 
   _handleFilterOption(e, container) {
     const cls = this;
@@ -132,7 +135,6 @@ class TableActionsProcessorView {
     if (filterExists) return;
 
     //logic to prevent re-render of container
-    // this._optionsView._optionsActive = true;
 
     const { top, left, width, height } = container.getBoundingClientRect();
 
@@ -202,7 +204,7 @@ class TableActionsProcessorView {
         filteredSearchValue =
           componentGlobalState.filterMethod(filteredSearchValue);
 
-      tableComponentView.renderTableItem(
+      importTableComponentView.object.renderTableItem(
         filteredSearchValue,
         componentGlobalState.filterMethod
       );

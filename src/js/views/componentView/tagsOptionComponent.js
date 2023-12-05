@@ -1,36 +1,54 @@
-import componentOptionsView from "./componentOptionsView.js";
+// import componentOptionsView from "./componentOptionsView.js";
+import { importComponentOptionsView } from "./componentOptionsView.js";
 import tagEditComponent from "./tagEditComponent.js";
 import { componentGlobalState } from "./componentGlobalState.js";
-import signals from "../../signals.js";
+import { formatTagRequestBody } from "../../helpers.js";
+import { importSignals } from "../../signals.js";
 import { svgMarkup } from "../../helpers.js";
+import { API } from "../../api.js";
 
 export default class TagOptionComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click", "keyup"];
+  _signals = importSignals.object
   _inputCounter = 0;
 
   constructor(state) {
     this._state = state;
   }
 
-  pass() {}
+  pass() { }
 
-  _createTagForCurrentItem(tag) {
+  _createAPITag(payload, refreshCallBack) {
+    this._state.eventHandlers.tableItemControllers.controlAddTag(payload, refreshCallBack)
+  }
+
+  _createTagForCurrentItem(tag, refreshCallBack) {
     const tagClass = Array.from(tag.classList).find((cls) =>
       cls.startsWith("color")
     );
-
+    const tagColor = this._state.tagsColors.find(color => color.color_value === tagClass.trim()
+    )
     const tagText = tag.textContent.trim();
     const tagObj = {
       color: tagClass,
       text: tagText,
       id: tag.dataset.id,
+      tagColor
     };
+
+
     const createTagMarkup = this._generateTagAddMarkup(tagObj, true);
+    if (!tagObj.id) {
+      const tagAPIRequestPayload = formatTagRequestBody(tagObj)
+
+      this._createAPITag(tagAPIRequestPayload, refreshCallBack.bind(null, createTagMarkup))
+    }
 
     return { createTagMarkup, tagObj };
   }
+
 
   _getRandomColor() {
     const randomColor = Math.trunc(Math.random() * 9) + 1;
@@ -39,20 +57,18 @@ export default class TagOptionComponent {
 
   _generateTagAddMarkup(tag, addXmark = false) {
     return `
-      <div class=" ${addXmark ? "tag-tag" : "row-tag-tag"} ${
-      tag.color
-    }" data-id=${tag.id}>
+      <div class=" ${addXmark ? "tag-tag" : "row-tag-tag"} ${tag.color
+      }" data-id=${tag.id}>
         ${tag.text}
 
-        ${
-          addXmark
-            ? `
+        ${addXmark
+        ? `
           <div class="row-tag-icon">
             ${svgMarkup("tags-items-icon", "xmark")}
           </div>
           `
-            : ""
-        }
+        : ""
+      }
       </div>
     `;
   }
@@ -87,11 +103,10 @@ export default class TagOptionComponent {
           <div class="row-option-tag">
             ${this._generateTagAddMarkup(tag)}
           </div>
-          ${
-            this._state.disableOptionsNudge
-              ? ""
-              : this._generateTagsOptionsNudge()
-          }
+          ${this._state.disableOptionsNudge
+          ? ""
+          : this._generateTagsOptionsNudge()
+        }
         </div>
       `;
     });
@@ -120,12 +135,20 @@ export default class TagOptionComponent {
     //restrict the item tags markup to only when the itemId is provided
     let tagItemsMarkup = "";
     if (tagItems) {
-      tagItemsMarkup =
-        tagItems.length > 0
-          ? tagItems
-              .map((tagItem) => this._generateTagAddMarkup(tagItem, true))
-              .join("")
-          : "";
+      const tagItemsExists = tagItems.length > 0
+      if (tagItemsExists) {
+        tagItemsMarkup = tagItems.map((tag, i) => {
+          const tagProperty = componentGlobalState.tags.find(modelTag => modelTag.id === tag)
+          if (!tagProperty || tagProperty === -1) {
+            tagItems.splice(i, 1)
+            return ""
+          }
+
+          return this._generateTagAddMarkup(tagProperty, true)
+
+        }).join("")
+      }
+      if (!tagItemsExists) tagItemsMarkup = ""
     }
 
     const tagInputMarkup = this._state.disableInput
@@ -149,6 +172,7 @@ export default class TagOptionComponent {
 
   render() {
     const cls = this;
+    debugger;
     this._state.markup = this._generateMarkup(
       this._state.tagItems,
       this._state.itemId
@@ -240,7 +264,7 @@ export default class TagOptionComponent {
             this._generateTagAddMarkup.bind(this);
 
           //observe for add events to route to filter view if active
-          signals.observe(e, "tagadd");
+          this._signals.observe(e, "tagadd");
         }
 
         //if tags not active somewhere else, deliver to its handler
@@ -318,7 +342,7 @@ export default class TagOptionComponent {
     const tagsAvailableContainer =
       e.currentTarget.querySelector(".tags-available");
     const inputContainer = e.currentTarget.querySelector(".tag-input-input");
-
+    debugger;
     //guard clause against empty input val
     const inputValExists = inputContainer?.value.trim().length > 0;
     if (!inputValExists) return;
@@ -327,12 +351,16 @@ export default class TagOptionComponent {
     inputContainer.value = "";
     // e.target.closest(".tag-tag")
     const tagContainer = e.currentTarget.querySelector(".tag-create .tag-tag");
+
     const { createTagMarkup: createdTagItem, tagObj } =
-      this._createTagForCurrentItem(tagContainer);
-    this._tagItemAdder(e, createdTagItem);
+      this._createTagForCurrentItem(tagContainer, this._tagsOptionsMarkupReRender.bind(this, tagsAvailableContainer));
+  }
+
+  _tagsOptionsMarkupReRender(tagsAvailableContainer, createdTagItem) {
+    this._tagItemAdder(createdTagItem);
 
     //update the _tags obj with the newly created tag
-    this._state.tags.push(tagObj);
+    // this._state.tags.push(tagObj);
 
     //render tags
     const tagsMarkup = this._generateTagsOptions(this._state.tags);
@@ -352,8 +380,8 @@ export default class TagOptionComponent {
     this._inputCounter > 0
       ? this.pass()
       : inputContainer.value.length > 0
-      ? (this._inputCounter = inputContainer.value.length + 1)
-      : this.pass();
+        ? (this._inputCounter = inputContainer.value.length + 1)
+        : this.pass();
     this._inputCounter--;
 
     //protect against key delete deleting tags if input has text values
@@ -376,13 +404,16 @@ export default class TagOptionComponent {
 
     const tagItemsContainer = document.querySelector(".tags-items");
 
+    debugger;
     const addedTagItems = Array.from(tagItemsContainer.children)
       .map((tagItem) => tagItem.textContent.trim())
       .filter((tagItem) => tagItem.length > 0);
 
-    const { createTagMarkup: createdItemTag, tagObj } =
-      this._createTagForCurrentItem(tagToAdd);
+    // const { createTagMarkup: createdItemTag, tagObj } =
+    // this._createTagForCurrentItem(tagToAdd);
 
+    const { createTagMarkup: createdTagItem, tagObj } =
+      this._createTagForCurrentItem(tagToAdd, this._tagsOptionsMarkupReRender.bind(this, tagsAvailableContainer));
     //check if tag in addedTags
     const duplicateCheck =
       addedTagItems.length > 0 &&
@@ -394,7 +425,7 @@ export default class TagOptionComponent {
     if (!duplicateCheck) {
       inputContainer.value = "";
 
-      this._tagItemAdder(e, createdItemTag);
+      this._tagItemAdder(createdTagItem);
       const tagsMarkup = this._generateTagsOptions(this._state.tags);
       tagsAvailableContainer.innerHTML = "";
       tagsAvailableContainer.insertAdjacentHTML("beforeend", tagsMarkup);
@@ -430,6 +461,7 @@ export default class TagOptionComponent {
       width,
       height,
       tags: state.tags,
+      eventHandlers: this._state.eventHandlers,
       tagsColors: state.tagsColors,
       table: state.table,
       itemId: +currentTarget.dataset.id,
@@ -441,15 +473,15 @@ export default class TagOptionComponent {
     component.render();
   }
 
-  _tagItemAdder(e, createdItemTag) {
-    const tagsAddContainer = e.currentTarget.querySelector(".tags-items");
+  _tagItemAdder(createdItemTag) {
+    const tagsAddContainer = document.querySelector(".tags-items");
     //clone input
-    const tagAddInputClone = e.currentTarget
+    const tagAddInputClone = document
       .querySelector(".tag-input-input")
       .cloneNode(true);
 
     //remove input
-    e.currentTarget.querySelector(".tag-input-input").remove();
+    document.querySelector(".tag-input-input").remove();
 
     //add tag and cloned input
     tagsAddContainer.insertAdjacentHTML("beforeend", createdItemTag);
@@ -463,7 +495,8 @@ export default class TagOptionComponent {
       updateModel = this._state.updateModel?.bind(
         null,
         componentGlobalState.filterMethod,
-        componentGlobalState.sortMethod
+        componentGlobalState.sortMethod,
+        this._state.payloadType ?? "tags"
       );
       this._state.updateModel = updateModel;
     }
@@ -472,7 +505,18 @@ export default class TagOptionComponent {
       updateModel = this._state.updateModel?.bind(
         null,
         componentGlobalState.filterMethod,
-        componentGlobalState.sortMethod
+        componentGlobalState.sortMethod,
+        this._state.payloadType ?? "tags"
+      );
+      this._state.updateModel = updateModel;
+    }
+
+    if (!componentGlobalState.sortMethod && !componentGlobalState.filterMethod) {
+      updateModel = this._state.updateModel?.bind(
+        null,
+        componentGlobalState.filterMethod,
+        componentGlobalState.sortMethod,
+        this._state.payloadType ?? "tags"
       );
       this._state.updateModel = updateModel;
     }

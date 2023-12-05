@@ -1,9 +1,9 @@
 import tableBodyProcessorView from "../views/tableBodyProcessorView";
-import signals from "../signals";
-
+import { importSignals } from "../signals";
 class TableBodyContainerListener {
   _parentElement;
   _events = ["mouseover", "click"];
+  _signals = importSignals.object ? importSignals.object : (importSignals.object = importSignals.import())
 
   activateListener(element) {
     const cls = this;
@@ -19,15 +19,15 @@ class TableBodyContainerListener {
   _registerSubscribers(e) {
     tableBodyProcessorView._handleDelegatedEvents(e);
 
-    if (signals.eventsToListenFor().find((events) => events === e.type))
-      signals.observe(e, "tablebody");
+    if (this._signals.eventsToListenFor().find((events) => events === e.type))
+      this._signals.observe(e, "tablebody");
   }
 
-  _subscribers() {}
+  _subscribers() { }
 
   activate(element) {
     this.activateListener(element);
   }
 }
 
-export default new TableBodyContainerListener();
+export const importTableBodyContainerListener = { import: (() => new TableBodyContainerListener()), object: null };

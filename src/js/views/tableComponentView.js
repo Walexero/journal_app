@@ -8,17 +8,19 @@ import {
   swapItemIndexInPlace,
   svgMarkup,
 } from "../helpers.js";
+import { importSignals } from "../signals.js";
+import { componentGlobalState } from "./componentView/componentGlobalState.js";
 import tableHeadProcessorView from "./tableHeadProcessorView.js";
+
 import tableActionsProcessorView from "./tableActionsProcessorView.js";
 import tableBodyProcessorView from "./tableBodyProcessorView.js";
-import signals from "../signals.js"; //passes events from one component to another
-import { componentGlobalState } from "./componentView/componentGlobalState.js";
 
 class TableComponentView {
   _parentElement = document.querySelector(".content-container");
   _tableElement = document.querySelector(".main-table");
   _tableHeadElement = document.querySelector(".main-table-head");
   _tableBodyElement = document.querySelector(`[role="tablerow"]`);
+  _signals = importSignals.object ? importSignals.object : (importSignals.object = importSignals.import())
   _tableBodyItemElement;
   _tableViewOptionsActive = false;
   _currentTable;
@@ -28,11 +30,14 @@ class TableComponentView {
   _tableActionsEventProcessor = tableActionsProcessorView;
   _tableBodyEventProcessor = tableBodyProcessorView;
   _bodyEventListenerActive = false;
+  _token; //api token
 
   init(tableHandler, currentTableHandler, tables, currentTable) {
+
     //add handleer to set currentTable in the model
     this._currentTableHandler = currentTableHandler;
     tableHandler();
+    console.log(this._signals, "tablecomponentvie")
 
     this._currentTable = currentTable;
 
@@ -113,8 +118,8 @@ class TableComponentView {
     cls._tableBodyEventProcessor.matchEvent(e);
 
     //register the event as a signal as well
-    if (signals.eventsToListenFor().find((events) => e.type === events))
-      signals.observe(e, "content");
+    if (this._signals.eventsToListenFor().find((events) => e.type === events))
+      this._signals.observe(e, "content");
   }
 
   addBodyDelegationEventListener() {
@@ -138,7 +143,25 @@ class TableComponentView {
     this._tableHeadElement.insertAdjacentHTML("afterbegin", markup);
   }
 
-  renderTableItem(tableItems, filter, filterPlaceHolder = false) {
+  addActiveTableFunc(tableFunc) {
+    this._clearTableFunc()
+    this._activateTableFunc(tableFunc)
+  }
+
+  _clearTableFunc() {
+    document.querySelector(".filter-action-container")?.remove()
+    document.querySelector(".sort-action-container")?.remove()
+  }
+
+  _activateTableFunc(activeTableFunc) {
+    const filter = activeTableFunc?.filter > 0
+    const sort = activeTableFunc?.sort > 0
+
+    if (filter) document.querySelector(".table-filter").click()
+    if (sort) document.querySelector(".table-sort").click()
+  }
+
+  renderTableItem(tableItems, filter, filterPlaceHolder = false, clearTableFunc = undefined, activeTableFunc = undefined) {
     const itemsExists = tableItems.length > 0;
     this._tableBodyItemElement.innerHTML = "";
 
@@ -153,6 +176,11 @@ class TableComponentView {
         "beforeend",
         this._generateBodyMarkup(true, filterPlaceHolder)
       );
+
+    if (clearTableFunc) this._clearTableFunc()
+
+    //apply filters to currently set tables if it exists
+    if (activeTableFunc) this._activateTableFunc(activeTableFunc)
   }
 
   updateTableItem(currentTable, tableItems, itemId, callBack = undefined) {
@@ -183,7 +211,7 @@ class TableComponentView {
   }
 
   listen() {
-    signals.activateListener("tablebody", this._tableBodyItemElement);
+    this._signals.activateListener("tablebody", this._tableBodyItemElement);
   }
 
   _generateMarkup(journals, currentTableId) {
@@ -230,9 +258,8 @@ class TableComponentView {
           ${journalsMarkup}
   
           <div class="table-column-options table-row">
-          <div class="table-row-text">${
-            journals.length - TABLE_HEAD_LIMIT
-          } more...</div>
+          <div class="table-row-text">${journals.length - TABLE_HEAD_LIMIT
+        } more...</div>
           </div>
         </div>
       `;
@@ -243,14 +270,12 @@ class TableComponentView {
     return `
       <div role="rowgroup" class="rowfill">
         <div role="row">
-            <div class="${
-              placeholder ? "row-adder-filter" : "row-adder-content"
-            }">
-              <div class="row-adder-text color-dull">${
-                placeholder
-                  ? TABLE_ROW_FILTER_PLACEHOLDER
-                  : TABLE_ROW_PLACEHOLDER
-              }</div>
+            <div class="${placeholder ? "row-adder-filter" : "row-adder-content"
+      }">
+              <div class="row-adder-text color-dull">${placeholder
+        ? TABLE_ROW_FILTER_PLACEHOLDER
+        : TABLE_ROW_PLACEHOLDER
+      }</div>
             </div>
         </div>
       </div>
@@ -319,4 +344,8 @@ class TableComponentView {
   }
 }
 
-export default new TableComponentView();
+// export const importTableComponentView = (() => new TableComponentView());
+export const importTableComponentView = {
+  import: (() => new TableComponentView()),
+  object: null
+};

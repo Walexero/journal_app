@@ -5,10 +5,12 @@ import { componentGlobalState } from "./componentView/componentGlobalState.js";
 import containerSidePeekComponentView from "./containerSidePeekComponentView.js";
 import alertComponent from "./componentView/alertComponent.js";
 import { COPY_ALERT } from "../config.js";
-import componentOptionsView from "./componentView/componentOptionsView.js";
-
+import {
+  importComponentOptionsView
+} from "./componentView/componentOptionsView.js";
 class TableBodyProcessorView {
   _parentElement = document.querySelector(`[role="tablebody"]`);
+  _componentHandler = importComponentOptionsView.cls
   _eventHandlers;
   _textInputActive = false;
   _currentTable;
@@ -18,6 +20,7 @@ class TableBodyProcessorView {
   _tagsColor;
   _checkedInputs = [];
   _currentHoverId = null;
+  _token;
 
   addHandlers(handlers, currentTableSetter) {
     this._eventHandlers = handlers; //.tableItemControllers;
@@ -33,11 +36,12 @@ class TableBodyProcessorView {
     this._textInputActive = false;
   }
 
-  callUpdateItemHandler(updateObj, filter = undefined, sort = undefined) {
+  callUpdateItemHandler(updateObj, filter = undefined, sort = undefined, payloadType = undefined) {
     this._eventHandlers.tableItemControllers.controlUpdateTableItem(
       updateObj,
       filter,
-      sort
+      sort,
+      payloadType
     );
   }
 
@@ -408,7 +412,7 @@ class TableBodyProcessorView {
   _handleHoverActionAddEvent(e) {
     const targetContainer = e.target.closest(
       ".row-actions-handler"
-    ).previousElementSibling;
+    )
 
     this._eventHandlers.tableItemControllers.controlAddTableItem(
       null,
@@ -449,10 +453,11 @@ class TableBodyProcessorView {
     };
 
     //check if filterMethod exists
-    const filter = componentGlobalState.filterMethod ?? null;
+    // const filter = componentGlobalState.filterMethod ?? null;
     this._eventHandlers.tableItemControllers.controlDeleteTableItem(
       updateObj,
-      filter
+      componentGlobalState.filterMethod,
+      "deleteTableItems"
     );
 
     //remove checkbox options container
@@ -475,7 +480,9 @@ class TableBodyProcessorView {
     };
 
     this._eventHandlers.tableItemControllers.controlDuplicateTableItem(
-      updateObj
+      updateObj,
+      componentGlobalState.filterMethod,
+      componentGlobalState.sortMethod
     );
   }
 
@@ -519,10 +526,12 @@ class TableBodyProcessorView {
       updateModel: cls.callUpdateItemHandler.bind(cls, updateObj),
       subComponentCallback: cls.callUpdateItemHandler.bind(cls),
       updateTag: true,
+      eventHandlers: this._eventHandlers,
       updateObj: updateObj,
       tagItems: getTableItemWithMaxTags.itemTags,
       tags: this._tags,
       tagsColors: this._tagsColor,
+      payloadType: "selectTags"
     };
 
     const component = new tagOptionComponent(componentObj);
@@ -578,6 +587,7 @@ class TableBodyProcessorView {
       updateModel: cls.callUpdateItemHandler.bind(cls, updateObj),
       subComponentCallback: cls.callUpdateItemHandler.bind(cls),
       updateTag: true,
+      eventHandlers: this._eventHandlers,
       updateObj: updateObj,
       tagItems: getTableItemData.itemTags,
       itemId: itemId,
@@ -599,12 +609,15 @@ class TableBodyProcessorView {
     const tableItemContainer = e.target.closest(`[role="tablecontent"]`);
     const tableContentContainer =
       tableItemContainer.querySelector(`[role="rowgroup"]`);
+    const tableItemRowId = tableContentContainer.children[0].dataset.id
 
     const sliderTriggerEl = tableContentContainer.querySelector(
       ".row-actions-render"
     );
 
     sliderTriggerEl.classList.remove("hidden");
+
+    hoverEl.dataset.id = tableItemRowId;
 
     tableContentContainer.insertAdjacentElement("beforeend", hoverEl);
 
@@ -709,14 +722,12 @@ class TableBodyProcessorView {
             </label>
           </div>
           <div role="rowgroup">
-            <div role="row" class="row-actions-handler-container" data-id="${
-              item.id
-            }">
+            <div role="row" class="row-actions-handler-container" data-id="${item.id
+        }">
               <span role="cell" class="table-item table-item-name">
                 <div class="row-actions-segment">
-                    <div class="name-actions-text row-actions-text highlight-column">${
-                      item.itemTitle
-                    }</div>
+                    <div class="name-actions-text row-actions-text highlight-column">${item.itemTitle
+        }</div>
                     <div class="row-actions-render hidden">
                       <div class="row-actions-render-icon">
                         ${svgMarkup("row-icon", "arrow-open")}
@@ -768,10 +779,15 @@ class TableBodyProcessorView {
 
     //get item tags markup
     if (tagsExist)
-      tags.forEach((tag) => {
-        itemTagsMarkup += `
-          <div class="tag-tag ${tag.color}">
-            ${tag.text}
+      tags.forEach((tag, i) => {
+        const tagProperty = this._tags.find(modelTag => modelTag.id === tag) //tag is an id
+        if (!tagProperty || tagProperty === -1) {
+          tags.splice(i, 1)
+        }
+        if (tagProperty || tagProperty > 0)
+          itemTagsMarkup += `
+          <div class="tag-tag ${tagProperty.color}">
+            ${tagProperty.text}
           </div>
       `;
       });
@@ -806,9 +822,9 @@ class TableBodyProcessorView {
     `;
   }
 
-  _generateHoverMarkupAndCreateElement() {
+  _generateHoverMarkupAndCreateElement(rowId) {
     const hoverMarkup = `
-        <div class="row-actions-handler">
+        <div class="row-actions-handler" data-id="${rowId}">
           <div class="row-actions-icon row-add-icon hover">
             ${svgMarkup("row-icon", "plus")}
           </div>
@@ -818,7 +834,7 @@ class TableBodyProcessorView {
         </div>
     `;
     const hoverEl =
-      componentOptionsView._convertHTMLStringToElement(hoverMarkup);
+      this._componentHandler.createHTMLElement(hoverMarkup);
     return hoverEl;
   }
 }

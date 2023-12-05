@@ -1,6 +1,10 @@
 import { svgMarkup } from "../../../helpers.js";
+import { TableFuncMixin } from "./tableFuncMixin.js";
+
 
 export default class PropertyOptionsComponent {
+  _mixinActive = false
+
   _generateOptions(properties, propertyComponent) {
     let propertiesMarkup = "";
 
@@ -29,15 +33,13 @@ export default class PropertyOptionsComponent {
                 <div class="property-rule-icon">
                   ${svgMarkup("property-added-rule-icon", `${property.icon}`)}
                 </div>
-                <div class="${propertyComponent}-added-rule-name property-added-rule-name">${
-                  property.text
-                }:</div>
+                <div class="${propertyComponent}-added-rule-name property-added-rule-name">${property.text
+      }:</div>
               </div>
-              ${
-                propertyComponent === "filter"
-                  ? this._generateAddedRuleMarkup(propertyComponent)
-                  : ""
-              }
+              ${propertyComponent === "filter"
+        ? this._generateAddedRuleMarkup(propertyComponent)
+        : ""
+      }
               <div class="added-rule-icon">
                 ${svgMarkup("rule-icon icon-sm", "arrow-down")}
               </div>
@@ -113,17 +115,23 @@ export default class PropertyOptionsComponent {
   }
 
   _handlePropertyOptionsOption(e, options) {
-    const clickedProperty = e.target.closest(".action-property-content");
+    const clickedProperty = this._getClickedProperty({ e, closest: ".action-property-content" }, options.property)
+
     const propertyContainer = document.querySelector(`.property-actions`);
     const selectedProperty = options.props.properties.find(
       (property) =>
         property.text.toLowerCase() ===
-        clickedProperty.textContent.replace(":", "").trim().toLowerCase()
+        clickedProperty
     );
     const propertyOptionsOptionMarkup = this._generateRuleMarkup(
       selectedProperty,
       options.property
     );
+
+    if (options.property === "sort") {
+      //prevent multiple create of ruleboxes for sort component
+      document.querySelector(`.sort-action-container`)?.remove()
+    }
 
     propertyContainer.insertAdjacentHTML(
       options.property === "sort" ? "afterbegin" : "beforeend",
@@ -131,7 +139,7 @@ export default class PropertyOptionsComponent {
     );
 
     options.state.property = selectedProperty;
-    options.callBack(selectedProperty, options.state);
+    if (options.callBack) options.callBack(selectedProperty, options.state);
   }
 
   _handleRemoveRuleBoxEvent(e) {
@@ -141,5 +149,45 @@ export default class PropertyOptionsComponent {
     }
 
     if (this._state.ruleBoxActive) this._state.ruleBoxActive = false; //sets the component active state back to not just rendered
+  }
+
+  _getClickedProperty(eProps = undefined, type = undefined) {
+    let clickedProperty;
+
+    if (eProps.e) {
+      if (eProps.closest && eProps.selector)
+        clickedProperty = eProps.e.target.closest(eProps.closest).querySelector(eProps.selector)
+
+      if (eProps.closest && !eProps.selector)
+        clickedProperty = eProps.e.target.closest(eProps.closest)
+
+      return clickedProperty.textContent.replace(":", "").trim().toLowerCase()
+    }
+    if (!eProps || !eProps.e) {
+      const currentTable = this._getCurrentTable()
+      const persistedFilter = this._state.eventHandlers.tableControllers.controlGetPersistedTableFunc(currentTable.id)[type]
+      // return persistedFilter.type === "itemTitle" ? "name" : "tags"
+      return this._clickedPropertyType(persistedFilter.type, type)
+    }
+  }
+
+  _clickedPropertyType(typeValue, propertyType) {
+    if (propertyType === "filter") return typeValue === "itemTitle" ? "name" : "tags"
+    if (propertyType === "sort") return typeValue.toLowerCase() === "name" ? "name" : "tags"
+  }
+
+  _getFunc(fnType) {
+    const currentTable = this._getCurrentTable()
+    return this._state.eventHandlers.tableControllers.controlGetPersistedTableFunc(currentTable.id)[fnType]
+  }
+
+  _addMixin() {
+    //copy mixin props
+    const { constructor, ...prototypePatch } = Object.getOwnPropertyDescriptors(TableFuncMixin.prototype)
+
+    //add copied props to instance proto
+    Object.defineProperties(Object.getPrototypeOf(this).__proto__, prototypePatch)
+
+    this._mixinActive = true
   }
 }

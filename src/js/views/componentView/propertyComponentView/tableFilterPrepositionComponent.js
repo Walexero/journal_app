@@ -1,8 +1,9 @@
-import componentOptionsView from "../componentOptionsView.js";
+import { importComponentOptionsView } from "../componentOptionsView.js";
 import { componentGlobalState } from "../componentGlobalState.js";
+import { TableFuncMixin } from "./tableFuncMixin.js";
 
 export default class TableFilterPrepositionComponent {
-  _componentHandler = componentOptionsView;
+  _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click"];
 
@@ -42,6 +43,7 @@ export default class TableFilterPrepositionComponent {
 
   render() {
     const cls = this;
+
     this._state.markup = this._generateMarkup(this._state.conditional);
 
     const { overlay, overlayInterceptor, component } =
@@ -62,6 +64,7 @@ export default class TableFilterPrepositionComponent {
     this._events.forEach((ev) => {
       component.addEventListener(ev, this._handleEvents.bind(cls));
     });
+
   }
 
   _handleEvents(e) {
@@ -96,6 +99,8 @@ export default class TableFilterPrepositionComponent {
       (prep) => prep.toLowerCase() === selectPrepositionValue.toLowerCase()
     );
 
+    console.log("the filter tag list comp glob", componentGlobalState.filterTagList)
+
     const filterInputToExecute =
       this._state.property.text.toLowerCase() === "tags"
         ? componentGlobalState.filterTagList
@@ -112,11 +117,17 @@ export default class TableFilterPrepositionComponent {
     }
 
     if (removeFilterInput && filterRuleInput) {
+      //clear the filteredTagList from the global component state
+      if (componentGlobalState?.filterTagList) componentGlobalState.filterTagList.length = 0;
+
       filterRuleInput.remove();
       this._state.parent._handleEvents(e, null, true);
     }
 
     if (removeFilterInput && !filterRuleInput) {
+      //clear the filteredTagList from the global component state
+      if (componentGlobalState?.filterTagList) componentGlobalState.filterTagList.length = 0;
+
       // this._state.executeFilter(null);
       this._state.parent._handleEvents(e, null, true);
     }

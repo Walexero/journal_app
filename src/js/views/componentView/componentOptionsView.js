@@ -2,11 +2,15 @@ class ComponentOptionsView {
   _overlayCount = 0;
   _overlayContainer = document.querySelector(".overlay-container");
 
-  _convertHTMLStringToElement(html) {
+  static _convertHTMLStringToElement(html) {
     const template = document.createElement("template");
     html = html.trim();
     template.innerHTML = html;
     return template.content.firstChild;
+  }
+
+  static createHTMLElement(html) {
+    return ComponentOptionsView._convertHTMLStringToElement(html)
   }
 
   _componentRender(componentObj) {
@@ -48,8 +52,7 @@ class ComponentOptionsView {
       .querySelector(".overlay-content-fill")
       .setAttribute(
         "style",
-        `width: ${componentObj.width + "px"}; height: ${
-          overlayCount > 1 ? componentObj.height : "0px"
+        `width: ${componentObj.width + "px"}; height: ${overlayCount > 1 ? componentObj.height : "0px"
         }`
       );
 
@@ -75,7 +78,8 @@ class ComponentOptionsView {
 
     const overlayMarkup = this._generateOverlayMarkup(componentObj.markup);
 
-    const overlay = this._convertHTMLStringToElement(overlayMarkup);
+    //FIXME: check to make sure implementation reesolves
+    const overlay = this.constructor._convertHTMLStringToElement(overlayMarkup);
 
     //set the positioning of
     this._overlayCount === 1
@@ -92,7 +96,7 @@ class ComponentOptionsView {
         this._overlayCount,
         disableOverlayInterceptor
       );
-
+    console.log("this overlaycontaineer", this)
     this._overlayContainer.insertAdjacentElement("beforeend", overlay);
 
     const component = overlay.querySelector(componentObj.selector);
@@ -103,6 +107,7 @@ class ComponentOptionsView {
   }
 
   _componentRemover(componentObj, component = undefined, mutate = true) {
+    debugger
     if (componentObj.componentInput) {
       componentObj.component.textContent =
         componentObj.componentInput.textContent;
@@ -136,10 +141,10 @@ class ComponentOptionsView {
       }
 
       //logic to rerender the side-peek content
-      if (componentObj.refreshCaller) {
-        const updatedData = componentObj.getUpdatedData();
-        componentObj.refreshCaller(updatedData);
-      }
+      // if (componentObj.refreshCaller) {
+      // const updatedData = componentObj.getUpdatedData();
+      // componentObj.refreshCaller(updatedData);
+      // }
     }
 
     //reset overlayCount relative to the overlays on page
@@ -175,4 +180,11 @@ class ComponentOptionsView {
   }
 }
 
-export default new ComponentOptionsView();
+
+// export default new ComponentOptionsView();
+
+export const importComponentOptionsView = {
+  cls: ComponentOptionsView,
+  import: (() => new ComponentOptionsView()),
+  object: null
+}
