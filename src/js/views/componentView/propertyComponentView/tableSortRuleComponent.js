@@ -302,7 +302,7 @@ export default class TableSortRuleComponent {
 
   remove(reset = true) {
     const cls = this;
-    this._state.overlay.remove();
+    this._state?.overlay?.remove();
     this._events.forEach((ev) =>
       this._state.component.removeEventListener(ev, cls._handleEvents, true)
     );

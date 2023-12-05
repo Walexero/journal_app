@@ -20,8 +20,15 @@ export class TableFuncMixin {
     _setFilterRuleBoxAddedValue(el) {
         const filterValue = this._getFunc("filter").value
         const filterValueExists = filterValue?.length > 0
-
-        if (filterValueExists) return filterValue
+        const filterType = this._getFunc("filter").type
+        const filterTags = this._getFunc("filter").tags
+        if (filterValueExists) {
+            if (filterType === "itemTags" || filterType.toLowerCase() === "tags") {
+                const textValue = filterTags.map(tag => tag.text).join(",")
+                return textValue
+            }
+            return filterValue
+        }
         if (!filterValueExists) {
             const conditionalsAllowedAsValue = ["Is empty", "Is not empty"]
             const conditionalValue = this._getFunc("filter").conditional
