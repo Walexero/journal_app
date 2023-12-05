@@ -276,7 +276,8 @@ export const formatAPIResp = function (APIResp, type) {
       "description": APIResp.journal_description,
       "tableHeads": APIResp.journal_tables,
       "currentTable": APIResp.current_table,
-      "tags": formatAPISub(APIResp.tags, "apiTags")
+      "tags": formatAPISub(APIResp.tags, "apiTags"),
+      "tableFunc": APIResp.journal_table_func
     }
   }
 

@@ -683,6 +683,8 @@ const replaceStateJournalDataWithAPIData = function (formattedAPIData, type) {
     state.currentTable = formattedAPIData.currentTable
     state.tags = formattedAPIData.tags
     state.id = formattedAPIData.id
+
+    tableFunc = formattedAPIData.tableFunc
   }
 
   if (type === "journalTables") {
@@ -721,7 +723,6 @@ const requestJournalData = function (callBack) {
     token: token.value,
     sec: null,
     actionType: "getJournal",
-    // queryData
     spinner: true,
     alert: true,
     type: "GET",
@@ -730,10 +731,6 @@ const requestJournalData = function (callBack) {
   }
   API.queryAPI(queryObjJournal)
 }
-
-// const loadAPIData = function () {
-// 
-// }
 
 export const init = function (controllerInit = undefined, loadController = false) {
   if (!loadController) {
@@ -751,9 +748,6 @@ export const init = function (controllerInit = undefined, loadController = false
       //create default tables
       const initCallBack = init.bind(null, controllerInit, true)
       requestJournalData(initCallBack)
-      // TABLE_DEFAULT_JOURNALS.forEach((table, i) =>
-      //   createTable(table, i, Date.now())
-      // );
 
       //create ids for tags
       state.tags.forEach((tag) => (tag.id = stringToHash(tag.text)));

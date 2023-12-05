@@ -15,7 +15,6 @@ import "core-js/stable";
 import { Loader } from "./components/loader.js";
 import { DEFAULT_LOGIN_PAGE_TIMEOUT } from "./config.js";
 import { API } from "./api.js";
-import { TableFuncMixin } from "./views/componentView/propertyComponentView/tableFuncMixin.js";
 
 let contentContainerListener;
 let sidebarComponentView;
@@ -104,6 +103,22 @@ const controlPersistTableFunc = function (fnProps, fnType) {
 
   model.tableFunc[tableId][fnType] = fnProps;
   model.persistFunc()
+
+  const apiPayload = {
+    "journal_table_func": model.tableFunc
+  }
+
+  const queryObj = {
+    endpoint: API.APIEnum.JOURNAL.PATCH(model.state.id),
+    token: model.token.value,
+    sec: null,
+    queryData: apiPayload,
+    actionType: "updateJournal",
+    spinner: false,
+    alert: false,
+    type: "PATCH",
+  }
+  API.queryAPI(queryObj)
 }
 
 const controlGetPersistedTableFunc = function (tableId) {
@@ -114,6 +129,22 @@ const controlRemovePersistedTableFunc = function (fnType) {
   const currentTable = model.getCurrentTable()
   model.tableFunc[currentTable.id][fnType] = {}
   model.persistFunc()
+
+  const apiPayload = {
+    "journal_table_func": model.tableFunc
+  }
+
+  const queryObj = {
+    endpoint: API.APIEnum.JOURNAL.PATCH(model.state.id),
+    token: model.token.value,
+    sec: null,
+    queryData: apiPayload,
+    actionType: "updateJournal",
+    spinner: false,
+    alert: false,
+    type: "PATCH",
+  }
+  API.queryAPI(queryObj)
 }
 
 const controlGetTable = function (tableId = undefined) {
@@ -788,8 +819,6 @@ const controlLoadUI = function () {
   sidebarComponentView.addComponentHandlers(componentControllers);
   journalInfoComponentView.addComponentHandlers(infoControllers);
   tableComponentView.addComponentHandlers(componentControllers);
-
-  debugger;
 
   //get and apply currentTable tableFunc
   const persistedFunc = controlGetActiveTableFuncType(currentTable)
