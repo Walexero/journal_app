@@ -56,16 +56,17 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
         callBack: null,
         props: TABLE_PROPERTIES,
       })
+      const fnData = this._getFunc("filter")
 
-      this._state.conditional = this._getFunc("filter").conditional
+      this._state.conditional = fnData.conditional
 
       const filterRuleBoxRuleAdded = document.querySelector(".filter-added-rule");
       filterRuleBoxRuleAdded.textContent = this._setFilterRuleBoxAddedValue(filterRuleBoxRuleAdded)
 
 
-      this._state.filterMethod = componentGlobalState.filterMethod = tableFilterRuleComponent.prototype._queryConditional(this._state.conditional, this._getFunc("filter").type, this._getFunc("filter").value)
+      this._state.filterMethod = componentGlobalState.filterMethod = tableFilterRuleComponent.prototype._queryConditional(this._state.conditional, fnData.type, fnData.value)
 
-      const table = this._state.eventHandlers.tableControllers.controlGetTable(this._getFunc("filter").tableId)
+      const table = this._state.eventHandlers.tableControllers.controlGetTable(fnData.tableId)
 
       //filter and render the table
       this._renderFiltered(table)

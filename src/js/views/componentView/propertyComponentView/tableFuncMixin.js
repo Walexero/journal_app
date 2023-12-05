@@ -3,13 +3,23 @@ import { capitalize } from "../../../helpers.js";
 import { componentGlobalState } from "../componentGlobalState";
 
 export class TableFuncMixin {
+
+    _getCurrentTable() {
+        return this._state.eventHandlers.tableControllers.controlGetTable()
+    }
+
     _checkTableFuncActive(fnType) {
         let fnActive = false
-        const fn = this._state.eventHandlers.tableControllers.controlGetPersistedTableFunc()[fnType]
-        console.log("the fn", fn)
-        const fnProps = Object.keys(fn).map(fnKey => fn[fnKey] ? true : false)
-        fnActive = fnProps.find(prop => prop === true) ? true : false
-        return fnActive
+        const currentTable = this._getCurrentTable()
+        const fnObj = this._state.eventHandlers.tableControllers.controlGetPersistedTableFunc(currentTable.id)
+
+        if (fnObj) {
+
+            const fn = fnObj[fnType]
+            const fnProps = Object.keys(fn).map(fnKey => fn[fnKey] ? true : false)
+            fnActive = fnProps.find(prop => prop === true) ? true : false
+            return fnActive
+        }
         return false
     }
 

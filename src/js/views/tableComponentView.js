@@ -143,7 +143,20 @@ class TableComponentView {
     this._tableHeadElement.insertAdjacentHTML("afterbegin", markup);
   }
 
-  renderTableItem(tableItems, filter, filterPlaceHolder = false) {
+  _clearTableFunc() {
+    document.querySelector(".filter-action-container")?.remove()
+    document.querySelector(".sort-action-container")?.remove()
+  }
+
+  _activateTableFunc(activeTableFunc) {
+    const filter = activeTableFunc.filter > 0
+    const sort = activeTableFunc.sort > 0
+
+    if (filter) document.querySelector(".table-filter").click()
+    if (sort) document.querySelector(".table-sort").click()
+  }
+
+  renderTableItem(tableItems, filter, filterPlaceHolder = false, clearTableFunc = undefined, activeTableFunc = undefined) {
     const itemsExists = tableItems.length > 0;
     this._tableBodyItemElement.innerHTML = "";
 
@@ -158,6 +171,11 @@ class TableComponentView {
         "beforeend",
         this._generateBodyMarkup(true, filterPlaceHolder)
       );
+
+    if (clearTableFunc) this._clearTableFunc()
+
+    //apply filters to currently set tables if it exists
+    if (activeTableFunc) this._activateTableFunc(activeTableFunc)
   }
 
   updateTableItem(currentTable, tableItems, itemId, callBack = undefined) {

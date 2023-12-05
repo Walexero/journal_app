@@ -50,8 +50,11 @@ export let diff = {
 }
 
 export let tableFunc = {
-  filter: {}, //filterTagList in the filter,table value
-  sort: {},
+  // 1:{ //tableId
+  // filter: {}, //filterTagList in the filter,table value
+  // sort: {},
+
+  // }
 
 }
 

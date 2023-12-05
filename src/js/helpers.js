@@ -18,6 +18,13 @@ export const capitalize = (value) => {
   return value.slice(0, 1).toUpperCase() + value.slice(1)
 }
 
+export const createNewTableFunc = (tableId, tableFuncModel) => {
+  tableFuncModel[tableId] = {
+    filter: {},
+    sort: {}
+  }
+}
+
 export const timeout = (sec, actionType, fn = undefined) => {
   return new Promise((_, reject) => {
     setTimeout(() => {

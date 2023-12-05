@@ -115,7 +115,6 @@ export default class PropertyOptionsComponent {
   }
 
   _handlePropertyOptionsOption(e, options) {
-    debugger;
     const clickedProperty = this._getClickedProperty({ e, closest: ".action-property-content" }, options.property)
 
     const propertyContainer = document.querySelector(`.property-actions`);
@@ -165,8 +164,8 @@ export default class PropertyOptionsComponent {
       return clickedProperty.textContent.replace(":", "").trim().toLowerCase()
     }
     if (!eProps || !eProps.e) {
-
-      const persistedFilter = this._state.eventHandlers.tableControllers.controlGetPersistedTableFunc()[type]
+      const currentTable = this._getCurrentTable()
+      const persistedFilter = this._state.eventHandlers.tableControllers.controlGetPersistedTableFunc(currentTable.id)[type]
       // return persistedFilter.type === "itemTitle" ? "name" : "tags"
       return this._clickedPropertyType(persistedFilter.type, type)
     }
@@ -178,7 +177,8 @@ export default class PropertyOptionsComponent {
   }
 
   _getFunc(fnType) {
-    return this._state.eventHandlers.tableControllers.controlGetPersistedTableFunc()[fnType]
+    const currentTable = this._getCurrentTable()
+    return this._state.eventHandlers.tableControllers.controlGetPersistedTableFunc(currentTable.id)[fnType]
   }
 
   _addMixin() {

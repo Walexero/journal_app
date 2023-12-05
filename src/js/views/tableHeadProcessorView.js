@@ -89,6 +89,7 @@ class TableHeadProcessorView {
     currentTableSelector = false,
     tableToDisplayId = undefined
   ) {
+    debugger;
     const allTables = document.querySelectorAll(".table-journal");
 
     const currentTable = currentTableSelector

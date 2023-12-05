@@ -1,5 +1,5 @@
 import * as model from "./model.js";
-import { swapItemIndex, formatAPITableItems, formatAPIRequestUpdateTableItemPayload, formatAPISub, getAPICreatedTagFromModel, formatAPIRequestTagPayload, formatAPIResp, isoDate, createTableItemAPIRequestPayload } from "./helpers.js";
+import { swapItemIndex, formatAPITableItems, formatAPIRequestUpdateTableItemPayload, formatAPISub, getAPICreatedTagFromModel, formatAPIRequestTagPayload, formatAPIResp, isoDate, createTableItemAPIRequestPayload, createNewTableFunc } from "./helpers.js";
 import { LoginTemplate } from "./templates/loginTemplate.js"
 import { JournalTemplate } from "./templates/journalTemplate.js"
 
@@ -15,6 +15,7 @@ import "core-js/stable";
 import { Loader } from "./components/loader.js";
 import { DEFAULT_LOGIN_PAGE_TIMEOUT } from "./config.js";
 import { API } from "./api.js";
+import { TableFuncMixin } from "./views/componentView/propertyComponentView/tableFuncMixin.js";
 
 let contentContainerListener;
 let sidebarComponentView;
@@ -61,6 +62,22 @@ const controlRenderUpdatedTableHeads = (tableId) => {
   tableComponentView.renderTableItem(getTable.tableItems);
 };
 
+const controlGetActiveTableFuncType = function (currentTable) {
+  const funcType = { sort: false, filter: false }
+  const tableFunc = controlGetPersistedTableFunc(currentTable.id)
+  if (tableFunc) {
+    const fnTypes = Object.keys(tableFunc)
+    fnTypes.forEach(type => {
+      const fn = tableFunc[type]
+      const fnProps = Object.keys(fn).map(fnKey => fn[fnKey] ? true : false)
+      fnActive = fnProps.find(prop => prop === true) ? true : false
+      if (fnActive) funcType[type] = true
+    })
+    return funcType
+  }
+  return false
+}
+
 const controlSetCurrentTable = function (
   currentTable,
   tableToDisplayId = undefined
@@ -68,7 +85,12 @@ const controlSetCurrentTable = function (
   if (!tableToDisplayId) {
     model.setCurrentTable(currentTable);
     const table = model.getCurrentTable(currentTable);
-    tableComponentView.renderTableItem(table.tableItems);
+    const activeFuncTypes = controlGetActiveTableFuncType(table)
+    if (!activeFuncTypes)
+      tableComponentView.renderTableItem(table.tableItems, null, null, true, null);
+    if (activeFuncTypes)
+      tableComponentView.renderTableItem(table.tableItems, null, null, true, activeFuncTypes);
+
   }
 
   //render to display currentTable
@@ -76,16 +98,21 @@ const controlSetCurrentTable = function (
 };
 
 const controlPersistTableFunc = function (fnProps, fnType) {
-  model.tableFunc[fnType] = fnProps;
+  const tableId = fnProps.tableId
+  const tableFnExists = model.tableFunc?.tableId ?? null
+  if (!tableFnExists) createNewTableFunc(tableId, model.tableFunc)
+
+  model.tableFunc[tableId][fnType] = fnProps;
   model.persistFunc()
 }
 
-const controlGetPersistedTableFunc = function () {
-  return model.tableFunc
+const controlGetPersistedTableFunc = function (tableId) {
+  return model.tableFunc[tableId] ?? false
 }
 
 const controlRemovePersistedTableFunc = function (fnType) {
-  model.tableFunc[fnType] = {}
+  const currentTable = model.getCurrentTable()
+  model.tableFunc[currentTable.id][fnType] = {}
   model.persistFunc()
 }
 

@@ -192,7 +192,6 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
   }
 
   _renderSortRuleComponent(selectedProperty) {
-    debugger;
     const sortAddRuleBox = document.querySelector(".sort-added-rule-box");
 
     const { top, left, width, height } = sortAddRuleBox.getBoundingClientRect();
