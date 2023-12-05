@@ -541,7 +541,6 @@ const controlUpdateTableItem = function (
   payloadType = undefined,
   updateUI = true
 ) {
-  // debugger;
   let tableItems;
   debugger
   console.log('the upd payload', payload)
