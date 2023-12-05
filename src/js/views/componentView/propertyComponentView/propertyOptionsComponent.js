@@ -129,6 +129,11 @@ export default class PropertyOptionsComponent {
       options.property
     );
 
+    if (options.property === "sort") {
+      //prevent multiple create of ruleboxes for sort component
+      document.querySelector(`.sort-action-container`)?.remove()
+    }
+
     propertyContainer.insertAdjacentHTML(
       options.property === "sort" ? "afterbegin" : "beforeend",
       propertyOptionsOptionMarkup

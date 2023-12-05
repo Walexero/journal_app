@@ -1,6 +1,6 @@
 import { importTableComponentView } from "../../tableComponentView"
 import { capitalize } from "../../../helpers.js";
-
+import { componentGlobalState } from "../componentGlobalState";
 
 export class TableFuncMixin {
     _checkTableFuncActive(fnType) {
@@ -42,6 +42,28 @@ export class TableFuncMixin {
         }
 
         if (!table.tableItems.length > 0) this._renderFilteredTableItems([], true);
+    }
+
+    _renderSorted(table) {
+        let filteredTableItems;
+        if (table.tableItems.length > 0) {
+            //check if filter methods exist
+            if (componentGlobalState.filterMethod) {
+                filteredTableItems = componentGlobalState.filterMethod(
+                    table.tableItems
+                );
+            }
+
+            const sortedTableItems =
+                filteredTableItems?.length > 0
+                    ? componentGlobalState.sortMethod(filteredTableItems)
+                    : componentGlobalState.sortMethod(table.tableItems);
+            this._renderSortedTableItems(sortedTableItems);
+        }
+    }
+
+    _renderSortedTableItems(sortedItems, filterPlaceHolder = false) {
+        importTableComponentView.object.renderTableItem(sortedItems, null);
     }
 
     _renderFilteredTableItems(filteredItems, filterPlaceHolder = false) {

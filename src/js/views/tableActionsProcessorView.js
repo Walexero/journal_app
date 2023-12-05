@@ -135,7 +135,6 @@ class TableActionsProcessorView {
     if (filterExists) return;
 
     //logic to prevent re-render of container
-    // this._optionsView._optionsActive = true;
 
     const { top, left, width, height } = container.getBoundingClientRect();
 

@@ -4,11 +4,14 @@ import { TABLE_SORT_TYPE } from "../../../config.js";
 import { svgMarkup } from "../../../helpers.js";
 import { componentGlobalState } from "../componentGlobalState.js";
 import tableSortRuleOptionActionComponent from "./tableSortRuleOptionActionComponent.js";
+import { TableFuncMixin } from "./tableFuncMixin.js";
+
 
 export default class TableSortRuleComponent {
   _componentHandler = importComponentOptionsView.object;
   _state;
   _events = ["click"];
+  _mixinActive = false
 
   constructor(state) {
     this._state = state;
@@ -68,6 +71,7 @@ export default class TableSortRuleComponent {
   }
 
   render() {
+    if (!this._mixinActive) this._addMixin()
     const cls = this;
 
     this._state.markup = this._generateMarkup(
@@ -142,17 +146,19 @@ export default class TableSortRuleComponent {
   }
 
   _handleSortPropertySelectEvent(e) {
+    debugger;
     const setPropertySelector = this._setPropertySelectValue.bind(this);
     const propertySelectPosition = document
       .querySelector(".sort-property-options-box")
       .getBoundingClientRect();
-    const reuseEvent = new CustomEvent("reuse", {
+    const eventDetails = {
       detail: {
         callBack: setPropertySelector,
         positioner: propertySelectPosition,
-      },
-    });
-    this._state.parentState.component.dispatchEvent(reuseEvent);
+      }
+    }
+    const reuseEvent = new CustomEvent("reuse", eventDetails);
+    this._state?.parentState?.component?.dispatchEvent(reuseEvent) ?? this._state.parent._handleEvents(null, null, eventDetails);
   }
 
   _handleSortTypeSelectEvent(e) {
@@ -281,9 +287,18 @@ export default class TableSortRuleComponent {
     this._executeSortRule(sortTypeContainer.textContent.trim());
   }
 
-  _renderSortedTableItems(sortedItems, filterPlaceHolder = false) {
-    importTableComponentView.object.renderTableItem(sortedItems, null);
+  _addMixin() {
+    const { constructor, ...prototypePatch } = Object.getOwnPropertyDescriptors(TableFuncMixin.prototype)
+
+    //add copied props to instance proto
+    Object.defineProperties(Object.getPrototypeOf(this).__proto__, prototypePatch)
+
+    this._mixinActive = true
   }
+
+  // _renderSortedTableItems(sortedItems, filterPlaceHolder = false) {
+  // importTableComponentView.object.renderTableItem(sortedItems, null);
+  // }
 
   remove(reset = true) {
     const cls = this;

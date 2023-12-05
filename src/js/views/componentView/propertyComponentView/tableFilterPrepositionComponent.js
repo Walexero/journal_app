@@ -118,7 +118,7 @@ export default class TableFilterPrepositionComponent {
 
     if (removeFilterInput && filterRuleInput) {
       //clear the filteredTagList from the global component state
-      componentGlobalState.filterTagList.length = 0;
+      if (componentGlobalState?.filterTagList) componentGlobalState.filterTagList.length = 0;
 
       filterRuleInput.remove();
       this._state.parent._handleEvents(e, null, true);
@@ -126,7 +126,8 @@ export default class TableFilterPrepositionComponent {
 
     if (removeFilterInput && !filterRuleInput) {
       //clear the filteredTagList from the global component state
-      componentGlobalState.filterTagList.length = 0;
+      if (componentGlobalState?.filterTagList) componentGlobalState.filterTagList.length = 0;
+
       // this._state.executeFilter(null);
       this._state.parent._handleEvents(e, null, true);
     }

@@ -389,7 +389,6 @@ export default class TableFilterRuleComponent {
   }
 
   _executeFilterRule(input) {
-    debugger;
     const currentTable = document.querySelector(".table-row-active");
 
     const conditionalValue = document

@@ -69,20 +69,23 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
 
       const table = this._state.eventHandlers.tableControllers.controlGetTable(this._getFunc("sort").tableId)
 
-      //filter and render the table
-      this._renderFiltered(table)
+      //sort and render the table
+      this._renderSorted(table)
+
+      //remove persistedSort
+      // this._removeComponentTableFunc("sort")
 
     }
 
     //register for events from the body
-    if (!componentGlobalState.sortMethod) {
-      //prevent subscribing multiple times if already subscribeed
+    if (!componentGlobalState.sortMethod || fnActive) {
+      //prevent subscribing multiple times if already subscribeed  or if fnActive subscribe for events
       this._signals.subscribe({ component: this, source: ["tablebody", "content"] });
     }
   }
 
-  _handleEvents(e, signal = false) {
-    if (!signal) {
+  _handleEvents(e, signal = false, childEvent = false) {
+    if (!signal && !childEvent) {
       if (this._propertyOptionFormStrategy(e, "sort"))
         this._handlePropertyOptionsForm(TABLE_PROPERTIES.properties, "sort");
 
@@ -102,6 +105,8 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
 
       if (this._sortHoverAddStrategy(e)) this._handleSortHoverAddEvent(e);
     }
+
+    if (childEvent) this._reuseComponentListener(childEvent)
   }
 
   _sortAddRuleBoxStrategy(e) {
@@ -187,6 +192,7 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
   }
 
   _renderSortRuleComponent(selectedProperty) {
+    debugger;
     const sortAddRuleBox = document.querySelector(".sort-added-rule-box");
 
     const { top, left, width, height } = sortAddRuleBox.getBoundingClientRect();
@@ -229,6 +235,7 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
       (this._state.width = width),
       (this._state.height = height);
 
+    this._removeComponentTableFunc("sort")
     this.render();
     this._state.reuseCallBack = (value, parentState) => {
       e.detail.callBack(value, parentState);
@@ -243,13 +250,17 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
       ".sort-action-container "
     );
     delete this;
-    this._state.overlay.remove();
-    this._state.overlay.remove();
+    this._state?.overlay?.remove();
+    this._state?.overlay?.remove();
     this._events.forEach((ev) =>
-      this._state.component.removeEventListener(ev, cls._handleEvents, true)
+      this._state?.component?.removeEventListener(ev, cls._handleEvents, true)
     );
-    this._state.component.remove();
+    this._state?.component?.remove();
     sortActionContainer?.remove();
     componentGlobalState.sortMethod = null;
+
+    const fnActive = this._checkTableFuncActive("sort")
+    if (fnActive) this._removeComponentTableFunc("sort")
+
   }
 }
