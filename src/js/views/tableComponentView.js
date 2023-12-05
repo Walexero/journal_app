@@ -143,14 +143,19 @@ class TableComponentView {
     this._tableHeadElement.insertAdjacentHTML("afterbegin", markup);
   }
 
+  addActiveTableFunc(tableFunc) {
+    this._clearTableFunc()
+    this._activateTableFunc(tableFunc)
+  }
+
   _clearTableFunc() {
     document.querySelector(".filter-action-container")?.remove()
     document.querySelector(".sort-action-container")?.remove()
   }
 
   _activateTableFunc(activeTableFunc) {
-    const filter = activeTableFunc.filter > 0
-    const sort = activeTableFunc.sort > 0
+    const filter = activeTableFunc?.filter > 0
+    const sort = activeTableFunc?.sort > 0
 
     if (filter) document.querySelector(".table-filter").click()
     if (sort) document.querySelector(".table-sort").click()

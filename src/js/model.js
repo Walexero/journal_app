@@ -713,8 +713,6 @@ const requestJournalTableData = function (callBack, journalAPIResp, requestState
     //replace state data for journal
     replaceStateJournalDataWithAPIData(formattedJournalAPIResp, "journal")
   }
-
-  //TODO: add formatted data to model
 }
 
 const requestJournalData = function (callBack) {

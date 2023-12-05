@@ -711,6 +711,7 @@ const controlAddTemplate = function (templateType) {
 }
 
 const controlLoadUI = function () {
+
   const infoControllers = {
     controlGetJournalName,
     controlUpdateJournalInfo,
@@ -787,6 +788,13 @@ const controlLoadUI = function () {
   sidebarComponentView.addComponentHandlers(componentControllers);
   journalInfoComponentView.addComponentHandlers(infoControllers);
   tableComponentView.addComponentHandlers(componentControllers);
+
+  debugger;
+
+  //get and apply currentTable tableFunc
+  const persistedFunc = controlGetActiveTableFuncType(currentTable)
+  tableComponentView.addActiveTableFunc(persistedFunc)
+
   //componentGlobalState inherits all controller methods all components have
   componentGlobalState.eventHandlers = {
     infoControllers,
