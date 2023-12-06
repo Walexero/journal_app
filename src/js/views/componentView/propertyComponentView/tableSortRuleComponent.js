@@ -228,7 +228,6 @@ export default class TableSortRuleComponent {
   }
 
   _executeSortRule(sortType, optionObj = undefined) {
-    debugger;
     let filteredTableItems;
     const currentTable = document.querySelector(".table-row-active");
 

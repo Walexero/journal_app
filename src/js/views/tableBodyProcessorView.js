@@ -154,6 +154,7 @@ class TableBodyProcessorView {
   }
 
   _handleItemAdd(e) {
+    console.log("added iteem add")
     //call controller to add new Item
     this._eventHandlers.tableItemControllers.controlAddTableItem();
   }

@@ -10,6 +10,8 @@ tags and automatically capture the date.
 ↓ Click through the different database tabs to filter
 entries by a specific category such as daily or personal.
 `;
+export const HEADER_TITLE_LENGTH = 24
+export const SIDEBAR_JOURNAL_TITLE_LENGTH = 14
 export const NEW_JOURNAL_NAME = "Table";
 export const TABLE_HEAD_LIMIT = 4;
 export const TABLE_BODY_LOAD_AFTER = 1; //seconds

@@ -27,7 +27,7 @@ const controlGetJournalName = function () {
   return model.state.name;
 };
 
-const controlAPIUpdateJournalInfo = function (payload, returnData, requestState) {
+const controlAPIUpdateJournalInfoFallback = function (payload, returnData, requestState) {
   if (!requestState) {
     const key = Object.keys(payload)
     model.diff.journalInfoToUpdate[key] = payload[key]
@@ -40,11 +40,11 @@ const controlAPIUpdateJournalInfo = function (payload, returnData, requestState)
 }
 
 const controlUpdateJournalInfo = function (updateVal) {
-
+  debugger
   const apiPayload = {
   }
   if (updateVal.name) apiPayload.journal_name = updateVal.name
-  if (updateVal.journal_description) apiPayload.journal_description = updateVal.description
+  if (updateVal.description) apiPayload.journal_description = updateVal.description
 
   const queryObj = {
     endpoint: API.APIEnum.JOURNAL.PATCH(model.state.id),
@@ -55,7 +55,7 @@ const controlUpdateJournalInfo = function (updateVal) {
     spinner: false,
     alert: false,
     type: "PATCH",
-    callBack: controlAPIUpdateJournalInfo.bind(null, updateVal),
+    callBack: controlAPIUpdateJournalInfoFallback.bind(null, updateVal),
     callBackParam: true
   }
   API.queryAPI(queryObj)
@@ -727,7 +727,7 @@ const controlDuplicateTableItem = function (
     sec: null,
     queryData: apiPayload,
     actionType: "duplicateTableItems",
-    spinner: false,
+    spinner: true,
     alert: false,
     type: "POST",
     callBack: controlDuplicateTableItemFallback.bind(null, { apiPayload, filter, sort, updateUI }),

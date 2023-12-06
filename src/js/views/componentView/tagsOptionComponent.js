@@ -519,4 +519,10 @@ export default class TagOptionComponent {
       this._state.updateModel = updateModel;
     }
   }
+
+  remove() {
+    this._state?.overlay?.click()
+    this._events.forEach(ev => this._state?.component?.removeEventListener(ev, cls._handleEvents, true))
+
+  }
 }

@@ -1,4 +1,5 @@
 import { importSignals } from "../signals";
+import { HEADER_TITLE_LENGTH, SIDEBAR_JOURNAL_TITLE_LENGTH } from "../config";
 import { valueEclipser, svgMarkup } from "../helpers";
 
 class JournalInfoComponentView {
@@ -78,9 +79,9 @@ class JournalInfoComponentView {
       ".container-header .nav-options-text"
     );
     headerTitle.textContent =
-      nameInputVal.length > 0 ? valueEclipser(nameInputVal, 24) : "Untitled";
+      nameInputVal.length > 0 ? valueEclipser(nameInputVal, HEADER_TITLE_LENGTH) : "Untitled";
     sideBarJournalTitle.textContent =
-      nameInputVal.length > 0 ? valueEclipser(nameInputVal, 14) : "Untitled";
+      nameInputVal.length > 0 ? valueEclipser(nameInputVal, SIDEBAR_JOURNAL_TITLE_LENGTH) : "Untitled";
     const payload = {
       name: nameInputVal,
     };
@@ -110,6 +111,7 @@ class JournalInfoComponentView {
   }
 
   _generateMainContent(journal) {
+    debugger
     return `
         <div class="main-content-info">
             <div class="main-content-heading">
@@ -121,8 +123,7 @@ class JournalInfoComponentView {
                 class="journal-title-input"
                 contenteditable="true"
                 placeholder="Untitled"
-                value="${journal.name}"
-              ></h2>
+              >${journal.name.trim()}</h2>
             </div>
             <div class="main-content-description">
               <div

@@ -1,8 +1,7 @@
-import { USER } from "../config";
-// import signals from "../signals";
+import { USER, SIDEBAR_JOURNAL_TITLE_LENGTH } from "../config";
 import { importSignals } from "../signals";
 import { componentGlobalState } from "./componentView/componentGlobalState";
-import { svgMarkup } from "../helpers";
+import { svgMarkup, valueEclipser } from "../helpers";
 import tableHeadProcessorView from "./tableHeadProcessorView";
 
 class SideBarComponentView {
@@ -202,7 +201,7 @@ class SideBarComponentView {
                 ${svgMarkup("journal-icon icon", "journal-icon")}
               </div>
 
-              <div class="nav-options-text">${journalName.length > 0 ? journalName : "Untitled"
+              <div class="nav-options-text">${journalName.length > 0 ? valueEclipser(journalName, SIDEBAR_JOURNAL_TITLE_LENGTH) : "Untitled"
       }</div>
 
               <div class="journal-tables-list">

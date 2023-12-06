@@ -1,6 +1,8 @@
-export class JournalTemplate{
-    static template(){
-        return `
+import { svgMarkup } from "../helpers.js";
+
+export class JournalTemplate {
+  static template() {
+    return `
             <main>
                 <div class="container">
                   <div class="nav-sidebar"></div>
@@ -37,11 +39,10 @@ export class JournalTemplate{
                                           <span role="columnhead">
                                             <div class="action-filter-content">
                                               <div class="action-filter-icon">
-                                                <div class="svg-icon-box filter-icon">
-                                                  <svg class="svg-icon">
-                                                    <use href="./src/icons.svg#alphabet-icon"></use>
-                                                  </svg>
-                                                </div>
+                                                ${svgMarkup(
+                                                  "filter-icon",
+                                                  "alphabet-icon"
+                                                )}
                                               </div>
                                               <div class="action-filter-text">Name</div>
                                             </div>
@@ -49,11 +50,10 @@ export class JournalTemplate{
                                           <span role="columnhead">
                                             <div class="action-filter-content">
                                               <div class="action-filter-icon">
-                                                <div class="svg-icon-box filter-icon">
-                                                  <svg class="svg-icon">
-                                                    <use href="./src/icons.svg#clock"></use>
-                                                  </svg>
-                                                </div>
+                                                ${svgMarkup(
+                                                  "filter-icon",
+                                                  "clock"
+                                                )}
                                               </div>
                                           
                                               <div class="action-filter-text">
@@ -64,11 +64,10 @@ export class JournalTemplate{
                                           <span role="columnhead">
                                             <div class="action-filter-content">
                                               <div class="action-filter-icon">
-                                                <div class="svg-icon-box filter-icon">
-                                                  <svg class="svg-icon">
-                                                    <use href="./src/icons.svg#list-icon"></use>
-                                                  </svg>
-                                                </div>
+                                                ${svgMarkup(
+                                                  "filter-icon",
+                                                  "list-icon"
+                                                )}
                                               </div>
                                               <div class="action-filter-text">Tags</div>
                                             </div>
@@ -108,10 +107,10 @@ export class JournalTemplate{
                   <div class="alert-msg">ksdlfjsldf</div>
                 </div> -->
             </main>
-        `
-    }
+        `;
+  }
 
-    static templateStyling(){
-        document.querySelector("html").style.fontSize = "62.5%";
-    }
+  static templateStyling() {
+    document.querySelector("html").style.fontSize = "62.5%";
+  }
 }

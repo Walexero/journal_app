@@ -37,7 +37,6 @@ class TableComponentView {
     //add handleer to set currentTable in the model
     this._currentTableHandler = currentTableHandler;
     tableHandler();
-    console.log(this._signals, "tablecomponentvie")
 
     this._currentTable = currentTable;
 
@@ -201,7 +200,8 @@ class TableComponentView {
       `.row-actions-handler-container[data-id="${itemId}"] .row-actions-segment`
     );
 
-    this._tableBodyEventProcessor.renderTableInput(addedItemRow, currentTable);
+    if (addedItemRow)
+      this._tableBodyEventProcessor.renderTableInput(addedItemRow, currentTable);
 
     //add body event listener for the table body items if they exist on page load
     if (!this._bodyEventListenerActive) {

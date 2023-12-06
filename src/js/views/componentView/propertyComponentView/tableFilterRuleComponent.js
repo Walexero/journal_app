@@ -105,7 +105,7 @@ export default class TableFilterRuleComponent {
   }
 
   render() {
-    debugger;
+    // debugger;
     if (!this._mixinActive) this._addMixin()
     const cls = this;
     this._state.conditional = PREPOSITIONS.filter(
@@ -132,12 +132,12 @@ export default class TableFilterRuleComponent {
     this._setConditional()
 
     //disables the click interceptor|Allows click to be detected in background
-    this._state.disableOverlayInterceptor = true;
+    // this._state.disableOverlayInterceptor = true;
 
     const { overlay, overlayInterceptor, component } =
       this._componentHandler._componentOverlay(
         this._state,
-        this._state.disableOverlayInterceptor
+        // this._state.disableOverlayInterceptor
       );
 
     this._state = { ...this._state, overlay, overlayInterceptor, component };

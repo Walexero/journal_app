@@ -157,6 +157,7 @@ export default class TableFilterRuleOptionActionComponent extends optionActionCo
 
     //remove the options from the filterRule
     this._state.component.remove();
+    this._state.overlay.remove()
     component.render();
   }
 
