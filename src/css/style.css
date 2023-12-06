@@ -43,7 +43,7 @@ html {
   align-items: center;
 }
 
-.nav-options-journal {
+.nav-options-journal,.nav-options-user {
   position: relative;
 }
 

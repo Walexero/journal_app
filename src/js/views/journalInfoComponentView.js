@@ -1,5 +1,4 @@
 import { importSignals } from "../signals";
-import { HEADER_TITLE_LENGTH, SIDEBAR_JOURNAL_TITLE_LENGTH } from "../config";
 import { valueEclipser, svgMarkup } from "../helpers";
 
 class JournalInfoComponentView {
@@ -30,9 +29,9 @@ class JournalInfoComponentView {
 
   _handleEvents(e) {
     if (this._journalNameChangeMatchStrategy(e))
-      this._handleJournalEventDelay(this._handleJournalNameChangeEvent.bind(this, e))//this._handleJournalNameChangeEvent(e);
+      this._handleJournalEventDelay(e, this._handleJournalNameChangeEvent, this._changeName)//this._handleJournalNameChangeEvent(e);
     if (this._journalDescChangeMatchStrategy(e))
-      this._handleJournalEventDelay(this._handleJournalDescChangeEvent.bind(this, e));//this._handleJournalDescChangeEvent(e);
+      this._handleJournalEventDelay(e, this._handleJournalDescChangeEvent);//this._handleJournalDescChangeEvent(e);
 
     this._signals.observe(e, "journalInfo");
   }
@@ -57,20 +56,19 @@ class JournalInfoComponentView {
 
   _clearPreviousTimer() {
     clearInterval(this._timer)
-    console.log("cleared... ")
     this._timer = null
   }
 
-  _handleJournalEventDelay(eventToTrigger) {
+  _handleJournalEventDelay(e, eventToTrigger, exec = undefined) {
     if (this._timer) this._clearPreviousTimer()
-    console.log("input update event")
+    if (exec) exec(e)
     this._timer = setTimeout(() => {
-      eventToTrigger()
+      eventToTrigger(e)
 
     }, 2 * 1000)
   }
 
-  _handleJournalNameChangeEvent(e) {
+  _changeName(e) {
     const nameInputVal = e.target.textContent.trim();
     const sideBarJournalTitle = document.querySelector(
       ".nav-options-journal .nav-options-text"
@@ -79,9 +77,13 @@ class JournalInfoComponentView {
       ".container-header .nav-options-text"
     );
     headerTitle.textContent =
-      nameInputVal.length > 0 ? valueEclipser(nameInputVal, HEADER_TITLE_LENGTH) : "Untitled";
+      nameInputVal.length > 0 ? valueEclipser(nameInputVal, 24) : "Untitled";
     sideBarJournalTitle.textContent =
-      nameInputVal.length > 0 ? valueEclipser(nameInputVal, SIDEBAR_JOURNAL_TITLE_LENGTH) : "Untitled";
+      nameInputVal.length > 0 ? valueEclipser(nameInputVal, 14) : "Untitled";
+  }
+
+  _handleJournalNameChangeEvent(e) {
+    const nameInputVal = e.target.textContent.trim();
     const payload = {
       name: nameInputVal,
     };
@@ -111,7 +113,6 @@ class JournalInfoComponentView {
   }
 
   _generateMainContent(journal) {
-    debugger
     return `
         <div class="main-content-info">
             <div class="main-content-heading">

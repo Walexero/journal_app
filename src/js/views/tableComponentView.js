@@ -183,11 +183,13 @@ class TableComponentView {
   }
 
   updateTableItem(currentTable, tableItems, itemId, callBack = undefined) {
-    this._tableBodyItemElement.innerHTML = "";
-    this._tableBodyItemElement.insertAdjacentHTML(
-      "beforeend",
-      this._tableBodyEventProcessor._generateItemMarkup(tableItems)
-    );
+    if (tableItems.length > 0) {
+      this._tableBodyItemElement.innerHTML = "";
+      this._tableBodyItemElement.insertAdjacentHTML(
+        "beforeend",
+        this._tableBodyEventProcessor._generateItemMarkup(tableItems)
+      );
+    }
 
     //triggers slider and prevents input render
     if (callBack) {

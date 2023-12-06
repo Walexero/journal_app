@@ -155,13 +155,7 @@ export default class TableFilterRuleComponent {
     this._events.forEach((ev) => {
       component.addEventListener(ev, this._handleEvents.bind(cls));
     });
-    // }
 
-    // if (fnActive) {
-    // set parent state conditional value if it doesn't exist
-    // this._setConditional()
-    // this._executeFilterRule() //add filter rule input
-    // }
     //register for events from tag Options
     this._signals.subscribe({ component: this, source: ["tagadd"] });
   }
@@ -421,14 +415,6 @@ export default class TableFilterRuleComponent {
 
     //filter and render the table
     this._renderFiltered(table)
-    // if (table.tableItems.length > 0) {
-    //   //filter the tablebody
-    //   const filteredTableItems = this._state.filterMethod(table.tableItems);
-
-    //   this._renderFilteredTableItems(filteredTableItems, true);
-    // }
-
-    // if (!table.tableItems.length > 0) this._renderFilteredTableItems([], true);
   }
 
   _queryConditional(conditional, property, input) {

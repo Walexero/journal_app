@@ -17,12 +17,12 @@ export class Form {
             case "reset":
                 return new ResetPasswordForm()
                 break;
-            // case "updateInfo":
-            //     return new UpdateInfoForm()
-            //     break;
-            // case "updatePwd":
-            //     return new UpdatePasswordForm()
-            //     break;
+            case "updateInfo":
+                return new UpdateInfoForm()
+                break;
+            case "updatePwd":
+                return new UpdatePasswordForm()
+                break;
             // case "reset":
             //     return new ResetPasswordForm()
         }

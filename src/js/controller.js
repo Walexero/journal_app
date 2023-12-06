@@ -128,7 +128,7 @@ const controlSetCurrentTable = function (
 
 const controlPersistTableFunc = function (fnProps, fnType) {
   const tableId = fnProps.tableId
-  const tableFnExists = model.tableFunc?.tableId ?? null
+  const tableFnExists = model.tableFunc[tableId] ?? null
   if (!tableFnExists) createNewTableFunc(tableId, model.tableFunc)
 
   model.tableFunc[tableId][fnType] = fnProps;
@@ -458,15 +458,13 @@ const controlGetTableItemWithMaxTags = function (tableId, itemsId) {
 };
 
 const controlUpdateTableItemFallback = function (addTableItemParam, returnData, requestStatus = false) {
-  debugger;
   const currentTable = model.getCurrentTable();
   const batchItems = ["selectTags", "deleteActivities"]
   if (!requestStatus) {
     const subModels = ["intentions", "happenings", "actionItems", "gratefulFor"]
     model.updateTableItem(addTableItemParam.payload);
     const tableItems = ["tags", "title"]
-    //TODO: add fallback imp for batch actions
-    //submodels
+
     if (addTableItemParam.payloadType === subModels.find(sub => sub === addTableItemParam.payloadType)) {
       const updateAndCreate = addTableItemParam?.payload?.modelProperty?.property?.updateAndAddProperty
       const updateOnly = addTableItemParam?.payload?.modelProperty?.property?.updateProperty

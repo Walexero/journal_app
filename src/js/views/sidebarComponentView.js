@@ -213,13 +213,36 @@ class SideBarComponentView {
     `;
   }
 
+  _generateSideBarUserSettingsOption() {
+    return `
+          <div class="nav-option nav-options-user">
+              <div class="nav-options-icon">
+                ${svgMarkup(
+      "arrow-render arrow-right-icon icon icon-mid",
+      "arrow-right"
+    )}
+              </div>
+      
+              <div class="nav-icon-text">  
+                <div class="nav-options-text">Update Info</div>
+  
+                <div class="journal-tables-list">
+                <ul class="tables-list">
+                </ul>
+                </div>
+              </div>
+          </div>
+      `;
+  }
+
   _generateMarkup(user, journal) {
     return `
         <div class="nav-sidebar-options">
             ${this._generateSideBarHeadingMarkup(user)}
             ${this._generateSideBarJournalMarkup(journal)}
-        </div>
-    `;
+            </div>
+            `;
+    // ${this._generateSideBarUserSettingsOption()}
   }
 
   _generateSideBarVisibilityIcon() {
