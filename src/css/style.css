@@ -1713,7 +1713,7 @@ html {
   display: grid;
   grid-template-columns: 1fr 3fr;
   align-items: center;
-  height: 4rem;
+  /* height: 4rem; */
   padding-top: 0.8rem;
 }
 
@@ -1721,10 +1721,24 @@ html {
   display: grid;
   grid-template-columns: 1fr 6fr;
   /* gap: 2.4rem; */
-  height: 100%;
+  /* height: 100%; */
+  height: 3rem;
   padding: 0 0.4rem;
   /* align-self: center; */
   align-items: center;
+}
+
+.slide-properties-box{
+  margin-top: 1rem;
+}
+
+.slide-property-content .slide-property-text{
+  gap: unset;
+  padding: 0 1rem;
+}
+
+.slide-property-content{
+  align-self: start;
 }
 
 .slide-property .slide-icon {
@@ -1748,6 +1762,7 @@ html {
   align-self: center;
   display: flex;
   gap: 0.8rem;
+  flex-wrap: wrap;
 }
 
 .slide-property-text {
@@ -1757,10 +1772,22 @@ html {
   align-self: center;
   padding: 1rem;
   flex: 1 0 0;
+  /* width: 45rem; */
 }
 
 .slide-created-text--box {
   display: flex;
+  align-items: center;
+  height: 3rem;
+}
+
+.slide-created-text--box .row-actions-render{
+  height: 100%
+}
+
+.slide-created-text{
+  padding: 0 1rem;
+  align-items: center;
 }
 
 .slide-created-text--box .row-actions-tooltip {

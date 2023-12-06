@@ -141,7 +141,7 @@ export default class ContainerSidePeekComponentView {
                 </div>
               </div>
               <div class="slide-created-text--box">
-                <div class="slide-property-text slide-created-text hover ${tableItem.id ? "active" : ""
+                <div class="slide-property-text slide-created-text ${tableItem.id ? "active" : ""
       }">${dateTimeFormat(tableItem.id ?? "Empty")}
                 </div>
                 <div class="row-actions-render">
@@ -607,17 +607,19 @@ export default class ContainerSidePeekComponentView {
       addedItemInput.focus();
       this._moveCursorToTextEnd(addedItemInput);
     }
+
+    //reset the trigger state after content rerender
+    this._updateAndAddTriggeredBeforeUpdateDelay = false;
+
   }
 
   _clearPreviousTimer() {
     clearInterval(this._timer)
-    console.log("cleared... ")
     this._timer = null
   }
 
   _handleInputUpdateEventDelay(e) {
     if (this._timer) this._clearPreviousTimer()
-    console.log("input update event")
     this._timer = setTimeout(() => {
       if (!this._updateAndAddTriggeredBeforeUpdateDelay) {
         this._handleInputUpdateEvent(e)
@@ -639,7 +641,6 @@ export default class ContainerSidePeekComponentView {
       return
     }
 
-    console.log("triggered update event")
     const inputType = this._getInputType(e);
     const [inputContainer, checkedValue, updateVal, updateId] =
       this._getInputAndChecked(e, inputType);
@@ -670,7 +671,7 @@ export default class ContainerSidePeekComponentView {
         updateProperty: true,
       },
     };
-    debugger;
+    // debugger;
     this._state.eventHandlers.tableItemControllers.controlUpdateTableItem(
       payload,
       null,
@@ -918,9 +919,7 @@ export default class ContainerSidePeekComponentView {
     //reset component itemData value
     this.setItemDataState(updatedData)
 
-    debugger;
     const itemPropertyContainer = document.querySelector(".slide-content");
-    console.log("the itemProperty container", itemPropertyContainer)
     const contentContainer = document.querySelector(".container-slide-content");
 
     const tableItemTags = this._generateSlideTagsMarkup(updatedData);
