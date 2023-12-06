@@ -70,7 +70,11 @@ export const selector = (identifier, nodeObj = undefined) => {
   if (nodeObj) return nodeObj.querySelector(identifier)
 
   if (!nodeObj) return document.querySelector(identifier)
-}
+};
+
+export const matchStrategy = (e, className) => {
+  return e.target.classList.contains(className) || e.target.closest(`.${className}`)
+};
 
 export const occurences = (val, state) => {
   const occurrence = state.tables.reduce(

@@ -1,14 +1,17 @@
 import { USER, SIDEBAR_JOURNAL_TITLE_LENGTH } from "../config";
 import { importSignals } from "../signals";
 import { componentGlobalState } from "./componentView/componentGlobalState";
-import { svgMarkup, valueEclipser } from "../helpers";
+import { svgMarkup, valueEclipser, matchStrategy } from "../helpers";
 import tableHeadProcessorView from "./tableHeadProcessorView";
+import { Form } from "../views/loginView/form.js"
+import { Overlay } from "./loginView/overlay.js";
 
 class SideBarComponentView {
   _parentElement = document.querySelector(".nav-sidebar");
   _eventHandlers = null;
   _events = ["click"];
   _signals = importSignals.object
+  _children = []
 
   init(sideBarHandler) {
     sideBarHandler();
@@ -28,44 +31,22 @@ class SideBarComponentView {
   }
 
   _handleEvents(e, signals = false) {
-    if (this._sideBarCollapseMatchStrategy(e))
+    if (matchStrategy(e, "angles-icon"))
       this._handleSideBarCollapseEvent(e);
 
     if (!signals) {
-      if (this._sideBarListTablesMatchStrategy(e))
+      if (matchStrategy(e, "table-list-arrow-render"))
         this._handleSideBarListTablesEvent(e);
 
-      if (this._sideBarRenderTableMatchStrategy(e))
+      if (matchStrategy(e, "update-list-arrow-render")) this._handleSideBarUpdateEvent(e)
+
+      if (matchStrategy(e, "tables-list-box"))
         this._handleSideBarRenderTableEvent(e);
+
+      if (matchStrategy(e, "update-user-info")) this._handleUpdateUserInfoEvent(e)
+
+      if (matchStrategy(e, "update-user-pwd")) this._handleUpdateUserPasswordEvent(e)
     }
-  }
-
-  _sideBarCollapseMatchStrategy(e) {
-    const matchStrategy =
-      e.target.classList.contains("angles-icon") ||
-      e.target.closest(".angles-icon");
-    return matchStrategy;
-  }
-
-  _sideBarOpenMatchStrategy(e) {
-    const matchStrategy =
-      e.target.classList.contains("angles-icon") ||
-      e.target.closest(".angles-icon");
-    return matchStrategy;
-  }
-
-  _sideBarListTablesMatchStrategy(e) {
-    const matchStrategy =
-      e.target.classList.contains("arrow-render") ||
-      e.target.closest(".arrow-render");
-    return matchStrategy;
-  }
-
-  _sideBarRenderTableMatchStrategy(e) {
-    const matchStrategy =
-      e.target.classList.contains("tables-list-box") ||
-      e.target.closest(".tables-list-box");
-    return matchStrategy;
   }
 
   _handleSideBarCollapseEvent(e) {
@@ -91,6 +72,35 @@ class SideBarComponentView {
     sidebarJournalContainer.classList.toggle("tables-open");
 
     this._renderSideBarList(e, sidebarJournalContainer);
+  }
+
+  _handleSideBarUpdateEvent(e) {
+    const sidebarUpdateOptionContainer = e.target.closest(".nav-options-user");
+    sidebarUpdateOptionContainer.classList.toggle("updates-open");
+    const updateInfoContainer = sidebarUpdateOptionContainer.querySelector(".update-info-list")
+    const sideBarUpdateIcon = e.target.closest(".nav-options-icon")
+
+    const renderUpdatesOptions = sidebarUpdateOptionContainer.classList.contains("updates-open")
+    if (renderUpdatesOptions) {
+      const updateOptionsMarkup = this._generateSideBarUpdateOptionsMarkup()
+      sideBarUpdateIcon.innerHTML = "";
+      sideBarUpdateIcon.insertAdjacentHTML(
+        "afterbegin",
+        svgMarkup("update-list-arrow-render arrow-render arrow-down-icon icon icon-mid", "arrow-down")
+      )
+
+      updateInfoContainer.innerHTML = "";
+      updateInfoContainer.insertAdjacentHTML("afterbegin", updateOptionsMarkup)
+
+    }
+    if (!renderUpdatesOptions) {
+      updateInfoContainer.innerHTML = "";
+      sideBarUpdateIcon.innerHTML = "";
+      sideBarUpdateIcon.insertAdjacentHTML("afterbegin", svgMarkup(
+        "update-list-arrow-render arrow-render arrow-right-icon icon icon-mid",
+        "arrow-right"
+      ))
+    }
   }
 
   _handleSideBarRenderTableEvent(e) {
@@ -133,7 +143,7 @@ class SideBarComponentView {
         sideBarJournalIcon.innerHTML = "";
         sideBarJournalIcon.insertAdjacentHTML(
           "afterbegin",
-          svgMarkup("arrow-render arrow-down-icon icon icon-mid", "arrow-down")
+          svgMarkup("table-list-arrow-render arrow-render arrow-down-icon icon icon-mid", "arrow-down")
         );
       }
 
@@ -155,12 +165,20 @@ class SideBarComponentView {
         sideBarJournalIcon.insertAdjacentHTML(
           "afterbegin",
           svgMarkup(
-            "arrow-render arrow-right-icon icon icon-mid",
+            "table-list-arrow-render arrow-render arrow-right-icon icon icon-mid",
             "arrow-right"
           )
         );
       }
     }
+  }
+
+  _handleUpdateUserInfoEvent(e) {
+    const updateUserInfoForm = Form.form("updateInfo")
+    updateUserInfoForm.component()
+    const overlay = new Overlay(updateUserInfoForm)
+    this._children.push(updateUserInfoForm, overlay)
+    overlay.render()
   }
 
   _generateSideBarTablesMarkup(table, currentTableId) {
@@ -170,6 +188,20 @@ class SideBarComponentView {
         <div class="tables-list-disc"></div>
         <li class="tables-list-table">${table[0]}</li>
       </div>
+    `;
+  }
+
+  _generateSideBarUpdateOptionsMarkup() {
+    return `
+      <div class="update-list-box update-user-info hover">
+        <div class="update-list-disc"></div>
+        <li class="update-option">Update User Info</li>
+      </div>
+      <div class="update-list-box update-user-pwd hover">
+        <div class="update-list-disc"></div>
+        <li class="update-option">Update Password</li>
+      </div>
+
     `;
   }
 
@@ -189,9 +221,10 @@ class SideBarComponentView {
   _generateSideBarJournalMarkup(journalName) {
     return `
         <div class="nav-option nav-options-journal">
+          <div class="nav-group">
             <div class="nav-options-icon">
               ${svgMarkup(
-      "arrow-render arrow-right-icon icon icon-mid",
+      "table-list-arrow-render arrow-render arrow-right-icon icon icon-mid",
       "arrow-right"
     )}
             </div>
@@ -203,36 +236,38 @@ class SideBarComponentView {
 
               <div class="nav-options-text">${journalName.length > 0 ? valueEclipser(journalName, SIDEBAR_JOURNAL_TITLE_LENGTH) : "Untitled"
       }</div>
-
-              <div class="journal-tables-list">
-              <ul class="tables-list">
-              </ul>
-              </div>
-            </div>
+      </div>
+      </div>
+      <div class="journal-tables-list">
+      <ul class="tables-list">
+      </ul>
+      </div>
         </div>
     `;
   }
 
   _generateSideBarUserSettingsOption() {
     return `
-          <div class="nav-option nav-options-user">
-              <div class="nav-options-icon">
-                ${svgMarkup(
-      "arrow-render arrow-right-icon icon icon-mid",
-      "arrow-right"
-    )}
-              </div>
-      
-              <div class="nav-icon-text">  
-                <div class="nav-options-text">Update Info</div>
-  
-                <div class="journal-tables-list">
-                <ul class="tables-list">
-                </ul>
-                </div>
-              </div>
+      <div class="nav-option nav-options-user">
+        <div class="nav-group">
+          <div class="nav-options-icon">
+            ${svgMarkup("update-list-arrow-render arrow-render arrow-right-icon icon icon-mid", "arrow-right")}
           </div>
-      `;
+
+          <div class="nav-icon-text">
+            <div class="nav-options-journal-icon">
+              ${svgMarkup("journal-icon icon", "journal-icon")}
+            </div>
+            <div class="nav-options-text">Update Info</div>
+          </div>
+        </div>
+        <div class="journal-update-info-list">
+          <ul class="update-info-list">
+
+          </ul>
+        </div>
+      </div>
+    `;
   }
 
   _generateMarkup(user, journal) {
@@ -240,9 +275,9 @@ class SideBarComponentView {
         <div class="nav-sidebar-options">
             ${this._generateSideBarHeadingMarkup(user)}
             ${this._generateSideBarJournalMarkup(journal)}
+            ${this._generateSideBarUserSettingsOption()}
             </div>
             `;
-    // ${this._generateSideBarUserSettingsOption()}
   }
 
   _generateSideBarVisibilityIcon() {

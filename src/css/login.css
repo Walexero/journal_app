@@ -179,7 +179,7 @@
     /* padding-bottom: 6rem; */
 }
 
-.create-form-container,.login-form-container,.reset-form-container{
+.create-form-container,.login-form-container,.reset-form-container,.updateInfo-form-container{
     padding: 0 2rem;
 }
 

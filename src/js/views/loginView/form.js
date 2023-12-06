@@ -1,6 +1,6 @@
 import { CreateForm } from "./createForm.js"
 import { LoginForm } from "./loginForm.js"
-// import { UpdateInfoForm } from "./updateInfoForm.js";
+import { UpdateInfoForm } from "./updateInfoForm.js";
 // import { UpdatePasswordForm } from "./updatePasswordForm.js";
 import { ResetPasswordForm } from "./resetPasswordForm.js";
 
