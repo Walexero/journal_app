@@ -62,8 +62,12 @@ export const selector = (identifier, nodeObj = undefined) => {
   if (!nodeObj) return document.querySelector(identifier)
 };
 
-export const matchStrategy = (e, className) => {
-  return e.target.classList.contains(className) || e.target.closest(`.${className}`)
+export const matchStrategy = (e, className, evType = undefined) => {
+  if (!evType)
+    return e.target.classList.contains(className) || e.target.closest(`.${className}`)
+  if (evType)
+    return e.type === evType && e.target.classList.contains(className) || e.target.closest(`.${className}`)
+
 };
 
 export const occurences = (val, state) => {

@@ -1,7 +1,7 @@
 import { importComponentOptionsView } from "./componentOptionsView.js";
 import { TABLE_NOT_FOUND_RESPONSE } from "../../config.js";
 import tableHeadProcessorView from "../tableHeadProcessorView.js";
-import { svgMarkup } from "../../helpers.js";
+import { svgMarkup, matchStrategy } from "../../helpers.js";
 
 export default class TableViewOptionComponent {
   _componentHandler = importComponentOptionsView.object;
@@ -111,6 +111,9 @@ export default class TableViewOptionComponent {
 
     if (this._tableViewOptionsOptionStrategy(e))
       this._handleTableOptionsOption(e);
+
+    if (this._tableViewOptionsTableActiveStrategy(e)) this._handleTableActiveEvent(e)
+
   }
 
   _tableViewOptionsFormStrategy(e) {
@@ -127,6 +130,11 @@ export default class TableViewOptionComponent {
       (e.target.classList.contains("table-icon") ||
         e.target.closest(".table-view-options"));
     return viewOptionsOptionStrategy;
+  }
+
+  _tableViewOptionsTableActiveStrategy(e) {
+    return matchStrategy(e, "table-view-content", "click")
+
   }
 
   _handleTableViewOptionForm(e) {
@@ -157,6 +165,16 @@ export default class TableViewOptionComponent {
       renderViewOptions,
       this.remove.bind(this)
     );
+  }
+
+  _handleTableActiveEvent(e) {
+    const tableId = e.target.closest(".table-view-content").nextElementSibling.dataset.id;
+    tableHeadProcessorView._activateTable(
+      null,
+      `.main-table-heading [data-id="${tableId}"]`,
+      tableId
+    );
+    this.remove()
   }
 
   remove() {
