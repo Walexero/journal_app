@@ -290,7 +290,7 @@ html {
   max-height: 100%;
 }
 
-.main-table-head {
+.main-table-head-box {
   display: grid;
   /* gap: 22rem; */
   justify-content: space-between;
@@ -300,6 +300,11 @@ html {
   width: 100%;
   position: relative;
   white-space: nowrap;
+}
+
+.table-head-selector{
+  width: 1rem !important;
+  display: none;
 }
 
 .main-table-heading,

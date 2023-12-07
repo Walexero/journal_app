@@ -18,7 +18,7 @@ import tableBodyProcessorView from "./tableBodyProcessorView.js";
 class TableComponentView {
   _parentElement = document.querySelector(".content-container");
   _tableElement = document.querySelector(".main-table");
-  _tableHeadElement = document.querySelector(".main-table-head");
+  _tableHeadElement = document.querySelector(".main-table-head-box");
   _tableBodyElement = document.querySelector(`[role="tablerow"]`);
   _signals = importSignals.object ? importSignals.object : (importSignals.object = importSignals.import())
   _tableBodyItemElement;
@@ -239,6 +239,7 @@ class TableComponentView {
             ${svgMarkup("table-icon", "list-icon")}
           </div>
           <div class="table-row-text">${journalName}</div>
+          ${svgMarkup("table-icon table-head-selector", "arrow-down")}
         </div>
       `;
     });

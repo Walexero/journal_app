@@ -13,7 +13,10 @@ export class JournalTemplate {
                           <div class="table-container">
                             <div class="main-table">
                               <div class="row row-scroller-table">
-                                <div class="main-table-head"></div>
+                                <div class="main-table-head">
+                                  <div class="main-table-head-box">
+                                  </div>
+                                </div>
                             
                                 <div class="property-container">
                                   <div class="property-actions"></div>

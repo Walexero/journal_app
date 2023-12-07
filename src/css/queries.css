@@ -1,0 +1,36 @@
+/* --------------------------- */
+/* BELOW 1000px (smaller desktops) */
+/* ----------------------------- */
+@media (max-width: 63em) {
+    .main-table{
+        padding: unset;
+    }
+
+    .main-table-head,.property-container{
+        padding: 0 8rem;
+    }
+
+    .main-table-row{
+        overflow-x: scroll;
+    }
+
+    [role="tablerow"]{
+        /* float: left; */
+        padding: 0 8rem 18rem;
+    }
+
+    .table-journal:not(.table-row-active){
+        display: none;
+    }
+
+    .table-row-active{
+        min-width: 10rem;
+        max-width: 100%;
+    }
+
+    .table-head-selector{
+        display:block;
+      }
+
+      
+}  

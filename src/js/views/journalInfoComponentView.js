@@ -96,6 +96,7 @@ class JournalInfoComponentView {
     const payload = {
       description: descInputVal,
     };
+    console.log("journal desc ev", this)
     this._eventHandlers.controlUpdateJournalInfo(payload);
   }
 
