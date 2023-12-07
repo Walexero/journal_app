@@ -1,6 +1,8 @@
 import tableOptionComponent from "./componentView/tableOptionComponent.js";
 import { componentGlobalState } from "./componentView/componentGlobalState.js";
 import { importSideBarComponentView } from "./sidebarComponentView.js";
+import { TABLE_VIEW_OPTION_REPLACE_TABLE_OPTION } from "../config.js";
+import tableActionsProcessorView from "./tableActionsProcessorView.js";
 
 class TableHeadProcessorView {
   _optionsView; // = tableOptionsView;
@@ -26,6 +28,7 @@ class TableHeadProcessorView {
     const match =
       e.target.classList.contains("table-journal") ||
       e.target.closest(".table-journal");
+
     return match;
   }
 
@@ -39,14 +42,24 @@ class TableHeadProcessorView {
   }
 
   _handleTableOptions(e) {
-    const cls = this;
+    const tableViewOptionRender = window.matchMedia(TABLE_VIEW_OPTION_REPLACE_TABLE_OPTION)
+    if (tableViewOptionRender.matches) this._renderTableViewOptions(e)
+    if (!tableViewOptionRender.matches) this._renderTableOptions(e)
+  }
 
+  _renderTableOptions(e) {
     const { currentTable, currentTableIsActiveTable } = this._activateTable(e);
 
     //use overlay imp instead
     if (currentTableIsActiveTable) {
       this._renderAndListenForTableOptionsEvents(currentTable);
     }
+
+  }
+
+  _renderTableViewOptions(e) {
+    const container = document.querySelector(".table-row-active")
+    tableActionsProcessorView._handleTableViewOptions(e, container)
   }
 
   /**

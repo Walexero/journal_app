@@ -11,6 +11,7 @@ tags and automatically capture the date.
 entries by a specific category such as daily or personal.
 `;
 export const HEADER_TITLE_LENGTH = 24
+export const TABLE_VIEW_OPTION_REPLACE_TABLE_OPTION = "(max-width: 1008px)"
 export const SIDEBAR_JOURNAL_TITLE_LENGTH = 14
 export const NEW_JOURNAL_NAME = "Table";
 export const TABLE_HEAD_LIMIT = 4;
