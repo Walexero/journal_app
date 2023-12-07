@@ -248,7 +248,6 @@ export const formatAPITableItems = function (APIResp, type) {
   let formattedData = [];
   if (APIResp.length > 0) {
     APIResp.forEach(resp => {
-
       let formatAPITableItem = {
         "id": resp.id,
         "itemTitle": resp.name,
@@ -256,7 +255,8 @@ export const formatAPITableItems = function (APIResp, type) {
         "actionItems": formatAPISub(resp.action_items, "actionItems"),
         "intentions": formatAPISub(resp.intentions, "intentions"),
         "happenings": formatAPISub(resp.happenings, "happenings"),
-        "gratefulFor": formatAPISub(resp.grateful_for, "gratefulFor")
+        "gratefulFor": formatAPISub(resp.grateful_for, "gratefulFor"),
+        "created": Date.now(resp.created)
       }
       formattedData.push(formatAPITableItem)
     })

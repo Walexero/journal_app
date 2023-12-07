@@ -745,7 +745,7 @@ class TableBodyProcessorView {
               <span role="cell" class="table-item table-item-created">
                 <div class="row-actions-segment">
                   <div class="created-actions-text row-actions-text">
-                    ${dateTimeFormat(item.id)}
+                    ${dateTimeFormat(item.created ?? item.id)}
                   </div>
                   <div class="row-actions-render hidden">
                     <div class="row-actions-render-icon">
