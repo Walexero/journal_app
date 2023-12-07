@@ -4,16 +4,6 @@ import { TAGS_COLORS } from "./config.js";
 
 const pass = () => { };
 
-// export const timeout = function (s, fn, param = undefined) {
-//   return new Promise(function (resolve) {
-//     setTimeout(function () {
-//       // console.log(fn);
-
-//       //condition to resolve on
-//       param ? resolve(fn(param), s * 1000) : resolve(fn(), s * 1000);
-//     });
-//   });
-// };
 export const capitalize = (value) => {
   return value.slice(0, 1).toUpperCase() + value.slice(1)
 }
@@ -338,13 +328,6 @@ export const formatAPIResp = function (APIResp, type) {
 
   if (type === "tags") {
     formattedData = APIResp.id
-
-    // formattedData = {
-    // "id": APIResp.id,
-    // "color": APIResp.tag_class,
-    // "text": APIResp.tag_name,
-    // "color_value": APIResp.tag_class
-    // }
   }
 
   return formattedData
@@ -422,7 +405,6 @@ export const formatAPIRequestUpdateTableItemPayload = function (payload, type) {
   if (type === "title") {
     formattedRequest = {
       "name": payload?.title ?? "",
-      // "journal_table": currentTableId
     }
   }
 
@@ -448,7 +430,6 @@ export const formatAPIRequestUpdateTableItemPayload = function (payload, type) {
   }
 
   if (type === "duplicateTableItems") {
-    //TODO: add format duplicateeTableItems payload
     formattedRequest = {
       "duplicate_list": [{ "ids": payload.items.map(id => +id) }]
     }
@@ -508,4 +489,8 @@ export const createTableItemAPIRequestPayload = function (currentTable, relative
   }
   if (relativeItem) payload["ordering_list"] = tableItemOrdering(relativeItem)
   return payload
+}
+
+export const formatJournalHeadingName = (username) => {
+  return `${username.slice(0, 1).toUpperCase() + username.slice(1)}'s Journal`
 }

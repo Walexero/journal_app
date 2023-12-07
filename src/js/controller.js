@@ -756,7 +756,7 @@ const controlAddTemplate = function (templateType) {
     document.body.classList.remove("journal-template")
     document.body.classList.add("login-template")
     document.body.innerHTML = LoginTemplate.template();
-    LoginTemplate.templateStyling();
+    // LoginTemplate.templateStyling();
     Login.addEventListeners(controlLogin)
   }
 
@@ -834,7 +834,7 @@ const controlLoadUI = function () {
   contentContainerListener.init(journalInfoComponentView, tableComponentView)
   // contentContainerListener.activateListener();
 
-  sidebarComponentView.init(controlAddSideBar);
+  sidebarComponentView.init(controlAddSideBar, model.token.value);
 
   journalInfoComponentView.init(controlAddJournalInfo);
 

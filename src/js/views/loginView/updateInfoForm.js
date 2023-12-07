@@ -1,5 +1,6 @@
 import { BaseForm } from "./baseForm.js";
 import { API } from "../../api.js";
+import { formatJournalHeadingName } from "../../helpers.js";
 
 export class UpdateInfoForm extends BaseForm {
   constructor() {
@@ -23,12 +24,24 @@ export class UpdateInfoForm extends BaseForm {
       sec: null,
       actionType: "updateInfo",
       queryData: payload,
-      callBack: this._renderFormErrors.bind(this),
+      callBack: this._updateInfoAPICallback.bind(this),
       spinner: true,
       alert: true,
-      type: "PUT"
+      type: "PUT",
+      callBackParam: true,
     }
     API.queryAPI(queryObj)
+  }
+
+  _updateInfoAPICallback(returnData, requestState = false) {
+    debugger
+    this._renderFormErrors(returnData, requestState)
+
+    if (requestState) {
+      const usernameContainer = document.querySelector(".options-heading-title")
+      usernameContainer.textContent = formatJournalHeadingName(returnData.username)
+    }
+
   }
 
   _generateMarkup() {
@@ -44,7 +57,7 @@ export class UpdateInfoForm extends BaseForm {
         </div>
         <div class="form-div">
           <label for="email">Email</label>
-          <input type="email" class="email" id="email" name="email" placeholder="eg. johndoe@example.com">
+          <input type="email" class="email" id="email" name="email" placeholder="eg. johndoe@example.com" required>
         </div>
         <div class="form-div">
           <label for="username">Username</label>

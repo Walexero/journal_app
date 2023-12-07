@@ -12,8 +12,11 @@ class SideBarComponentView {
   _events = ["click"];
   _signals = importSignals.object
   _children = []
+  _token
 
-  init(sideBarHandler) {
+  init(sideBarHandler, token) {
+    debugger
+    this._token = token;
     sideBarHandler();
     this.addSideBarDelegationEventListener();
     this._signals.subscribe({ component: this, source: ["journalInfo"] });
@@ -175,9 +178,19 @@ class SideBarComponentView {
 
   _handleUpdateUserInfoEvent(e) {
     const updateUserInfoForm = Form.form("updateInfo")
+    updateUserInfoForm.addToken(this._token)
     updateUserInfoForm.component()
     const overlay = new Overlay(updateUserInfoForm)
     this._children.push(updateUserInfoForm, overlay)
+    overlay.render()
+  }
+
+  _handleUpdateUserPasswordEvent(e) {
+    const updateUserPasswordForm = Form.form("updatePwd")
+    updateUserPasswordForm.addToken(this._token)
+    updateUserPasswordForm.component()
+    const overlay = new Overlay(updateUserPasswordForm)
+    this._children.push(updateUserPasswordForm, overlay)
     overlay.render()
   }
 

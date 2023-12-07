@@ -13,6 +13,7 @@ export class BaseForm {
     _componentHandler = importComponentOptionsView.cls
     component() {
         const cls = this;
+        debugger
         this.componentWrapperEl = this._componentHandler.createHTMLElement(this._componentWrapper(this.formType()))
         this._component = this._componentHandler.createHTMLElement(this._generateMarkup())
 
@@ -148,18 +149,28 @@ export class BaseForm {
         if (formType === "create") return "Create Account"
 
         if (formType === "login") return formType.slice(0, 1).toUpperCase() + formType.slice(1)
+
+        if (formType === "updateInfo") return "Update Your Info"
+
+        if (formType === "updatePwd") return "Update Your Password"
+
     }
 
     _formRenderInfo(formType) {
         const requestType = {
             "login": "account",
             "create": "account",
-            "reset": "password"
+            "reset": "password",
+            "updateInfo": "information",
+            "updatePwd": "password"
         }
 
         if (formType === "login") return `${formType} to your ${requestType[formType]}`
         if (formType === "create") return `${formType} an ${requestType[formType]}`
         if (formType === "reset") return `${formType} your ${requestType[formType]}`
+        if (formType === "updateInfo") return `update your ${requestType[formType]}`
+        if (formType === "updatePwd") return `update your ${requestType[formType]}`
+
     }
 
     _renderFormErrors(errors, success = false) {

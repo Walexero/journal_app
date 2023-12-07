@@ -1,7 +1,7 @@
 import { CreateForm } from "./createForm.js"
 import { LoginForm } from "./loginForm.js"
 import { UpdateInfoForm } from "./updateInfoForm.js";
-// import { UpdatePasswordForm } from "./updatePasswordForm.js";
+import { UpdatePasswordForm } from "./updatePasswordForm.js";
 import { ResetPasswordForm } from "./resetPasswordForm.js";
 
 export class Form {
@@ -23,8 +23,6 @@ export class Form {
             case "updatePwd":
                 return new UpdatePasswordForm()
                 break;
-            // case "reset":
-            //     return new ResetPasswordForm()
         }
     }
 }
