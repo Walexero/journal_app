@@ -23,8 +23,8 @@ let journalInfoComponentView;
 
 const pass = () => { };
 
-const controlGetJournalName = function () {
-  return model.state.name;
+const controlGetJournalNameAndUsername = function () {
+  return { journalName: model.state.name, username: model.state.username };
 };
 
 const controlAPIUpdateJournalInfoFallback = function (payload, returnData, requestState) {
@@ -66,7 +66,7 @@ const controlGetModel = function () {
 };
 
 const controlAddSideBar = function () {
-  sidebarComponentView.render(controlGetJournalName());
+  sidebarComponentView.render(controlGetJournalNameAndUsername());
 };
 
 const controlAddJournalInfo = function () {
@@ -773,7 +773,7 @@ const controlAddTemplate = function (templateType) {
 const controlLoadUI = function () {
 
   const infoControllers = {
-    controlGetJournalName,
+    controlGetJournalNameAndUsername,
     controlUpdateJournalInfo,
   };
 
@@ -781,7 +781,7 @@ const controlLoadUI = function () {
     controlAddNewTable,
     controlGetTableHeads,
     controlGetTable,
-    controlGetJournalName,
+    controlGetJournalNameAndUsername,
     controlSetCurrentTable,
     controlPersistTableFunc,
     controlGetPersistedTableFunc,

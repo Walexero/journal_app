@@ -1,7 +1,7 @@
 import { USER, SIDEBAR_JOURNAL_TITLE_LENGTH } from "../config";
 import { importSignals } from "../signals";
 import { componentGlobalState } from "./componentView/componentGlobalState";
-import { svgMarkup, valueEclipser, matchStrategy } from "../helpers";
+import { svgMarkup, valueEclipser, matchStrategy, formatJournalHeadingName } from "../helpers";
 import tableHeadProcessorView from "./tableHeadProcessorView";
 import { Form } from "../views/loginView/form.js"
 import { Overlay } from "./loginView/overlay.js";
@@ -218,13 +218,11 @@ class SideBarComponentView {
     `;
   }
 
-  _generateSideBarHeadingMarkup(user) {
-    const userFirstName = user.split(" ")[0];
+  _generateSideBarHeadingMarkup(username) {
     return `
         <div class="nav-options-heading">
-            <div class="options-heading-icon">${userFirstName[0]}</div>
-            <div class="options-heading-title">${userFirstName[0].toUpperCase() + userFirstName.slice(1)
-      }'s Notion</div>
+            <div class="options-heading-icon">${username[0]}</div>
+            <div class="options-heading-title">${formatJournalHeadingName(username)}</div>
 
           ${svgMarkup("angles-icon sidebar-close icon", "angles-left")}
         </div>
@@ -301,8 +299,10 @@ class SideBarComponentView {
     `;
   }
 
-  render(journalName) {
-    const markup = this._generateMarkup(USER, journalName);
+  render(dataObj) {
+    const { username, journalName } = dataObj
+    console.log("the username", username)
+    const markup = this._generateMarkup(username, journalName);
 
     this._parentElement.innerHTML = "";
     this._parentElement.insertAdjacentHTML("beforeend", markup);

@@ -684,6 +684,7 @@ const replaceStateJournalDataWithAPIData = function (formattedAPIData, type) {
     state.currentTable = formattedAPIData.currentTable
     state.tags = formattedAPIData.tags
     state.id = formattedAPIData.id
+    state.username = formattedAPIData.username
 
     tableFunc = formattedAPIData.tableFunc
   }
