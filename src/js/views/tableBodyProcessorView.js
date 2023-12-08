@@ -4,7 +4,7 @@ import tableInputComponent from "./componentView/tableInputComponent.js";
 import { componentGlobalState } from "./componentView/componentGlobalState.js";
 import containerSidePeekComponentView from "./containerSidePeekComponentView.js";
 import alertComponent from "./componentView/alertComponent.js";
-import { COPY_ALERT } from "../config.js";
+import { COPY_ALERT, TABLE, LAYOUT_BREAKPOINT } from "../config.js";
 import {
   importComponentOptionsView
 } from "./componentView/componentOptionsView.js";
@@ -312,6 +312,12 @@ class TableBodyProcessorView {
     if (sliderAlreadyExists) {
       sliderAlreadyExists.remove();
       document.querySelector(".container").classList.remove("side-peek");
+    }
+
+    const layoutBreakpointTrigger = window.matchMedia(LAYOUT_BREAKPOINT)
+    if (layoutBreakpointTrigger.matches) {
+      const sideBarComponentCloseIcon = document.querySelector(".sidebar-close")
+      sideBarComponentCloseIcon?.click()
     }
 
     // const currentTable = document.querySelector(".table-row-active");

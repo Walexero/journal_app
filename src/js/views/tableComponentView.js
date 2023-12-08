@@ -321,27 +321,33 @@ class TableComponentView {
   _generateActionsMarkup() {
     return `
       <div class="main-table-actions">
-        <div class="table-row table-filter">
+        <div class="table-row table-action-row table-filter">
           <div class="table-row-text">Filter</div>
         </div>
-        <div class="table-row table-sort">
+        <div class="table-row table-action-row table-sort">
           <div class="table-row-text">Sort</div>
         </div>
-        <div class="table-row table-row-search">
+        <div class="table-row table-action-row table-row-search">
           <div class="table-row-icon">
             ${svgMarkup("table-icon", "search-icon")}
           </div>
         </div>
-        <div class="table-row-search--form">
+        <div class="table-row-search--form table-action-row">
           <input type="text" class="search-input hide-search-input" placeholder="Type to search..." />
         </div>
-        <div class="table-row-button">
+        <div class="table-row-button table-action-row">
           <div class="table-button">
             <div class="table-button-content">
               <div class="table-button-text table-row-text">New</div>
             </div>
           </div>
         </div>
+        <div class="table-row-options table-row">
+          <div class="table-row-icon">
+            ${svgMarkup("table-icon", "ellipsis")}
+          </div>
+        </div>
+
       </div>
     `;
   }

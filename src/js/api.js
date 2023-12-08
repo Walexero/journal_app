@@ -122,7 +122,7 @@ export class API {
 
         try {
             const res = await Promise.race([API.makeRequest(queryObj), timeout(queryObj.sec, queryObj.actionType)]) //TODO: Add fns to the timeout function
-            debugger
+            // debugger
             const resContent = res.status !== HTTP_204_SUCCESS_NO_CONTENT ? await res.json() : {}
 
             if (!res.ok) throw new Error(`${ALERT_STATUS_ERRORS.find(s => s === res.status) ? API.getResponseToRender(resContent, queryObj, res.status) : res.message} (${res.status})`)

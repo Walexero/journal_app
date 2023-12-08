@@ -6,16 +6,18 @@ import containerSidePeekComponentView from "./containerSidePeekComponentView.js"
 import { componentGlobalState } from "./componentView/componentGlobalState.js";
 import { importSideBarComponentView } from "./sidebarComponentView.js";
 import { importTableComponentView } from "./tableComponentView.js";
-
+import { matchStrategy } from "../helpers.js";
+import { TableActionOptionsComponent } from "./componentView/propertyComponentView/tableActionOptionsComponent.js";
 class TableActionsProcessorView {
   _tableHeadProcessor = tableHeadProcessorView;
   _eventHandlers;
+  _children = [];
 
   addHandlers(handlers) {
     this._eventHandlers = handlers;
   }
 
-  matchEvent(e) {
+  matchEvent(e, eventRouterComponent = undefined) {
     const cls = this;
 
     //table adder
@@ -31,15 +33,21 @@ class TableActionsProcessorView {
 
     //filter functionality in table head
     const filterContainer = this._tableFilterStrategy(e);
-    if (filterContainer) this._handleFilterOption(e, filterContainer);
+    if (filterContainer) this._handleFilterOption(e, filterContainer, eventRouterComponent);
 
     //sort functionality in table head
     const sortContainer = this._tableSortStrategy(e);
-    if (sortContainer) this._handleSortOption(e, sortContainer);
+    if (sortContainer) this._handleSortOption(e, sortContainer, eventRouterComponent);
 
     if (this._tableSearchMatchStrategy(e)) this._handleTableSearchEvent(e);
 
-    if (this._tableNewBtnMatchStrategy(e)) this._handleTableNewBtnEvent(e);
+    if (this._tableNewBtnMatchStrategy(e)) this._handleTableNewBtnEvent(e, eventRouterComponent);
+
+    if (this._tableActionOptionsStrategy(e)) this._handleActionOptionsEvent(e)
+  }
+
+  _tableActionOptionsStrategy(e) {
+    return matchStrategy(e, "table-row-options")
   }
 
   _tableAddMatchStrategy(e) {
@@ -127,7 +135,8 @@ class TableActionsProcessorView {
   }
 
 
-  _handleFilterOption(e, container) {
+  _handleFilterOption(e, container, eventRouterComponent) {
+    debugger;
     const cls = this;
 
     const filterExists = document.querySelector(".filter-added-rule-box");
@@ -151,9 +160,12 @@ class TableActionsProcessorView {
 
     const component = new tableFilterOptionComponent(componentObj);
     component.render();
+    if (eventRouterComponent) eventRouterComponent()
+
   }
 
-  _handleSortOption(e, container) {
+  _handleSortOption(e, container, eventRouterComponent) {
+
     const cls = this;
 
     const sortExists = document.querySelector(".sort-added-rule-box");
@@ -178,6 +190,7 @@ class TableActionsProcessorView {
 
     const component = new tableSortOptionComponent(componentObj);
     component.render();
+    if (eventRouterComponent) eventRouterComponent()
   }
 
   _handleTableSearchEvent(e) {
@@ -211,7 +224,9 @@ class TableActionsProcessorView {
     });
   }
 
-  _handleTableNewBtnEvent(e) {
+  _handleTableNewBtnEvent(e, eventRouterComponent) {
+    if (eventRouterComponent) eventRouterComponent()
+
     const sidePeekCallBack = (itemId) => {
       const componentObj =
         componentGlobalState.containerSidePeekComponentObj(itemId);
@@ -226,6 +241,25 @@ class TableActionsProcessorView {
       componentGlobalState.sortMethod,
       sidePeekCallBack
     );
+  }
+
+  _handleActionOptionsEvent(e) {
+    const actionOptionContainer = document.querySelector(".table-row-options")
+
+    const { top, left, width, height } = actionOptionContainer.getBoundingClientRect();
+
+    const componentObj = {
+      top,
+      left: `${parseInt(left) - 50}`,
+      width,
+      height,
+      eventHandlers: this._eventHandlers,
+      selector: ".table-head-actions-add-action--options",
+      updateModel: "",
+    }
+
+    const component = new TableActionOptionsComponent(componentObj)
+    component.render()
   }
 }
 

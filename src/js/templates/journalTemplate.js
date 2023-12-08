@@ -1,5 +1,6 @@
 import { svgMarkup } from "../helpers.js";
 
+const actionOptions = [];
 export class JournalTemplate {
   static template() {
     return `
@@ -17,6 +18,10 @@ export class JournalTemplate {
                                   <div class="main-table-head-box">
                                   </div>
                                 </div>
+
+                                <!-- start view option markup -->
+                                                        
+                                <!-- end view option markup -->
                             
                                 <div class="property-container">
                                   <div class="property-actions"></div>

@@ -10,7 +10,7 @@ export default class PropertyOptionsComponent {
 
     properties.forEach((property) => {
       propertiesMarkup += `
-            <div class="${`${propertyComponent}-property-content`} action-property-content">
+            <div class="${`${propertyComponent}-property-content`} action-property-content ${property.class ?? ""}">
               <div class="action-property-icon">
                 ${svgMarkup("property-icon", `${property.icon}`)}
               </div>
@@ -47,7 +47,7 @@ export default class PropertyOptionsComponent {
     `;
   }
 
-  _generateMarkup(properties, propertyComponent) {
+  _generateMarkup(properties, propertyComponent, form = true) {
     const placeHolder =
       propertyComponent[0].toUpperCase() + propertyComponent.slice(1);
     return `
@@ -55,15 +55,9 @@ export default class PropertyOptionsComponent {
             <div class="property-options">
               <div class="property-options-property--option">
                 <div class="property-content-box">
-                  <form action="" id="property-content-forms">
-                    <input
-                      type="text"
-                      name="${propertyComponent}-search property-search"
-                      class="${propertyComponent}-search property-search component-form"
-                      placeholder="${placeHolder} by..."
-                    />
-                  </form>
-                  <div class="property-content">
+                ${form ? this._generateFormMarkup(propertyComponent, placeHolder) : ""}
+                
+                <div class="property-content">
                     <div class="${propertyComponent}-content-search property-content-search">
                       ${this._generateOptions(properties, propertyComponent)}
                     </div>
@@ -73,6 +67,19 @@ export default class PropertyOptionsComponent {
             </div>
           </div>
         `;
+  }
+
+  _generateFormMarkup(propertyComponent, placeHolder) {
+    return `
+      <form action="" id="property-content-forms">
+        <input
+          type="text"
+          name="${propertyComponent}-search property-search"
+          class="${propertyComponent}-search property-search component-form"
+          placeholder="${placeHolder} by..."
+        />
+      </form>
+    `
   }
 
   _propertyOptionFormStrategy(e, propertyComponent) {

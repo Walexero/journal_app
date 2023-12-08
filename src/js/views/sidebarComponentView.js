@@ -1,4 +1,4 @@
-import { USER, SIDEBAR_JOURNAL_TITLE_LENGTH } from "../config";
+import { USER, SIDEBAR_JOURNAL_TITLE_LENGTH, LAYOUT_BREAKPOINT } from "../config";
 import { importSignals } from "../signals";
 import { componentGlobalState } from "./componentView/componentGlobalState";
 import { svgMarkup, valueEclipser, matchStrategy, formatJournalHeadingName } from "../helpers";
@@ -66,6 +66,13 @@ class SideBarComponentView {
       //removes the sidebar opener from the journalInfo component
       const sideBarOpen = document.querySelector(".sidebar-open");
       sideBarOpen.remove();
+
+      const layoutBreakpointTrigger = window.matchMedia(LAYOUT_BREAKPOINT)
+      if (layoutBreakpointTrigger.matches) {
+        const containerSideBeekCloseIcon = document.querySelector(".slide-nav-close")
+        containerSideBeekCloseIcon?.click()
+      }
+
     }
   }
 

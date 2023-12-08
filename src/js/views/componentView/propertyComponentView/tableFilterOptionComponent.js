@@ -338,7 +338,6 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
     };
 
     const component = new tableFilterRuleComponent(componentObj);
-    debugger;
     this._state.inputValue = this._state.inputValue ?? "";
     this._state.children.push(component);
     component.render();

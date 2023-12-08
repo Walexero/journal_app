@@ -2,6 +2,10 @@
 /* BELOW 1000px (smaller desktops) */
 /* ----------------------------- */
 @media (max-width: 63em) {
+    .main-content-info{
+        padding-left: 9rem;
+    }
+
     .main-table{
         padding: unset;
     }
@@ -31,6 +35,14 @@
     .table-head-selector{
         display:block;
       }
-
-      
 }  
+
+
+/* --------------------------- */
+/* BELOW 800px (tablets and smaller screens) */
+/* ----------------------------- */
+@media (max-width: 50em) {
+    .table-action-row{
+        display: none;
+    }
+}

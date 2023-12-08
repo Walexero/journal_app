@@ -12,6 +12,7 @@ entries by a specific category such as daily or personal.
 `;
 export const HEADER_TITLE_LENGTH = 24
 export const TABLE_VIEW_OPTION_REPLACE_TABLE_OPTION = "(max-width: 1008px)"
+export const LAYOUT_BREAKPOINT = "(max-width: 1008px)"
 export const SIDEBAR_JOURNAL_TITLE_LENGTH = 14
 export const NEW_JOURNAL_NAME = "Table";
 export const TABLE_HEAD_LIMIT = 4;
@@ -33,6 +34,27 @@ export const TABLE_DEFAULT_JOURNALS = [
 ];
 
 export const FILTER_RULE_CONTAINER_TOP_DIFF = 225;
+
+export const TABLE_ACTION_OPTIONS = {
+  properties: [
+    {
+      text: "Filter",
+      icon: "filter",
+      class: "table-filter"
+
+    },
+    {
+      text: "Sort",
+      icon: "sort",
+      class: "table-sort"
+    },
+    {
+      text: "New",
+      icon: "plus",
+      class: "table-button-content"
+    }
+  ]
+}
 
 export const TABLE_PROPERTIES = {
   properties: [

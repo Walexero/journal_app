@@ -78,7 +78,6 @@ class ComponentOptionsView {
 
     const overlayMarkup = this._generateOverlayMarkup(componentObj.markup);
 
-    //FIXME: check to make sure implementation reesolves
     const overlay = this.constructor._convertHTMLStringToElement(overlayMarkup);
 
     //set the positioning of
