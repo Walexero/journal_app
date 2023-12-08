@@ -26,6 +26,7 @@ export const COPY_ALERT = "Copied property to Clipboard";
 export const TABLE_ROW_PLACEHOLDER = "Empty. Click to add a row.";
 export const TABLE_ROW_FILTER_PLACEHOLDER =
   "No filter results. Click to add a row.";
+export const JOURNAL_HEADING_NAME_LENGTH = 15
 
 export const TABLE_DEFAULT_JOURNALS = [
   "All entries",

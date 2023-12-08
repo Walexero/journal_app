@@ -274,7 +274,7 @@ class SideBarComponentView {
 
           <div class="nav-icon-text">
             <div class="nav-options-journal-icon">
-              ${svgMarkup("journal-icon icon", "journal-icon")}
+              ${svgMarkup("icon", "user-settings")}
             </div>
             <div class="nav-options-text">Update Info</div>
           </div>

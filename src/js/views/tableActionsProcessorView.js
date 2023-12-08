@@ -246,7 +246,7 @@ class TableActionsProcessorView {
   _handleActionOptionsEvent(e) {
     const actionOptionContainer = document.querySelector(".table-row-options")
 
-    const { top, left, width, height } = actionOptionContainer.getBoundingClientRect();
+    let { top, left, width, height } = actionOptionContainer.getBoundingClientRect();
 
     const componentObj = {
       top,

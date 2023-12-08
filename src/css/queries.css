@@ -35,6 +35,31 @@
     .table-head-selector{
         display:block;
       }
+
+    .table-column-options{
+        display: none;
+    }
+
+    .form-container{
+        width: 50%;
+    }
+
+    .login-content-heading{
+        font-size: 3.2rem;
+        margin-top: 4rem;
+    }
+
+    .login-content-text{
+        width: 45%;
+    }
+
+    .outline-heading{
+        font-size: 2.6rem;
+    }
+
+    .outline-text{
+        font-size: 1.5rem;
+    }
 }  
 
 
@@ -42,7 +67,115 @@
 /* BELOW 800px (tablets and smaller screens) */
 /* ----------------------------- */
 @media (max-width: 50em) {
+    .side-peek .table-action-row{
+        display: none;
+    }
+
+    .side-peek .table-row-options{
+        display: block;
+    }
+
+    .form-container{
+        width: 60%;
+    }
+
+    .login-content-heading{
+        font-size: 3.2rem;
+    }
+
+    .login-content-text{
+        width: 55%;
+    }
+
+}
+
+/* --------------------------- */
+/* BELOW 600px (tablets and smaller screens) */
+/* ----------------------------- */
+@media (max-width: 37.5em) {
+
+    .side-peek .container-slide-template {
+        width: 70vw;
+    }
+
+    .form-container{
+        width: 70%;
+    }
+
+    .form-heading{
+        font-size: 2rem;
+    }
+
+    .form-content {
+        font-size: 1.4rem;
+    }
+
+    .login-content-heading {
+        font-size: 3rem;
+        text-align: center;
+        margin-bottom: 5rem;
+      }
+
+    .login-content-outline {
+        grid-template-columns: 1fr;
+    }
+
+    .content-img-box{
+        padding: 0 2rem;
+    }
+
+    .content-img{
+        width: 95%;
+        grid-row: 1/-1;
+    }
+
+    .img-overlay ul{
+        transform: translate(0%, -3.6%);
+    }
+
+
+
+}
+
+/* --------------------------- */
+/* BELOW 500px (tablets and smaller screens) */
+/* ----------------------------- */
+@media (max-width: 31.3em) {
+    .form-container{
+        width: 80%;
+    }
+
+    .filter-input-option-option{
+        margin-left: -15px;
+    }
+}
+
+/* --------------------------- */
+/* BELOW 400px (tablets and smaller screens) */
+/* ----------------------------- */
+@media (max-width: 25em) {
     .table-action-row{
         display: none;
     }
+
+    .table-row-options{
+        display: block;
+    }
+
+    .form-container{
+        width: 90%;
+    }
+
+    .login-content-text {
+        width: 85%;
+    }
+
+    .login-content-heading {
+        margin-bottom: 8rem;
+    }
+
+    .outline-heading {
+        font-size: 2.4rem;
+    }
+
 }

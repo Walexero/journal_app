@@ -1,4 +1,4 @@
-import { LOCALE_TIME, TAG_TEXT_RENDER_LENGTH } from "./config.js";
+import { LOCALE_TIME, TAG_TEXT_RENDER_LENGTH, JOURNAL_HEADING_NAME_LENGTH } from "./config.js";
 import icons from "url:../icons.svg";
 import { TAGS_COLORS } from "./config.js";
 
@@ -497,5 +497,8 @@ export const createTableItemAPIRequestPayload = function (currentTable, relative
 }
 
 export const formatJournalHeadingName = (username) => {
-  return `${username.slice(0, 1).toUpperCase() + username.slice(1)}'s Journal`
+
+  const headingName = `${username.slice(0, 1).toUpperCase() + username.slice(1)}'s Journal`
+  return `${headingName.slice(0, 15)}...`
+
 }

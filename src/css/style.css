@@ -14,14 +14,16 @@ html {
 
 .journal-template {
   height: 100vh;
-  font-family: sans-serif;
+  /* font-family: sans-serif; */
+  font-family: 'Roboto Mono', monospace;
   color: #bec1c6;
   overflow: hidden;
 }
 
 .nav-options-heading {
   display: flex;
-  gap: 1rem;
+  /* gap: 1rem; */
+  justify-content: space-between;
   /* padding-left: 1rem; */
   padding: 0.8rem 1rem;
 }
@@ -32,6 +34,8 @@ html {
   padding-left: 0.4rem;
   padding-right: 0.4rem;
   transition: width 270ms ease 0s;
+  max-width: 22rem;
+  min-width: 23rem;
 }
 
 .nav-option {
@@ -130,6 +134,10 @@ html {
   color: #bec1c6;
   font-size: 1.2rem;
   font-weight: 900;
+  flex: 1 0 0;
+  padding-left: 1rem;
+  align-items: center;
+  display: flex;
 }
 
 .angles-icon {
@@ -593,6 +601,10 @@ html {
   width: 100%;
 }
 
+.table-row-options{
+  display: none;
+}
+
 /* .table-button::after {
   content: " ";
   border: 1px solid #252325;
@@ -835,6 +847,7 @@ html {
   padding: 0.8rem 1.4rem;
   align-items: center;
   font-size: 1.4rem;
+  white-space: nowrap;
 }
 
 .filter-add-action {

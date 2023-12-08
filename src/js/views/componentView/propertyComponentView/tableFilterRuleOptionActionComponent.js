@@ -129,8 +129,11 @@ export default class TableFilterRuleOptionActionComponent extends optionActionCo
   _handleTagSelectEvent(e) {
     const tagViewportHolder = e.target.closest(".filter-input-option-option");
 
-    const { top, left, width, height } =
+    let { top, left, width, height } =
       tagViewportHolder.getBoundingClientRect();
+
+    const queryPositioner = window.matchMedia("(max-width: 500px)")
+    if (queryPositioner.matches) left = `${parseInt(left) - 80}`
 
     const componentObj = {
       table: tagViewportHolder,

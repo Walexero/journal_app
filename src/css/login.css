@@ -201,7 +201,7 @@ html{
     /* padding-bottom: 6rem; */
 }
 
-.create-form-container,.login-form-container,.reset-form-container,.updateInfo-form-container{
+.create-form-container,.login-form-container,.reset-form-container,.updateInfo-form-container,.updatePwd-form-container{
     padding: 0 3rem;
     width: 100%;
 }
