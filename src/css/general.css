@@ -152,6 +152,10 @@ svg.hidden {
   /* transition: ea; */
 }
 
+.row-tag-icon{
+  cursor: pointer;
+}
+
 /* Tags styling */
 .row-tag-tag,
 .tag-tag {

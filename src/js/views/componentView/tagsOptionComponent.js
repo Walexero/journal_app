@@ -3,6 +3,7 @@ import tagEditComponent from "./tagEditComponent.js";
 import { componentGlobalState } from "./componentGlobalState.js";
 import { formatTagRequestBody, svgMarkup, formatTagRenderedText } from "../../helpers.js";
 import { importSignals } from "../../signals.js";
+import { LAYOUT_SMALLER_DESKTOP_BREAKPOINT } from "../../config.js";
 import { API } from "../../api.js";
 
 export default class TagOptionComponent {
@@ -449,7 +450,10 @@ export default class TagOptionComponent {
 
     const optionNudge = e.target.closest(".row-option-icon");
 
-    const { top, left, width, height } = optionNudge.getBoundingClientRect();
+    let { top, left, width, height } = optionNudge.getBoundingClientRect();
+
+    const layoutPositioner = window.matchMedia(LAYOUT_SMALLER_DESKTOP_BREAKPOINT)
+    if (layoutPositioner.matches) left = `${parseInt(left) - 200}`
 
     const componentObj = {
       callBack: state.subComponentCallback,

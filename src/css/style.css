@@ -848,6 +848,7 @@ html {
   align-items: center;
   font-size: 1.4rem;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .filter-add-action {
@@ -1198,6 +1199,10 @@ html {
   width: 100%;
 }
 
+[role="tableadd"]{
+  cursor: pointer;
+}
+
 [role="tablerow"] {
   position: relative;
 }
@@ -1419,6 +1424,7 @@ html {
 
 .table-item-tags {
   position: relative;
+  cursor: pointer;
 }
 
 .table-item-tags .row-actions-text {
@@ -1616,6 +1622,10 @@ html {
   gap: 0.4rem;
 }
 
+.row-tag-tag{
+  cursor: pointer;
+}
+
 .row-option-tag {
   display: flex;
 }
@@ -1675,6 +1685,7 @@ html {
   box-shadow: 0 0 6px #252325;
   overflow-y: scroll;
   transition: width 270ms ease 0s;
+  padding-bottom: 10rem;
 }
 
 .slide-nav {

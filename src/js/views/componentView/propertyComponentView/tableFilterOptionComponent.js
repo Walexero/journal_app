@@ -386,7 +386,7 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
     this._events.forEach((ev) =>
       this._state?.component?.removeEventListener(ev, cls._handleEvents, true)
     );
-    filterContainer.remove();
+    filterContainer?.remove();
 
     const fnActive = this._checkTableFuncActive("filter")
     if (fnActive) this._removeComponentTableFunc("filter")

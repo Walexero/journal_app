@@ -3,7 +3,7 @@ import { importComponentOptionsView } from "../views/componentView/componentOpti
 
 export class Alert {
     _eventListeners = ["click"]
-    timeout = 3 //1 sec to timeout
+    timeout = 3 // 1 sec to timeout
 
     constructor(msg, timeout, alertType) {
         this.msg = msg

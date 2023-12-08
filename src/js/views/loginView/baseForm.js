@@ -238,10 +238,10 @@ export class BaseForm {
 
     remove(removeComponent = false) {
         const cls = this;
-        this._eventListeners.forEach(ev => this._component.removeEventListener(ev, cls._handleSubmit))
+        this._eventListeners.forEach(ev => this._component?.removeEventListener(ev, cls._handleSubmit))
 
         if (removeComponent) {
-            this._component.remove()
+            this._component?.remove()
             this?.wrapperContent ?? (this.wrapperContent = null)
             delete this
         }

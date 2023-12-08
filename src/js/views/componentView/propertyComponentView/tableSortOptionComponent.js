@@ -230,7 +230,7 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
     const { top, left, width, height } = e.detail.positioner;
 
     (this._state.top = top),
-      (this._state.left = left),
+      (this._state.left = `${parseInt(left) + 150}`),
       (this._state.width = width),
       (this._state.height = height);
 
