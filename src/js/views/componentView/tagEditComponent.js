@@ -198,7 +198,6 @@ export default class TagEditComponent {
   }
 
   _updateElClassAndText(inputVal, colorVal, el, tag) {
-    debugger;
     el.forEach((elm) => {
       if (elm) {
         elm.classList.remove(tag.color);

@@ -1,7 +1,6 @@
 import { API } from "./api.js";
 import {
   NEW_JOURNAL_NAME,
-  TABLE_DEFAULT_JOURNALS,
   TABLE_TAGS,
   TAGS_COLORS,
   DEFAULT_JOURNAL_DESC,
@@ -12,11 +11,13 @@ import {
   occurences,
   createDuplicateName,
   formatUpdateObjTags,
+  getUpdateTableItemTagId,
   stringToHash,
   dynamicArithmeticOperator,
   indexVal,
   formatAPIResp,
   formatAPITableItems,
+  getCreatedTagFromModel,
 
 } from "./helpers.js";
 
@@ -41,13 +42,15 @@ export let diff = {
   journalInfoToUpdate: [],
   tagToDelete: [],
   tagsToUpdate: [],
+  tagsToCreate: [],
   submodelToCreate: [],
   submodelToUpdate: [],
   submodelToDelete: [],
   tableToUpdate: [],
   tableToCreate: [],
   tableToDuplicate: [],
-  tableToDelete: []
+  tableToDelete: [],
+  diffActive: false
 }
 
 export let tableFunc = {
@@ -396,6 +399,18 @@ export const deleteTableItem = function (payload) {
   persistData();
 };
 
+export const createTagObject = function (payload) {
+  //triggers only for fallback tag create
+  //create temp id for tag
+  payload.id = stringToHash(payload.tag_name)
+
+  let formatFailedRequestPayload = formatAPIResp(payload, "apiTags")
+  state.tags.push(formatFailedRequestPayload)
+  formatFailedRequestPayload = {}
+  persistData()
+  return payload.id
+}
+
 export const updateAPITableItem = function (payload, api = true, tableId) {
   const updateSingleItem = payload?.id
   const updateMultipleItems = payload?.itemIds;
@@ -507,14 +522,13 @@ export const updateTableItem = function (payload) {
 
     payload?.title ? (itemToUpdate.itemTitle = payload.title) : pass();
 
-    const formattedTags = payload?.tags
-      ? formatUpdateObjTags(payload?.tags)
+    //get the tags from the model state
+    const getTagsId = payload?.tags
+      ? getUpdateTableItemTagId(payload, state)
       : pass();
 
-    formattedTags ? (itemToUpdate.itemTags = formattedTags) : pass();
-
-    //create new tag object if it doesn't exist in the tag table
-    payload.tags ? checkForAndAddNewTag(formattedTags) : pass();
+    //add the tag to the item to update
+    getTagsId.length > 0 ? (itemToUpdate.itemTags = getTagsId) : pass();
 
     if (payload.modelProperty) {
       if (payload.modelProperty.property.update) {
@@ -646,6 +660,12 @@ const getPersistedData = () => {
   return JSON.parse(stateFromDb);
 };
 
+const getPersistedDiffData = () => {
+  const diffFromDb = localStorage.getItem("diffState");
+  return JSON.parse(diffFromDb);
+};
+
+
 export const loadToken = () => {
   const storedToken = localStorage.getItem("token")
   if (storedToken) token = JSON.parse(storedToken)
@@ -734,19 +754,37 @@ const requestJournalData = function (callBack) {
   API.queryAPI(queryObjJournal)
 }
 
-export const init = function (controllerInit = undefined, loadController = false) {
+// const loadDataFromAPI = ()
+
+export const init = function (sync, controllerInit = undefined, loadController = false) {
+  // debugger
   if (!loadController) {
 
-    const dataLoadedFromDb = getPersistedData();
-    if (dataLoadedFromDb) {
-      state = dataLoadedFromDb
+    if (sync) {
+      const dataLoadedFromDb = getPersistedData();
+      const diffLoadedData = getPersistedDiffData()
+
+
+      //add diff state
+      // const diffLocalState = diffLoadedData
+      // diffLoadedData.diffActive = true
       if (!token.value) loadToken()
-      const initCallBack = init.bind(null, controllerInit, true)
-      requestJournalData(initCallBack)
 
-    };
+      //TODO: add prev against when local dt doesnt exist
+      if (diffLoadedData && diffLoadedData?.diffActive) {
+        //TODO: add check for diffactive state
+        sync.addModelData(dataLoadedFromDb, diffLoadedData, diff, persistDiff, token)
+        sync.startModelInit(init.bind(this, null,))
+      }
+      if (!diffLoadedData?.diffActive && dataLoadedFromDb || !dataLoadedFromDb) {
+        //FIXME: do not replace the whole state object only the required parts cause of the tags and tagscolor val
+        state = dataLoadedFromDb ?? state
+        const initCallBack = init.bind(null, null, controllerInit, true)
+        requestJournalData(initCallBack)
+      };
+    }
 
-    if (!dataLoadedFromDb) {
+    if (!sync) {
       //create default tables
       const initCallBack = init.bind(null, controllerInit, true)
       requestJournalData(initCallBack)

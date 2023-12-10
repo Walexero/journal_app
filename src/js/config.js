@@ -210,4 +210,4 @@ export const HTTP_200_RESPONSE = {
   "getJournal": ((APIResp) => "Loading completed"),
   "getActiveTable": ((APIResp) => APIResp),
 }
-export const PREVENT_DESTRUCTURING_FROM_API_ENDPOINT_RESP = ["create", "getJournal", "getActiveTable", "createTableItem", "updateTableItem", "createTag", "deleteTag", "updateTag", "deleteTableItem", "batchAddTags", "batchDeleteActivities", "duplicateTableItems", "updateTableName", "deleteTable", "duplicateTable", "createNewTable", "updateJournal", "updateJournalInfo", "updateInfo", "updatePwd"]
+export const PREVENT_DESTRUCTURING_FROM_API_ENDPOINT_RESP = ["create", "getJournal", "getActiveTable", "createTableItem", "updateTableItem", "createTag", "deleteTag", "updateTag", "deleteTableItem", "batchAddTags", "batchDeleteActivities", "duplicateTableItems", "updateTableName", "deleteTable", "duplicateTable", "createNewTable", "updateJournal", "updateJournalInfo", "updateInfo", "updatePwd", "batchTags"]

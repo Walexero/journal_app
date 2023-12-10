@@ -1,5 +1,5 @@
 import * as model from "./model.js";
-import { swapItemIndex, formatAPITableItems, formatAPIRequestUpdateTableItemPayload, formatAPISub, getAPICreatedTagFromModel, formatAPIRequestTagPayload, formatAPIResp, isoDate, createTableItemAPIRequestPayload, createNewTableFunc } from "./helpers.js";
+import { swapItemIndex, formatAPITableItems, formatAPIRequestUpdateTableItemPayload, formatAPISub, getCreatedTagFromModel, formatAPIRequestTagPayload, formatAPIResp, isoDate, createTableItemAPIRequestPayload, createNewTableFunc } from "./helpers.js";
 import { LoginTemplate } from "./templates/loginTemplate.js"
 import { JournalTemplate } from "./templates/journalTemplate.js"
 
@@ -10,6 +10,7 @@ import { importJournalInfoComponentView } from "./views/journalInfoComponentView
 import { importComponentOptionsView } from "./views/componentView/componentOptionsView.js";
 import { importTableBodyContainerListener } from "./listeners/tableBodyContainerListener.js";
 import { componentGlobalState } from "./views/componentView/componentGlobalState.js";
+import { importSyncLocalStorageToAPI } from "./syncLocalStorageToAPI.js";
 import Login from "./views/loginView/login.js";
 import "core-js/stable";
 import { Loader } from "./components/loader.js";
@@ -20,6 +21,7 @@ let contentContainerListener;
 let sidebarComponentView;
 let tableComponentView;
 let journalInfoComponentView;
+let syncComponentView;
 
 const pass = () => { };
 
@@ -381,20 +383,27 @@ const controlAddTableItemFallback = function (addTableItemParam, returnData, req
   }
 }
 
-const controlAPIAddTagFallback = function (callBack, returnData, requestState = false) {
+const controlAPIAddTagFallback = function (addTagParams, returnData, requestState = false) {
+  debugger;
   if (requestState) {
     debugger;
     const formattedData = formatAPISub(Array.isArray(returnData) ? returnData : [returnData], "apiTags")
     model.state.tags.push(...formattedData)
   }
   //TODO: add fallback handling for failure in creating tags
-  callBack()
-
+  if (!requestState) {
+    debugger;
+    const createFallBackTag = model.createTagObject(addTagParams.payload)
+    model.diff.tagsToCreate.push(addTagParams.payload)
+    model.persistDiff()
+  }
+  addTagParams.callBack()
 }
 
 const controlAddTag = function (payload, callBack) {
   const queryObj = {
-    endpoint: API.APIEnum.TAG.CREATE,
+    // API.APIEnum.TAG.CREATE
+    endpoint: API.APIEnum.TAG.CREATED,
     token: model.token.value,
     sec: null,
     queryData: payload,
@@ -402,7 +411,7 @@ const controlAddTag = function (payload, callBack) {
     spinner: false,
     alert: false,
     type: "POST",
-    callBack: controlAPIAddTagFallback.bind(null, callBack)
+    callBack: controlAPIAddTagFallback.bind(null, { callBack, payload })
   }
   API.queryAPI(queryObj)
 }
@@ -545,7 +554,7 @@ const controlUpdateTableItem = function (
   if (!payload) return
   let apiPayload = formatAPIRequestUpdateTableItemPayload(payload, payloadType)
   if (payloadType === "tags") apiPayload = { "tags": apiPayload }
-  getAPICreatedTagFromModel(apiPayload, payload, model.state, payloadType)
+  getCreatedTagFromModel(apiPayload, payload, model.state, payloadType)
   console.log("the api payload", apiPayload)
   const batchTypes = ["selectTags"]
   const batchAction = payloadType === batchTypes.find(type => type === payloadType)
@@ -585,9 +594,8 @@ const controlUpdateTableItem = function (
 
 const controlUpdateTagFallback = function (payload, returnData, requestStatus) {
   debugger
-  console.log(model.state.tags)
   if (!requestStatus) {
-    model.checkForAndUpdateTag(payload)
+    // model.checkForAndUpdateTag(payload)
     model.diff.tagsToUpdate.push(payload)
     model.persistDiff()
   }
@@ -601,8 +609,10 @@ const controlUpdateTagFallback = function (payload, returnData, requestStatus) {
 
 const controlUpdateTag = function (payload, payloadType) {
   const apiPayload = formatAPIRequestTagPayload(payload, payloadType)
+
+  //API.APIEnum.TAG.PATCH(payload.tag.id),
   const queryObj = {
-    endpoint: API.APIEnum.TAG.PATCH(payload.tag.id),
+    endpoint: API.APIEnum.TAG.PATCHED,
     token: model.token.value,
     sec: null,
     queryData: apiPayload,
@@ -613,7 +623,6 @@ const controlUpdateTag = function (payload, payloadType) {
     callBack: controlUpdateTagFallback.bind(null, payload.tag)
   }
   API.queryAPI(queryObj)
-
 }
 
 const controlAPIDeleteTagFallback = function (tagId, returnData, requestStatus) {
@@ -624,8 +633,9 @@ const controlAPIDeleteTagFallback = function (tagId, returnData, requestStatus) 
 }
 
 const controlDeleteTag = function (tagId) {
+  // API.APIEnum.TAG.DELETE(tagId),
   const queryObj = {
-    endpoint: API.APIEnum.TAG.DELETE(tagId),
+    endpoint: API.APIEnum.TAG.DELETED,
     token: model.token.value,
     sec: null,
     actionType: "deleteTag",
@@ -866,9 +876,12 @@ const controlLoadUI = function () {
 const init = function (loadTemplate = true) {
   model.loadToken()
   if (model.token.value) {
+    syncComponentView = importSyncLocalStorageToAPI()
+    syncComponentView.component()
+
     if (loadTemplate) {
       controlAddTemplate("journal")
-      model.init(init)
+      model.init(syncComponentView, init)
     }
 
     if (!loadTemplate) controlLoadUI()

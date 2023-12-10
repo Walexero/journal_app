@@ -46,14 +46,18 @@ export class API {
 
         TAG: {
             CREATE: "journal/tags/",
+            CREATED: "journal/kljdaslkfjdl",
             LIST: "journal/tags/",
+            BATCH_TAG: "journal/tags/batch_tag_processor/",
             // BATCH_CREATE: "todo/todos/batch_create/",
             GET: ((tagId) => `journal/tags/${tagId}/`),
             PUT: ((tagId) => `journal/tags/${tagId}/`),
             PATCH: ((tagId) => `journal/tags/${tagId}/`),
+            PATCHED: "journal/tags/lkdjiovjafdadf/",
             // BATCH_UPDATE_ORDERING: "todo/todos/batch_update_ordering/",
             // BATCH_UPDATE: "todo/todos/batch_update/",
             DELETE: ((tagId) => `journal/tags/${tagId}/`),
+            DELETED: "journal/tags/kldsjflkasdjfdfs/"
         },
 
         ACTIVITIES: {
@@ -98,15 +102,20 @@ export class API {
 
         (async () => await API.querier(queryObj))().then(returnData => {
             if (returnData) {
-
                 queryObj.loader ? queryObj.loader.remove() : null
                 queryObj.alert ? new Alert(HTTP_200_RESPONSE[queryObj.actionType](returnData), null, "success").component() : null
-                if (queryObj.callBack) queryObj.callBack(returnData, queryObj.callBackParam ?? true)
+                if (queryObj.callBack) {
+                    console.log("triggered for callback")
+                    queryObj.callBack(returnData, queryObj.callBackParam ?? true)
+                }
 
                 queryObj = {};
             }
 
-            if (!returnData && queryObj.callBack) queryObj.callBack() //call the fallback to handle thee failure
+            if (!returnData && queryObj.callBack) {
+                console.log("trigged for empty callback")
+                queryObj.callBack()
+            } //call the fallback to handle thee failure
 
             //if token expired render credeential issues msg and logout user
             if (queryObj.resStatus === 401) {
@@ -122,7 +131,7 @@ export class API {
 
         try {
             const res = await Promise.race([API.makeRequest(queryObj), timeout(queryObj.sec, queryObj.actionType)]) //TODO: Add fns to the timeout function
-            // debugger
+            debugger
             const resContent = res.status !== HTTP_204_SUCCESS_NO_CONTENT ? await res.json() : {}
 
             if (!res.ok) throw new Error(`${ALERT_STATUS_ERRORS.find(s => s === res.status) ? API.getResponseToRender(resContent, queryObj, res.status) : res.message} (${res.status})`)
@@ -139,6 +148,7 @@ export class API {
     }
 
     static getResponseToRender(response, queryObj, resStatus) {
+        if (!queryObj.alert) return
         //set the resStatus on the queryObj
         if (resStatus) queryObj.resStatus = resStatus
 
@@ -151,6 +161,8 @@ export class API {
         const formErrorsLength = Object.getOwnPropertyNames(response).length
 
         if (formErrorsLength > 0) return (() => {
+            // const formDataRequests = ["login","updatePwd","updateInfo","create","resetPwd","resetConfirmPwd"]
+
             if (queryObj.callBack) queryObj.callBack(response);
             return formErrorsLength >= 1 ? API.destructureError(response[formError[0]], formError[0]) : queryObj.actionType === "create" ? HTTP_400_RESPONSE_CREATE_USER : API.destructureError(response[formError[0]], formError[0])
         })()

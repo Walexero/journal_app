@@ -137,6 +137,7 @@ class ComponentOptionsView {
       if (componentObj.updateModel) {
         //update model gets called with the bounded updateObj
         componentObj.updateModel();
+        console.log("updated model tag obj")
       }
 
       //logic to rerender the side-peek content

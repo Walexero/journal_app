@@ -1435,6 +1435,7 @@ html {
 .table-item-tags .tag-tag {
   padding: 0.2rem 0.4rem;
   border-radius: 0.4rem;
+
 }
 
 /* .row-tag {
@@ -1620,9 +1621,6 @@ html {
 .tag-tag {
   display: flex;
   gap: 0.4rem;
-}
-
-.row-tag-tag{
   cursor: pointer;
 }
 

@@ -570,6 +570,8 @@ class TableBodyProcessorView {
 
     const tagContainer = clickedContainer.querySelector(".table-item-tags");
 
+    debugger;
+
     const getTableItemData =
       this._eventHandlers.tableItemControllers.controlGetTableItem(
         +cls._currentTable.id,

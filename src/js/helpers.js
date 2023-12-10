@@ -114,13 +114,40 @@ export const formatUpdateObjTags = (tagsToFormat) => {
   return formattedTag;
 };
 
-export const formatTagRequestBody = (tagToCreate) => {
+//returns the tag object for existing tags with id and also returns tags without id from model
+export const getUpdateTableItemTagId = (tagHtmlData, state) => {
+  let tagIds = []
+  let tagsWithId = tagHtmlData.tags.map(tag => tag.dataset?.id ? Number(tag.dataset.id) : pass()).filter(tagId => isFinite(tagId))
+
+  //add the tags with id to the return array
+  tagIds.push(...tagsWithId)
+
+  //add tags without id
+  getCreatedTagFromModel(tagIds, tagHtmlData, state, "tags")
+  return tagIds
+}
+
+export const formatTagRequestBody = (tagToCreate, addMeta = false, tagMeta = undefined) => {
   let formattedTags;
-  formattedTags = {
-    "tag_name": tagToCreate.text,
-    "tag_color": tagToCreate.tagColor.color,
-    "tag_class": tagToCreate.tagColor.color_value
+  if (!addMeta)
+    formattedTags = {
+      "tag_name": tagToCreate.text,
+      "tag_color": tagToCreate.tagColor.color,
+      "tag_class": tagToCreate.tagColor.color_value
+    }
+
+  if (addMeta) {
+    const tagMetaObj = tagMeta.find(meta => meta.color_value.toLowerCase() === tagToCreate.color.toLowerCase())
+
+    formattedTags = {
+      "tag_name": tagToCreate.text,
+      "tag_color": tagMetaObj.color,
+      "tag_class": tagMetaObj.color_value
+    }
+
+    if (tagToCreate.id) formattedTags.id = tagToCreate.id
   }
+
   return formattedTags
 }
 
@@ -238,12 +265,14 @@ export const formatTagPayload = function (APIResp, type) {
 export const formatAPIRequestTagPayload = function (payload, type) {
   let formattedRequest;
   if (type === "tagsValue") {
+    debugger
     formattedRequest = {
       "tag_class": payload.tag.color,
       "tag_name": payload.tag.text,
       "tag_color": TAGS_COLORS.colors.find(color => color.color_value == payload.tag.color).color,
-
     }
+
+    if (payload.tag.id) formattedRequest["id"] = payload.tag.id
   }
   return formattedRequest
 }
@@ -455,14 +484,14 @@ export const formatAPIRequestUpdateTableItemPayload = function (payload, type) {
   return formattedRequest
 }
 
-export const getAPICreatedTagFromModel = function (apiPayload, payload, state, type) {
+export const getCreatedTagFromModel = function (returnPayload, payload, state, type) {
   if (type === "tags") {
     const tagsWithoutId = payload.tags.map(tag => tag.dataset?.id === "undefined" ? tag : pass()).filter(tag => tag)
     tagsWithoutId.forEach(tagObj => {
       const objExistInTableTags = state.tags.find(
         (tag) => tag.text.toLowerCase() === tagObj.textContent.replaceAll("\n", "").trim().toLowerCase()
       );
-      if (objExistInTableTags) apiPayload.tags.push(objExistInTableTags.id)
+      if (objExistInTableTags) returnPayload?.tags?.push(objExistInTableTags.id) ?? returnPayload.push(objExistInTableTags.id)
     })
   }
 }
@@ -500,5 +529,8 @@ export const formatJournalHeadingName = (username) => {
 
   const headingName = `${username.slice(0, 1).toUpperCase() + username.slice(1)}'s Journal`
   return `${headingName.slice(0, 15)}...`
-
 }
+
+//replace with actual func 
+export const formatAPIResponseBody = () => { }
+export const formatAPIRequestBody = () => { }
