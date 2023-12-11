@@ -485,10 +485,7 @@ const controlUpdateTableItemFallback = function (addTableItemParam, returnData, 
 
       const updateAndCreate = payload?.modelProperty?.property?.updateAndAddProperty
       const updateOnly = payload?.modelProperty?.property?.updateProperty ?? payload?.modelProperty?.updateProperty
-      console.log("update and create", updateAndCreate)
-      console.log("update only", updateOnly)
-      console.log(payload.modelProperty.property)
-      debugger
+
       if (updateAndCreate) {
         //add the model to create
         // model.diff.submodelToCreate.push({ subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.createdItemId, item: addTableItemParam.payload.itemId, table: addTableItemParam.payload.tableId, date: isoDate() })
