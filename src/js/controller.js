@@ -16,6 +16,7 @@ import "core-js/stable";
 import { Loader } from "./components/loader.js";
 import { DEFAULT_LOGIN_PAGE_TIMEOUT } from "./config.js";
 import { API } from "./api.js";
+import { cloneDeep } from "lodash";
 
 let contentContainerListener;
 let sidebarComponentView;
@@ -477,35 +478,47 @@ const controlUpdateTableItemFallback = function (addTableItemParam, returnData, 
     const tableItems = ["tags", "title"]
 
     if (addTableItemParam.payloadType === subModels.find(sub => sub === addTableItemParam.payloadType)) {
-      const updateAndCreate = addTableItemParam?.payload?.modelProperty?.property?.updateAndAddProperty
-      const updateOnly = addTableItemParam?.payload?.modelProperty?.property?.updateProperty
+      let payload = cloneDeep(addTableItemParam.payload)
+      payload.payloadType = addTableItemParam.payloadType
+      payload.date = isoDate()
+      payload.refreshCallBack = null
+
+      const updateAndCreate = payload?.modelProperty?.property?.updateAndAddProperty
+      const updateOnly = payload?.modelProperty?.property?.updateProperty ?? payload?.modelProperty?.updateProperty
+      console.log("update and create", updateAndCreate)
+      console.log("update only", updateOnly)
+      console.log(payload.modelProperty.property)
+      debugger
       if (updateAndCreate) {
         //add the model to create
-        model.diff.submodelToCreate.push({ subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.createdItemId, item: addTableItemParam.payload.itemId, table: addTableItemParam.payload.tableId, date: isoDate() })
+        // model.diff.submodelToCreate.push({ subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.createdItemId, item: addTableItemParam.payload.itemId, table: addTableItemParam.payload.tableId, date: isoDate() })
+        model.diff.submodelToCreate.push(payload)
 
         //check against dups
-        const subModelExists = model.diff.submodelToUpdate.find(subModel => subModel.id === addTableItemParam.payload.updatedItemId)
-        if (subModelExists && subModelExists !== -1) { }
+        // const subModelExists = model.diff.submodelToUpdate.find(subModel => subModel.id === addTableItemParam.payload.updatedItemId)
+        // if (subModelExists && subModelExists !== -1) { }
 
-        if (!subModelExists || subModelExists === -1) {
-          //add the submodel to the update obj
-          model.diff.submodelToUpdate.push({
-            subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.updatedItemId, table: addTableItemParam.payload.tableId,
-            item: addTableItemParam.payload.itemId, date: isoDate()
-          })
-        }
+        // if (!subModelExists || subModelExists === -1) {
+        //   //add the submodel to the update obj
+        //   model.diff.submodelToUpdate.push({
+        //     subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.updatedItemId, table: addTableItemParam.payload.tableId,
+        //     item: addTableItemParam.payload.itemId, date: isoDate()
+        //   })
+        // }
       }
       if (!updateAndCreate && updateOnly) {
         //TODO: refactor
         //check against dups
-        const subModelExists = model.diff.submodelToUpdate.find(subModel => subModel.id === addTableItemParam.payload.updatedItemId)
-        if (subModelExists && subModelExists !== -1) { }
+        // const subModelExists = model.diff.submodelToUpdate.find(subModel => subModel.id === addTableItemParam.payload.updatedItemId)
+        // if (subModelExists && subModelExists !== -1) { }
 
-        if (!subModelExists || subModelExists === -1) {
-          //add the submodel to the update obj
-          model.diff.submodelToUpdate.push({ subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.updatedItemId, table: addTableItemParam.payload.tableId, item: addTableItemParam.payload.itemId, date: isoDate() })
-        }
+        // if (!subModelExists || subModelExists === -1) {
+        //add the submodel to the update obj
+        // model.diff.submodelToUpdate.push({ subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.updatedItemId, table: addTableItemParam.payload.tableId, item: addTableItemParam.payload.itemId, date: isoDate() })
+        // }
+        model.diff.submodelToUpdate.push(payload)
       }
+      payload = {}
     }
 
 
