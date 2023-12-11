@@ -67,6 +67,7 @@ export class API {
             GET: ((activityId) => `journal/activities/${activityId}/`),
             PUT: ((activityId) => `journal/activities/${activityId}/`),
             PATCH: ((activityId) => `journal/activities/${activityId}/`),
+            PATCHED: "journal/activities/kdjfalsdfasddf/",
             BATCH_UPDATE_ACTIVITIES: "journal/activities/batch_update_activities/",
             BATCH_DELETE_ACTIVITIES: "journal/activities/batch_delete_activities/",
             BATCH_DUPLICATE_ACTIVITIES: "journal/activities/batch_duplicate_activities/",
@@ -80,6 +81,7 @@ export class API {
             PUT: ((subModel, subModelId) => `journal/${subModel}/${subModelId}/`),
             PATCH: ((subModel, subModelId) => `journal/${subModel}/${subModelId}/`),
             DELETE: ((subModel, subModelId) => `journal/${subModel}/${subModelId}/`),
+            DELETED: "journal/djfldsjflakdfsdfd/dsfkasdfjdsfdsfdf/"
         },
     }
     static timeout = 20 //timeout in 20s

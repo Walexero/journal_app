@@ -528,7 +528,7 @@ export const updateTableItem = function (payload) {
       : pass();
 
     //add the tag to the item to update
-    getTagsId.length > 0 ? (itemToUpdate.itemTags = getTagsId) : pass();
+    getTagsId?.length > 0 ? (itemToUpdate.itemTags = getTagsId) : pass();
 
     if (payload.modelProperty) {
       if (payload.modelProperty.property.update) {

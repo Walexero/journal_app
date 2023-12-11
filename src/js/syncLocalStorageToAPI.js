@@ -154,10 +154,14 @@ class SyncLocalStorageToAPI {
         // this._filterDeletedObjectsFromObjects(this.pendingTagsToUpdate, this.pendingTagsToDelete, null, this.createPendingTagsToUpdate, "tags")
 
         /**End of done */
-        debugger;
+
         //submodels to create passes delete cheeck
         this._filterDeletedObjectsFromObjects(this.pendingSubmodelToCreate, this.pendingSubmodelToDelete, null, this.createPendingSubmodels, "submodels")
 
+        //submodels to update passes delete cheeck
+        this._filterDeletedObjectsFromObjects(this.pendingSubmodelToUpdate, this.pendingSubmodelToDelete, null, this.createPendingSubmodelsToUpdate, "submodels")
+
+        console.log("the state", this._modelState)
 
         // this._filterDeletedObjectsFromObjects(this.pendingTodoToUpdate, this.pendingTodosToDelete, null, this.createPendingTodosToUpdate, "todo")
         // 
@@ -173,9 +177,14 @@ class SyncLocalStorageToAPI {
         //create tags payload
         this._createTagsPayload(this.createPendingTags, this.createTagsPayload)
 
-        debugger
-        //create tags payload
+        //create tags update payload
         this._createTagToUpdatePayload(this.createPendingTagsToUpdate, this.createPendingTags, this.createTagsToUpdatePayload)
+
+        debugger
+        //create submodels payload
+        this._createSubmodelsPayload(this.createPendingSubmodels, this.createSubmodelsPayload)
+
+        //create submodels update payload
 
         // this._createTodoPayload(this.pendingTodos, this.createPendingTodos, this.createTodoPayload)
 
@@ -532,9 +541,16 @@ class SyncLocalStorageToAPI {
             if (deletedObjectsExists) {
 
                 object.forEach(obj => {
-                    const deletedObjectExistsInObject = deletedObjects.some(deletedObjId =>
-                        this._returnDeleteObjId(objectType, deletedObjId) === this._returnObjType(objectType, obj)
-                    )
+                    let deletedObjectExistsInObject;
+                    if (objectType.toLowerCase() !== "submodels")
+                        deletedObjectExistsInObject = deletedObjects.some(deletedObjId =>
+                            this._returnDeleteObjId(objectType, deletedObjId) === this._returnObjType(objectType, obj)
+                        )
+                    if (objectType.toLowerCase() === "submodels") {
+                        const deletedObjectsWithSameModels = deletedObjects.filter(delObj => delObj.subModel.toLowerCase() === obj.subModel.toLowerCase())
+                        deletedObjectExistsInObject = deletedObjectsWithSameModels.some(delObj => delObj.id === obj.id)
+
+                    }
                     if (!deletedObjectExistsInObject) returnList.push(obj)
                 })
             }
@@ -595,6 +611,22 @@ class SyncLocalStorageToAPI {
         else this._diffState.tagsToUpdate = []
     }
 
+    _createSubmodelsPayload(submodelsToCreateFilteredArray, submodelsToCreatePayloadArray) {
+        //create submodel payload
+        if (submodelsToCreateFilteredArray.length > 0) {
+            submodelsToCreateFilteredArray.forEach(submodel => {
+                //get submodel from modelState
+                const subModelTable = this._modelState.tables.find(table => table.id === submodel.table)
+                //TODO: get the submodel type from the payload
+                const subModelTableItem = subModelTable.tableItems.find(tableItem => tableItem.id === submodel.item)
+                const subModelItem = subModelTableItem[submodel.subModel].find(id => id === submodel.id)
+                console.log("the usbmodel item", subModelItem)
+
+                const submodelPayload = subModelItem
+            })
+        }
+
+    }
 
     _createTodoUpdatePayload(todoToUpdateDiffArray, todoToUpdateFilteredArray, todoToCreateFilteredArray, todoToUpdatePayloadArray) {
 

@@ -429,6 +429,7 @@ const controlAddTableItem = function (
   sort = false,
   callBack = false,
 ) {
+
   const currentTableBeforeUpdate = model.getCurrentTable()
   const apiPayload = createTableItemAPIRequestPayload(currentTableBeforeUpdate, relativeItem)
 
@@ -467,6 +468,7 @@ const controlGetTableItemWithMaxTags = function (tableId, itemsId) {
 };
 
 const controlUpdateTableItemFallback = function (addTableItemParam, returnData, requestStatus = false) {
+  debugger;
   const currentTable = model.getCurrentTable();
   const batchItems = ["selectTags", "deleteActivities"]
   if (!requestStatus) {
@@ -479,7 +481,7 @@ const controlUpdateTableItemFallback = function (addTableItemParam, returnData, 
       const updateOnly = addTableItemParam?.payload?.modelProperty?.property?.updateProperty
       if (updateAndCreate) {
         //add the model to create
-        model.diff.submodelToCreate.push({ subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.createdItemId, date: isoDate() })
+        model.diff.submodelToCreate.push({ subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.createdItemId, item: addTableItemParam.payload.itemId, table: addTableItemParam.payload.tableId, date: isoDate() })
 
         //check against dups
         const subModelExists = model.diff.submodelToUpdate.find(subModel => subModel.id === addTableItemParam.payload.updatedItemId)
@@ -487,7 +489,10 @@ const controlUpdateTableItemFallback = function (addTableItemParam, returnData, 
 
         if (!subModelExists || subModelExists === -1) {
           //add the submodel to the update obj
-          model.diff.submodelToUpdate.push({ subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.updatedItemId, date: isoDate() })
+          model.diff.submodelToUpdate.push({
+            subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.updatedItemId, table: addTableItemParam.payload.tableId,
+            item: addTableItemParam.payload.itemId, date: isoDate()
+          })
         }
       }
       if (!updateAndCreate && updateOnly) {
@@ -498,7 +503,7 @@ const controlUpdateTableItemFallback = function (addTableItemParam, returnData, 
 
         if (!subModelExists || subModelExists === -1) {
           //add the submodel to the update obj
-          model.diff.submodelToUpdate.push({ subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.updatedItemId, date: isoDate() })
+          model.diff.submodelToUpdate.push({ subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.updatedItemId, table: addTableItemParam.payload.tableId, item: addTableItemParam.payload.itemId, date: isoDate() })
         }
       }
     }
@@ -560,6 +565,10 @@ const controlUpdateTableItem = function (
   const batchAction = payloadType === batchTypes.find(type => type === payloadType)
   let queryObj;
 
+  //FIXME: sync add
+  const submodels = ["intentions", "happenings", "actionItems", "gratefulFor"]
+  const submodelType = submodels.find(submodel => submodel.toLowerCase() === payloadType.toLowerCase())
+
   if (batchAction)
     queryObj = {
       endpoint: API.getBatchEndpoint(payloadType),
@@ -576,7 +585,7 @@ const controlUpdateTableItem = function (
 
   if (!batchAction)
     queryObj = {
-      endpoint: API.APIEnum.ACTIVITIES.PATCH(payload.itemId),
+      endpoint: submodelType ? API.APIEnum.ACTIVITIES.PATCHED : API.APIEnum.ACTIVITIES.PATCH(payload.itemId),
       token: model.token.value,
       sec: null,
       queryData: apiPayload,
@@ -651,6 +660,7 @@ const controlDeleteTag = function (tagId) {
 
 const controlDeleteTableItemFallback = function (deleteTableItemParam, returnData, requestStatus = false) {
   if (!requestStatus) {
+    debugger
     if (deleteTableItemParam.payloadType === "deleteTableItems") {
       model.tableItemToDelete.push(...deleteTableItemParam.payload.delete_list)
     } else {
@@ -674,8 +684,9 @@ const controlDeleteTableItem = function (
   const batchType = ["deleteTableItems"] //(s)
 
   const apiPayload = formatAPIRequestUpdateTableItemPayload(payload, payloadType)
+  //API.getSubmodelEndpoint(payloadType, "DELETE", apiPayload[payloadType].delete.id),
   const queryObj = {
-    endpoint: payloadType === "deleteTableItems" ? API.getBatchEndpoint(payloadType) : API.getSubmodelEndpoint(payloadType, "DELETE", apiPayload[payloadType].delete.id),
+    endpoint: payloadType === "deleteTableItems" ? API.getBatchEndpoint(payloadType) : API.APIEnum.SUBMODEL.DELETED,
     token: model.token.value,
     sec: null,
     actionType: "deleteTableItem",
