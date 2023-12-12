@@ -143,16 +143,8 @@ export default class TagEditComponent {
       colorContainer.querySelector(".color-row-icon");
 
     if (!selectedColorIsChecked) {
-      allColorContainer.forEach((color) =>
-        color.querySelector(".color-row-icon")?.remove()
-      );
-
-      colorContainer.insertAdjacentHTML(
-        "beforeend",
-        this._generateCheckmarkMarkup()
-      );
-
-      this.updateTagAndNotifyCallers();
+      //the color value is changed based on the API resolve value
+      this.updateTagAndNotifyCallers(null, this._selectColor.bind(this, allColorContainer, colorContainer));
     }
   }
 
@@ -161,7 +153,6 @@ export default class TagEditComponent {
 
     if (inputEl.value.length > 0) this.updateTagAndNotifyCallers();
 
-    //FIXME: might have to pass the container value dynamically
     this._componentHandler._componentRemover(
       this._state,
       this._state.component,
@@ -182,6 +173,18 @@ export default class TagEditComponent {
     const component = new notificationComponent(componentObj).render();
   }
 
+  _selectColor(allColorContainer, colorContainer) {
+    allColorContainer.forEach((color) =>
+      color.querySelector(".color-row-icon")?.remove()
+    );
+
+    colorContainer.insertAdjacentHTML(
+      "beforeend",
+      this._generateCheckmarkMarkup()
+    );
+
+  }
+
   _deleteElFromOptionContainer(el) {
     el.forEach((elm) => {
       if (elm) {
@@ -193,8 +196,7 @@ export default class TagEditComponent {
   }
 
   _deleteTag(tagId, el) {
-    this._state.eventHandlers.tableItemControllers.controlDeleteTag(tagId)
-    this._deleteElFromOptionContainer(el);
+    this._state.eventHandlers.tableItemControllers.controlDeleteTag(tagId, this._deleteElFromOptionContainer.bind(this, el))
   }
 
   _updateElClassAndText(inputVal, colorVal, el, tag) {
@@ -211,8 +213,7 @@ export default class TagEditComponent {
     });
   }
 
-  updateTagAndNotifyCallers(deleteTag) {
-    debugger;
+  updateTagAndNotifyCallers(deleteTag = undefined, eventCallBack = undefined) {
     const cls = this;
     let cloneTagBeforeUpdate = null;
 
@@ -250,7 +251,7 @@ export default class TagEditComponent {
       tagSelectedColor.toLowerCase() !==
       this._state.tagToEdit.color.toLowerCase();
 
-    if (tagInputChanged || tagColorChanged) {
+    if (tagInputChanged || tagColorChanged || eventCallBack) {
       //check for existing tag with similar tag name
       const similarNamedTag = this._state.tags.find(
         (tg) => tg.text.toLowerCase() === tagInput.value.trim().toLowerCase()
@@ -273,21 +274,6 @@ export default class TagEditComponent {
 
       cloneTagBeforeUpdate = cloneDeep(this._state.tagToEdit);
 
-      //change the color and text content of the elements
-      this._updateElClassAndText(
-        tagInput,
-        tagSelectedColor,
-        [updateParentOptionItemTag, updateParentOptionTag],
-        this._state.tagToEdit
-      );
-
-      //update the tag
-      //updates the model as well
-      [this._state.tagToEdit.color, this._state.tagToEdit.text] = [
-        tagSelectedColor,
-        tagInput.value,
-      ];
-
       //format the update object
       const updateObj = {
         tag: this._state.tagToEdit,
@@ -296,19 +282,32 @@ export default class TagEditComponent {
       };
 
 
-      this._state.eventHandlers.tableItemControllers.controlUpdateTag(updateObj, "tagsValue")
-      // this._state.callBack(
-      // {
-      // tableId: +this._state.currentTarget.dataset.id,
-      // itemId: this._state.itemId,
-      // updateObj,
-      // },
-      // null,
-      // null,
-      // "tagsValue" //added payload type
-
-      // );
+      this._state.eventHandlers.tableItemControllers.controlUpdateTag(updateObj, "tagsValue", this._updateUI.bind(this, { eventCallBack, tagInput, tagSelectedColor, updateParentOptionItemTag, updateParentOptionItemTag }))
     }
+  }
+
+  _updateUI(options) {
+
+    //resolve any callback for any other event passed that updates the UI
+    if (options.eventCallBack) options.eventCallBack()
+
+    //change the color and text content of the elements
+    this._updateElClassAndText(
+      options.tagInput,
+      options.tagSelectedColor,
+      [options.updateParentOptionItemTag, options.updateParentOptionTag],
+      this._state.tagToEdit
+    );
+
+    //update the tag
+    //updates the model as well
+    [this._state.tagToEdit.color, this._state.tagToEdit.text] = [
+      options.tagSelectedColor,
+      options.tagInput.value,
+    ];
+
+    //free mem
+    options = {}
   }
 
   //use for search sanitization

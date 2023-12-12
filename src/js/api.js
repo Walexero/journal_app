@@ -105,7 +105,9 @@ export class API {
         (async () => await API.querier(queryObj))().then(returnData => {
             if (returnData) {
                 queryObj.loader ? queryObj.loader.remove() : null
-                queryObj.alert ? new Alert(HTTP_200_RESPONSE[queryObj.actionType](returnData), null, "success").component() : null
+
+                if (queryObj.successAlert)
+                    queryObj.alert ? new Alert(HTTP_200_RESPONSE[queryObj.actionType](returnData), null, "success").component() : null
                 if (queryObj.callBack) {
                     console.log("triggered for callback")
                     queryObj.callBack(returnData, queryObj.callBackParam ?? true)
@@ -140,8 +142,9 @@ export class API {
 
             if (!resContent.non_field_errors) data = API.destructureSuccessResponse(resContent, queryObj)
         } catch (err) {
+            debugger
             if (queryObj.loader) await queryObj.loader.remove()
-            if (queryObj.alert) await new Alert(err.message ?? err, null, "error").component()
+            if (queryObj.alert) await new Alert(!queryObj.successAlert ? "Request Failed Please try again later" : err.message ?? err, null, "error").component()
             // if(queryObj.resStatus === 401) API.logoutUser()
 
         } finally {

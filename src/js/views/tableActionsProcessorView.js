@@ -225,6 +225,7 @@ class TableActionsProcessorView {
   }
 
   _handleTableNewBtnEvent(e, eventRouterComponent) {
+    debugger;
     if (eventRouterComponent) eventRouterComponent()
 
     const sidePeekCallBack = (itemId) => {

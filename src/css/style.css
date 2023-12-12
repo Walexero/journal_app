@@ -1600,6 +1600,7 @@ html {
 }
 
 .row-tag-delete {
+  cursor: pointer;
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
@@ -1652,6 +1653,7 @@ html {
   align-items: center;
   height: 3rem;
   padding: 0.2rem 0.6rem;
+  cursor: pointer;
 }
 
 .colors:hover {

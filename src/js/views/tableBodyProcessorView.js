@@ -23,7 +23,7 @@ class TableBodyProcessorView {
   _token;
 
   addHandlers(handlers, currentTableSetter) {
-    this._eventHandlers = handlers; //.tableItemControllers;
+    this._eventHandlers = handlers;
     this._currentTableSetter = currentTableSetter;
   }
 

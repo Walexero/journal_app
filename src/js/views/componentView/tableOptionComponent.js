@@ -89,7 +89,6 @@ export default class TableOptionComponent {
   }
 
   _handleEvents(e) {
-    debugger;
     if (this._renameMatchStrategy(e)) this._handleRenameEvent(e);
     if (this._deleteMatchStrategy(e)) this._handleDeleteEvent(e);
     if (this._duplicateMatchStrategy(e)) this._handleDuplicateEvent(e);
@@ -138,26 +137,9 @@ export default class TableOptionComponent {
       let formData = new FormData(e.target);
       [formData] = [...formData];
 
-      //set table UI value if exists
-      state.updateUI(state.table, renameInput.value);
-      //updateUi being updateUItableTitle
-
-      //change the dataset name on the current table
-      state.table.dataset.name = renameInput.value;
-
-      //clear and hide form
-      cls._hideInputcontainer(renameInputContainer);
-
       //update model
-      state.rename(formData[1], +state.table.dataset.id);
+      state.rename(formData[1], +state.table.dataset.id, cls._updateTableUI.bind(cls, renameInput, renameInputContainer));
 
-      //update sidebar tables if open
-      if (componentGlobalState.sideBarListActive) {
-        const sidebarJournalContainer = document.querySelector(
-          ".nav-options-journal"
-        );
-        this._sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
-      }
     });
   }
 
@@ -166,21 +148,34 @@ export default class TableOptionComponent {
     this.remove();
     state.delete(+state.table.dataset.id);
 
-    //update sidebar tables if open
-    if (componentGlobalState.sideBarListActive) {
-      const sidebarJournalContainer = document.querySelector(
-        ".nav-options-journal"
-      );
-      this._sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
-    }
+    this._updateSideBarComponent()
   }
 
   _handleDuplicateEvent(e) {
-    debugger
     const state = this._state;
-    this.remove();
+    this.remove()
+    //hide the options
     state.duplicate(+state.table.dataset.id);
+    this._updateSideBarComponent
+  }
 
+
+  _updateTableUI(renameInput, renameInputContainer) {
+    const cls = this
+    //set table UI value if exists
+    this._state.updateUI(this._state.table, renameInput.value);
+    //updateUi being updateUItableTitle
+
+    //change the dataset name on the current table
+    this._state.table.dataset.name = renameInput.value;
+
+    //clear and hide form
+    cls._hideInputcontainer(renameInputContainer);
+
+    this._updateSideBarComponent()
+  }
+
+  _updateSideBarComponent() {
     //update sidebar tables if open
     if (componentGlobalState.sideBarListActive) {
       const sidebarJournalContainer = document.querySelector(

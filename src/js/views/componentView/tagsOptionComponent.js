@@ -171,7 +171,6 @@ export default class TagOptionComponent {
 
   render() {
     const cls = this;
-    debugger;
     this._state.markup = this._generateMarkup(
       this._state.tagItems,
       this._state.itemId
@@ -341,7 +340,7 @@ export default class TagOptionComponent {
     const tagsAvailableContainer =
       e.currentTarget.querySelector(".tags-available");
     const inputContainer = e.currentTarget.querySelector(".tag-input-input");
-    debugger;
+
     //guard clause against empty input val
     const inputValExists = inputContainer?.value.trim().length > 0;
     if (!inputValExists) return;
@@ -403,7 +402,7 @@ export default class TagOptionComponent {
 
     const tagItemsContainer = document.querySelector(".tags-items");
 
-    debugger;
+
     const addedTagItems = Array.from(tagItemsContainer.children)
       .map((tagItem) => tagItem.textContent.trim())
       .filter((tagItem) => tagItem.length > 0);

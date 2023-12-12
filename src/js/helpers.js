@@ -265,7 +265,6 @@ export const formatTagPayload = function (APIResp, type) {
 export const formatAPIRequestTagPayload = function (payload, type) {
   let formattedRequest;
   if (type === "tagsValue") {
-    debugger
     formattedRequest = {
       "tag_class": payload.tag.color,
       "tag_name": payload.tag.text,
@@ -516,7 +515,6 @@ export const tableItemOrdering = function (createRelativeProperty) {
 }
 
 export const createTableItemAPIRequestPayload = function (currentTable, relativeItem = false) {
-  debugger;
   const payload = {
     "name": "",
     "journal_table": currentTable.id

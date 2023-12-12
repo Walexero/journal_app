@@ -30,20 +30,8 @@ const controlGetJournalNameAndUsername = function () {
   return { journalName: model.state.name, username: model.state.username };
 };
 
-const controlAPIUpdateJournalInfoFallback = function (payload, returnData, requestState) {
-  if (!requestState) {
-    const key = Object.keys(payload)
-    model.diff.journalInfoToUpdate[key] = payload[key]
-    model.persistDiff()
-  }
-
-  if (requestState) {
-    model.updateJournalInfo(payload);
-  }
-}
 
 const controlUpdateJournalInfo = function (updateVal) {
-  debugger
   const apiPayload = {
   }
   if (updateVal.name) apiPayload.journal_name = updateVal.name
@@ -56,10 +44,9 @@ const controlUpdateJournalInfo = function (updateVal) {
     queryData: apiPayload,
     actionType: "updateJournalInfo",
     spinner: false,
-    alert: false,
+    alert: true,
+    successAlert: false,
     type: "PATCH",
-    callBack: controlAPIUpdateJournalInfoFallback.bind(null, updateVal),
-    callBackParam: true
   }
   API.queryAPI(queryObj)
 };
@@ -192,23 +179,19 @@ const controlAddTable = function () {
   );
 };
 
-const controlRenameOptionFallback = function (payload, returnData, requestStatus) {
-  debugger;
-  if (!requestStatus) {
-    const tableToUpdateExists = model.tableToUpdate.find(table => table.id === payload.journal)
-    if (tableToUpdateExists && tableToUpdate !== -1) {
-      tableToUpdateExists["tableName"] = payload.table_name
-    }
-    if (tableToUpdateExists === -1)
-      model.tableToUpdate.push({ id: payload.journal, tableName: payload.table_name })
+const controlRenameOptionFallback = function (renameParam, returnData, requestStatus) {
+  //NOTE: Sync missing
+  if (requestStatus) {
+    model.updateTableName(...[renameParam.payload.table_name, renameParam.payload.journal]);
+    //update the table UI
+    renameParam.callBack()
   }
-  // if (requestStatus) { }
 }
 
-const controlRenameOption = function (...args) {
+const controlRenameOption = function (tableName, journalId, callBack) {
   const apiPayload = {
-    "table_name": args[0],
-    "journal": args[1]
+    "table_name": tableName,
+    "journal": journalId
   }
   const queryObj = {
     endpoint: API.APIEnum.JOURNAL_TABLES.PATCH(apiPayload.journal),
@@ -217,32 +200,26 @@ const controlRenameOption = function (...args) {
     queryData: apiPayload,
     actionType: "updateTableName",
     spinner: false,
-    alert: false,
+    alert: true,
+    successAlert: false,
     type: "PATCH",
-    callBack: controlRenameOptionFallback.bind(null, apiPayload),
+    callBack: controlRenameOptionFallback.bind(null, { payload: apiPayload, callBack }),
     callBackParam: true
   }
   API.queryAPI(queryObj)
-
-  const updateTableName = model.updateTableName(...args);
 };
 
 const controlAPIDuplicateTableFallback = function (payload, returnData, requestStatus) {
-  debugger;
-  if (!requestStatus) {
-    const duplicateTableId = model.duplicateJournal(payload.journal_table);
-    model.tableToCreate.push(duplicateTableId)
-    controlRenderUpdatedTableHeads(duplicateTableId);
-  }
+  // NOTE: Sync missing
   if (requestStatus) {
     const formattedData = formatAPIResp(returnData, "journalTables")
     model.state.tables.push(formattedData)
     controlRenderUpdatedTableHeads(returnData.id);
   }
+  payload = {}
 }
 
 const controlDuplicateOption = function (tableId) {
-  debugger;
   const apiPayload = {
     "journal_table": tableId,
     "journal": model.state.id,
@@ -254,18 +231,22 @@ const controlDuplicateOption = function (tableId) {
     sec: null,
     queryData: apiPayload,
     actionType: "duplicateTable",
-    spinner: false,
-    alert: false,
+    spinner: true,
+    alert: true,
+    successAlert: false,
     type: "POST",
-    callBack: controlAPIDuplicateTableFallback.bind(null, apiPayload),
+    callBack: controlAPIDuplicateTableFallback.bind(null, { payload: apiPayload }),
     callBackParam: true
   }
   API.queryAPI(queryObj)
 };
 
 const controlAPIDeleteTableFallback = function (tableId, returnData, requestStatus) {
-  if (!requestStatus) {
-    model.tableToDelete.push(tableId)
+  //NOTE: Sync missing
+  if (requestStatus) {
+    model.deleteJournal(tableId);
+    const tableHeads = controlGetTableHeads();
+    controlRenderUpdatedTableHeads(tableHeads[0][1]);
   }
 }
 
@@ -276,42 +257,34 @@ const controlDeleteOption = function (journalId) {
     sec: null,
     actionType: "deleteTable",
     spinner: false,
-    alert: false,
+    alert: true,
+    successAlert: false,
     type: "DELETE",
     callBack: controlAPIDeleteTableFallback.bind(null, journalId),
     callBackParam: true
   }
   API.queryAPI(queryObj)
-
-  model.deleteJournal(journalId);
-  const tableHeads = controlGetTableHeads();
-
-  controlRenderUpdatedTableHeads(tableHeads[0][1]);
 };
 
 const controlAPIAddNewTableFallback = function (callBack, returnData, requestState) {
   let tableId;
 
-  if (!requestState)
-    tableId = model.addNewTable();
-
+  //NOTE: Sync missing
 
   if (requestState) {
     const formattedData = formatAPIResp(returnData, "journalTables")
     tableId = formattedData.id
     model.state.tables.push(formattedData)
+    const tableHeads = controlGetTableHeads();
+
+    if (callBack) callBack()
+    if (tableHeads.length <= 4) {
+      const table = model.getCurrentTable(tableId);
+      tableComponentView.render(tableHeads);
+      tableComponentView.renderTableItem(table.tableItems);
+    }
+    if (tableHeads.length > 4) controlRenderUpdatedTableHeads(tableId);
   }
-
-  const tableHeads = controlGetTableHeads();
-
-  if (callBack) callBack()
-  if (tableHeads.length <= 4) {
-    const table = model.getCurrentTable(tableId);
-    tableComponentView.render(tableHeads);
-    tableComponentView.renderTableItem(table.tableItems);
-  }
-
-  if (tableHeads.length > 4) controlRenderUpdatedTableHeads(tableId);
 }
 
 const controlAddNewTable = function (callBack) {
@@ -325,7 +298,8 @@ const controlAddNewTable = function (callBack) {
     queryData: apiPayload,
     actionType: "createNewTable",
     spinner: false,
-    alert: false,
+    alert: true,
+    successAlert: false,
     type: "POST",
     callBack: controlAPIAddNewTableFallback.bind(null, callBack)
   }
@@ -360,19 +334,10 @@ const filterSortRenderTableItem = function (addTableItemParam, renderAddedItem =
 }
 
 const controlAddTableItemFallback = function (addTableItemParam, returnData, requestStatus = false) {
-  debugger;
   const currentTable = model.getCurrentTable();
 
-  if (!requestStatus) {
-    const itemId = model.addTableItem(addTableItemParam.payload, addTableItemParam.relativeItem);
-    model.diff.tableItemToCreate.push({ table: currentTable.id, item: itemId })
-    model.persistDiff()
-    addTableItemParam.currentTable = currentTable
-    addTableItemParam.itemId = itemId
+  //NOTE:SYNC missing
 
-    //filter,sort and render the table items
-    filterSortRenderTableItem(addTableItemParam, true)
-  }
   if (requestStatus) {
     const formattedAPIResp = formatAPITableItems([returnData])
     const itemId = model.addTableItem(...formattedAPIResp, addTableItemParam.relativeItem, true);
@@ -385,32 +350,25 @@ const controlAddTableItemFallback = function (addTableItemParam, returnData, req
 }
 
 const controlAPIAddTagFallback = function (addTagParams, returnData, requestState = false) {
-  debugger;
   if (requestState) {
-    debugger;
     const formattedData = formatAPISub(Array.isArray(returnData) ? returnData : [returnData], "apiTags")
     model.state.tags.push(...formattedData)
+    addTagParams.callBack()
   }
-  //TODO: add fallback handling for failure in creating tags
-  if (!requestState) {
-    debugger;
-    const createFallBackTag = model.createTagObject(addTagParams.payload)
-    model.diff.tagsToCreate.push(addTagParams.payload)
-    model.persistDiff()
-  }
-  addTagParams.callBack()
+
+  //NOTE: Sync missing
 }
 
 const controlAddTag = function (payload, callBack) {
   const queryObj = {
-    // API.APIEnum.TAG.CREATE
-    endpoint: API.APIEnum.TAG.CREATED,
+    endpoint: API.APIEnum.TAG.CREATE,
     token: model.token.value,
     sec: null,
     queryData: payload,
     actionType: "createTag",
     spinner: false,
-    alert: false,
+    alert: true,
+    successAlert: false,
     type: "POST",
     callBack: controlAPIAddTagFallback.bind(null, { callBack, payload })
   }
@@ -430,7 +388,6 @@ const controlAddTableItem = function (
   sort = false,
   callBack = false,
 ) {
-
   const currentTableBeforeUpdate = model.getCurrentTable()
   const apiPayload = createTableItemAPIRequestPayload(currentTableBeforeUpdate, relativeItem)
 
@@ -441,7 +398,8 @@ const controlAddTableItem = function (
     queryData: apiPayload,
     actionType: "createTableItem",
     spinner: false,
-    alert: false,
+    alert: true,
+    successAlert: false,
     type: "POST",
     callBack: controlAddTableItemFallback.bind(null, { payload, relativeItem, filter, sort, callBack }),
     callBackParam: true
@@ -469,88 +427,29 @@ const controlGetTableItemWithMaxTags = function (tableId, itemsId) {
 };
 
 const controlUpdateTableItemFallback = function (addTableItemParam, returnData, requestStatus = false) {
-  debugger;
   const currentTable = model.getCurrentTable();
   const batchItems = ["selectTags", "deleteActivities"]
-  if (!requestStatus) {
-    const subModels = ["intentions", "happenings", "actionItems", "gratefulFor"]
-    model.updateTableItem(addTableItemParam.payload);
-    const tableItems = ["tags", "title"]
 
-    if (addTableItemParam.payloadType === subModels.find(sub => sub === addTableItemParam.payloadType)) {
-      let payload = cloneDeep(addTableItemParam.payload)
-      payload.payloadType = addTableItemParam.payloadType
-      payload.date = isoDate()
-      payload.refreshCallBack = null
-
-      const updateAndCreate = payload?.modelProperty?.property?.updateAndAddProperty
-      const updateOnly = payload?.modelProperty?.property?.updateProperty ?? payload?.modelProperty?.updateProperty
-
-      if (updateAndCreate) {
-        //add the model to create
-        // model.diff.submodelToCreate.push({ subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.createdItemId, item: addTableItemParam.payload.itemId, table: addTableItemParam.payload.tableId, date: isoDate() })
-        model.diff.submodelToCreate.push(payload)
-
-        //check against dups
-        // const subModelExists = model.diff.submodelToUpdate.find(subModel => subModel.id === addTableItemParam.payload.updatedItemId)
-        // if (subModelExists && subModelExists !== -1) { }
-
-        // if (!subModelExists || subModelExists === -1) {
-        //   //add the submodel to the update obj
-        //   model.diff.submodelToUpdate.push({
-        //     subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.updatedItemId, table: addTableItemParam.payload.tableId,
-        //     item: addTableItemParam.payload.itemId, date: isoDate()
-        //   })
-        // }
-      }
-      if (!updateAndCreate && updateOnly) {
-        //TODO: refactor
-        //check against dups
-        // const subModelExists = model.diff.submodelToUpdate.find(subModel => subModel.id === addTableItemParam.payload.updatedItemId)
-        // if (subModelExists && subModelExists !== -1) { }
-
-        // if (!subModelExists || subModelExists === -1) {
-        //add the submodel to the update obj
-        // model.diff.submodelToUpdate.push({ subModel: addTableItemParam.payloadType, id: addTableItemParam.payload.updatedItemId, table: addTableItemParam.payload.tableId, item: addTableItemParam.payload.itemId, date: isoDate() })
-        // }
-        model.diff.submodelToUpdate.push(payload)
-      }
-      payload = {}
-    }
-
-
-
-    //TODO: switch save type payloadType to diff
-    //tableItems
-    if (addTableItemParam.payloadType === tableItems.find(item => item === addTableItemParam.payloadType)) {
-      const itemExists = model.diff.tableItemToUpdate.find(itemObj => itemObj.itemId === addTableItemParam.itemId)
-      if (itemExists && itemExists !== -1) { }
-      if (!itemExists || itemExists === -1) {
-        model.diff.tableItemToUpdate.push({ table: currentTable.id, item: addTableItemParam.itemId, date: isoDate() })
-      }
-
-    }
-    model.persistDiff()
-  }
+  //NOTE: Sync missing
 
   if (requestStatus) {
-    //TODO: add fallback imp for batch actions
-
     const formattedData = formatAPITableItems(Array.isArray(returnData) ? returnData : [returnData])
     const batchTypes = addTableItemParam.payloadType === batchItems.find(item => item === addTableItemParam.payloadType)
     if (!batchTypes)
       model.updateAPITableItem(formattedData[0], true, currentTable.id)
     if (batchTypes) formattedData.forEach(data => model.replaceTableItemWithAPITableItem(data))
-
-    console.log("state model", model.state)
-  }
-  //callback for the sidepeekinput
-  if (addTableItemParam.payload.refreshCallBack) {
-    addTableItemParam.payload.getUpdatedData ? addTableItemParam.payload.refreshCallBack(controlGetTableItem(addTableItemParam.payload.tableId, addTableItemParam.payload.itemId)) : addTableItemParam.payload.refreshCallBack()
   }
 
-  addTableItemParam.currentTable = currentTable
-  filterSortRenderTableItem(addTableItemParam, null, addTableItemParam.updateUI ? true : null)
+  if (requestStatus || addTableItemParam.payloadType === "selectTags") {
+    //callback for the sidepeekinput
+    if (addTableItemParam.payload.refreshCallBack) {
+      addTableItemParam.payload.getUpdatedData ? addTableItemParam.payload.refreshCallBack(controlGetTableItem(addTableItemParam.payload.tableId, addTableItemParam.payload.itemId)) : addTableItemParam.payload.refreshCallBack()
+    }
+
+    addTableItemParam.currentTable = currentTable
+    filterSortRenderTableItem(addTableItemParam, null, addTableItemParam.updateUI ? true : null)
+
+  }
   //free mem
   addTableItemParam = {}
 }
@@ -564,18 +463,15 @@ const controlUpdateTableItem = function (
   updateUI = true
 ) {
   let tableItems;
-  debugger
-  console.log('the upd payload', payload)
+
   if (!payload) return
   let apiPayload = formatAPIRequestUpdateTableItemPayload(payload, payloadType)
   if (payloadType === "tags") apiPayload = { "tags": apiPayload }
   getCreatedTagFromModel(apiPayload, payload, model.state, payloadType)
-  console.log("the api payload", apiPayload)
   const batchTypes = ["selectTags"]
   const batchAction = payloadType === batchTypes.find(type => type === payloadType)
   let queryObj;
 
-  //FIXME: sync add
   const submodels = ["intentions", "happenings", "actionItems", "gratefulFor"]
   const submodelType = submodels.find(submodel => submodel.toLowerCase() === payloadType.toLowerCase())
 
@@ -587,7 +483,8 @@ const controlUpdateTableItem = function (
       queryData: apiPayload,
       actionType: "batchAddTags",
       spinner: false,
-      alert: false,
+      alert: true,
+      successAlert: false,
       type: "PATCH",
       callBack: controlUpdateTableItemFallback.bind(null, { payload, filter, sort, updateUI, payloadType }),
       callBackParam: true
@@ -601,7 +498,8 @@ const controlUpdateTableItem = function (
       queryData: apiPayload,
       actionType: "updateTableItem",
       spinner: false,
-      alert: false,
+      alert: true,
+      successAlert: false,
       type: "PATCH",
       callBack: controlUpdateTableItemFallback.bind(null, { payload, filter, sort, updateUI, payloadType }),
       callBackParam: true
@@ -611,73 +509,80 @@ const controlUpdateTableItem = function (
   API.queryAPI(queryObj)
 };
 
-const controlUpdateTagFallback = function (payload, returnData, requestStatus) {
-  debugger
-  if (!requestStatus) {
-    // model.checkForAndUpdateTag(payload)
-    model.diff.tagsToUpdate.push(payload)
-    model.persistDiff()
-  }
+const controlUpdateTagFallback = function (updateTagParam, returnData, requestStatus) {
+  //NOTE: sync missing
 
   if (requestStatus) {
     //val updated from thee tagEdit comp
     const formattedData = formatAPIResp(returnData, "tags")
     model.checkForAndUpdateTag(formattedData)
+
+    //update the tag option UI
+    updateTagParam.callBack()
   }
+
+  updateTagParam = {}
 }
 
-const controlUpdateTag = function (payload, payloadType) {
+const controlUpdateTag = function (payload, payloadType, callBack = undefined) {
   const apiPayload = formatAPIRequestTagPayload(payload, payloadType)
 
-  //API.APIEnum.TAG.PATCH(payload.tag.id),
   const queryObj = {
-    endpoint: API.APIEnum.TAG.PATCHED,
+    endpoint: API.APIEnum.TAG.PATCH(payload.tag.id),
     token: model.token.value,
     sec: null,
     queryData: apiPayload,
     actionType: "updateTag",
     spinner: false,
-    alert: false,
+    alert: true,
+    successAlert: false,
     type: "PATCH",
-    callBack: controlUpdateTagFallback.bind(null, payload.tag)
+    callBack: controlUpdateTagFallback.bind(null, { payload: payload.tag, callBack })
   }
   API.queryAPI(queryObj)
 }
 
-const controlAPIDeleteTagFallback = function (tagId, returnData, requestStatus) {
-  if (!requestStatus) {
-    model.diff.tagToDelete.push(tagId)
-    model.persistDiff()
+const controlAPIDeleteTagFallback = function (deleteTagParam, returnData, requestStatus) {
+  //NOTE: Sync missing
+  if (requestStatus) {
+    model.deleteTag(deleteTagParam.tagId)
+    deleteTagParam.callBack()
   }
+
+  deleteTagParam = {}
 }
 
-const controlDeleteTag = function (tagId) {
-  // API.APIEnum.TAG.DELETE(tagId),
+const controlDeleteTag = function (tagId, callBack = undefined) {
   const queryObj = {
-    endpoint: API.APIEnum.TAG.DELETED,
+    endpoint: API.APIEnum.TAG.DELETE(tagId),
     token: model.token.value,
     sec: null,
     actionType: "deleteTag",
     spinner: false,
-    alert: false,
+    alert: true,
+    successAlert: false,
     type: "DELETE",
-    callBack: controlAPIDeleteTagFallback.bind(null, tagId)
+    callBack: controlAPIDeleteTagFallback.bind(null, { tagId, callBack })
   }
   API.queryAPI(queryObj)
-
-  model.deleteTag(tagId)
 }
 
 const controlDeleteTableItemFallback = function (deleteTableItemParam, returnData, requestStatus = false) {
-  if (!requestStatus) {
-    debugger
-    if (deleteTableItemParam.payloadType === "deleteTableItems") {
-      model.tableItemToDelete.push(...deleteTableItemParam.payload.delete_list)
-    } else {
-      model.diff.submodelToDelete.push({ subModel: deleteTableItemParam.payloadType, id: deleteTableItemParam.payload[deleteTableItemParam.payloadType].delete.id })
-    }
-    model.persistDiff()
+  const currentTable = model.getCurrentTable();
+
+  //NOTE: Sync missing
+  if (requestStatus) {
+    model.deleteTableItem(deleteTableItemParam.payload);
+
   }
+  deleteTableItemParam.filter
+    ? (tableItems = deleteTableItemParam.filter(currentTable.tableItems))
+    : (tableItems = currentTable.tableItems);
+
+  if (tableItems && !Array.isArray(tableItems)) tableItems = [tableItems];
+
+  //render current table
+  deleteTableItemParam.updateUI ? tableComponentView.renderTableItem(tableItems) : pass();
   //free mem
   deleteTableItemParam = {}
 }
@@ -688,58 +593,40 @@ const controlDeleteTableItem = function (
   payloadType = undefined,
   updateUI = true
 ) {
-  debugger;
   let tableItems;
   if (!payload) return
-  const batchType = ["deleteTableItems"] //(s)
+  const batchType = ["deleteTableItems"]
 
   const apiPayload = formatAPIRequestUpdateTableItemPayload(payload, payloadType)
-  //API.getSubmodelEndpoint(payloadType, "DELETE", apiPayload[payloadType].delete.id),
+  //API.getSubmodelEndpoint(payloadType, "DELETE", apiPayload[payloadType].delete.id)
   const queryObj = {
-    endpoint: payloadType === "deleteTableItems" ? API.getBatchEndpoint(payloadType) : API.APIEnum.SUBMODEL.DELETED,
+    endpoint: payloadType === "deleteTableItems" ? API.getBatchEndpoint(payloadType) : API.APIEnum.SUBMODEL.DELETE,
     token: model.token.value,
     sec: null,
     actionType: "deleteTableItem",
     spinner: false,
-    alert: false,
+    alert: true,
+    successAlert: false,
     type: "DELETE",
-    callBack: controlDeleteTableItemFallback.bind(null, { payload: apiPayload, filter, payloadType }),
+    callBack: controlDeleteTableItemFallback.bind(null, { payload, filter, payloadType, updateUI }),
     callBackParam: true
   }
   if (payloadType === "deleteTableItems") queryObj["queryData"] = apiPayload
   API.queryAPI(queryObj)
-
-  model.deleteTableItem(payload);
-  const currentTable = model.getCurrentTable();
-
-  filter
-    ? (tableItems = filter(currentTable.tableItems))
-    : (tableItems = currentTable.tableItems);
-
-  if (tableItems && !Array.isArray(tableItems)) tableItems = [tableItems];
-
-  //render current table
-  updateUI ? tableComponentView.renderTableItem(tableItems) : pass();
 };
 
 const controlDuplicateTableItemFallback = function (duplicateTableItemParam, returnData, requestStatus = false) {
-  if (!requestStatus) {
+  const currentTable = model.getCurrentTable()
+  duplicateTableItemParam.currentTable = currentTable
 
-    const duplicates = model.duplicateTableItem(payload);
-    duplicateTableItemParam.payload.duplicate_list[0].ids.forEach((duplicate, i) => {
-
-      model.tableItemToDuplicate.push({ "originalId": duplicate, "duplicateId": duplicates[i].id })
-    })
-    model.persistDiff()
-  }
+  //NOTE: Sync missing
 
   if (requestStatus) {
     const formattedData = formatAPITableItems(Array.isArray(returnData) ? returnData : [returnData])
-    const currentTable = model.getCurrentTable()
     currentTable.tableItems.push(...formattedData)
-    duplicateTableItemParam.currentTable = currentTable
-    filterSortRenderTableItem(duplicateTableItemParam, null, duplicateTableItemParam.updateUI ? true : null)
   }
+
+  filterSortRenderTableItem(duplicateTableItemParam, null, duplicateTableItemParam.updateUI ? true : null)
   //free mem
   duplicateTableItemParam = {}
 }
@@ -749,6 +636,7 @@ const controlDuplicateTableItem = function (
   filter = undefined,
   sort = undefined,
   updateUI = true) {
+
   const apiPayload = formatAPIRequestUpdateTableItemPayload(payload, "duplicateTableItems")
   const queryObj = {
     endpoint: API.APIEnum.ACTIVITIES.BATCH_DUPLICATE_ACTIVITIES,
@@ -757,7 +645,8 @@ const controlDuplicateTableItem = function (
     queryData: apiPayload,
     actionType: "duplicateTableItems",
     spinner: true,
-    alert: false,
+    alert: true,
+    successAlert: false,
     type: "POST",
     callBack: controlDuplicateTableItemFallback.bind(null, { apiPayload, filter, sort, updateUI }),
     callBackParam: true
@@ -792,7 +681,6 @@ const controlAddTemplate = function (templateType) {
   }
 
   if (templateType === "journal") {
-    console.log("loading emp")
     document.body.innerHTML = ""
     document.body.classList.remove("login-template")
     document.body.classList.add("journal-template")

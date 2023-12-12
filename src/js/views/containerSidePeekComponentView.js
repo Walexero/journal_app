@@ -467,7 +467,7 @@ export default class ContainerSidePeekComponentView {
   }
 
   _handleInputUpdateAndAddEvent(e) {
-    console.log("triggered update add event")
+
     const inputType = this._getInputType(e);
 
     const [inputContainer, checkedValue, updateVal, updateId] =
@@ -494,15 +494,13 @@ export default class ContainerSidePeekComponentView {
       inputContainsCheckbox,
       checkedValue
     );
-    console.log("the input selection exists", inputSelectionExists)
-    //FIXME: add an update for new value to create an empty list with id
+
     const update = this._constructUpdateProperty(updateVal, inputModelKey, updateId)
     const createRelativeProperty = inputSelectionExists || nextElInput ? updateId : null
 
     //get the ordering value of each item from the UI
     const { createItemOrdering, itemsOrdering } = this._getItemsOrdering(inputType, createRelativeProperty)
 
-    console.log("the itemsOrdering", itemsOrdering)
     const payload = {
       itemId: this._state.itemId,
       tableId: this._state.tableId,
@@ -524,7 +522,6 @@ export default class ContainerSidePeekComponentView {
     };
     this._updateAndAddTriggeredBeforeUpdateDelay = true;
 
-    console.log("payload updatee and create", payload)
     //callback after update
     payload.refreshCallBack = this._refreshAndUpdateUICallBack.bind(this, inputSelectionExists, nextElInput, inputType, updateId)
 
@@ -597,13 +594,11 @@ export default class ContainerSidePeekComponentView {
       ].querySelector(`.slide-${inputType}-input`);
 
     if (relativeAddedItem) {
-      console.log("found relative added item")
       relativeAddedItem.focus();
       this._moveCursorToTextEnd(relativeAddedItem);
     }
 
     if (!relativeAddedItem) {
-      console.log("could not find relative added item")
       addedItemInput.focus();
       this._moveCursorToTextEnd(addedItemInput);
     }
@@ -634,7 +629,6 @@ export default class ContainerSidePeekComponentView {
   }
 
   _handleInputUpdateEvent(e) {
-    // debugger;
     if (this.getDeleteActivatedState()) {
       //prevent an update event from being triggered after a delete event
       this.setDeleteActivatedState(false)

@@ -303,8 +303,10 @@ html{
     background-color: #4b4b4b;
     display: grid;
     grid-template-columns: auto 1fr;
-    position: absolute;
-    z-index: 100;
+    /* position: absolute; */
+    position: fixed;
+    /* z-index: 100; */
+    z-index: 1000;
     top: 5%;
     left: 43%;
 }
