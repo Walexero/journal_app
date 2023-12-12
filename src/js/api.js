@@ -108,24 +108,21 @@ export class API {
 
                 if (queryObj.successAlert)
                     queryObj.alert ? new Alert(HTTP_200_RESPONSE[queryObj.actionType](returnData), null, "success").component() : null
-                if (queryObj.callBack) {
-                    console.log("triggered for callback")
+                if (queryObj.callBack)
                     queryObj.callBack(returnData, queryObj.callBackParam ?? true)
-                }
+
 
                 queryObj = {};
             }
 
-            if (!returnData && queryObj.callBack) {
-                console.log("trigged for empty callback")
+            if (!returnData && queryObj.callBack)
                 queryObj.callBack()
-            } //call the fallback to handle thee failure
+            //call the fallback to handle thee failure
 
             //if token expired render credeential issues msg and logout user
             if (queryObj.resStatus === 401) {
                 new Alert(HTTP_200_RESPONSE[queryObj.actionType](returnData), null, "success").component()
                 timeoutWithoutPromise(5, API.logoutUser)
-
             }
         })
     }
@@ -135,14 +132,13 @@ export class API {
 
         try {
             const res = await Promise.race([API.makeRequest(queryObj), timeout(queryObj.sec, queryObj.actionType)]) //TODO: Add fns to the timeout function
-            debugger
+
             const resContent = res.status !== HTTP_204_SUCCESS_NO_CONTENT ? await res.json() : {}
 
             if (!res.ok) throw new Error(`${ALERT_STATUS_ERRORS.find(s => s === res.status) ? API.getResponseToRender(resContent, queryObj, res.status) : res.message} (${res.status})`)
 
             if (!resContent.non_field_errors) data = API.destructureSuccessResponse(resContent, queryObj)
         } catch (err) {
-            debugger
             if (queryObj.loader) await queryObj.loader.remove()
             if (queryObj.alert) await new Alert(!queryObj.successAlert ? "Request Failed Please try again later" : err.message ?? err, null, "error").component()
             // if(queryObj.resStatus === 401) API.logoutUser()

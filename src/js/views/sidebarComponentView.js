@@ -2,7 +2,8 @@ import { USER, SIDEBAR_JOURNAL_TITLE_LENGTH, LAYOUT_BREAKPOINT } from "../config
 import { importSignals } from "../signals";
 import { componentGlobalState } from "./componentView/componentGlobalState";
 import { svgMarkup, valueEclipser, matchStrategy, formatJournalHeadingName } from "../helpers";
-import tableHeadProcessorView from "./tableHeadProcessorView";
+// import tableHeadProcessorView from "./tableHeadProcessorView";
+import { importTableHeadProcessorView } from "./tableHeadProcessorView.js";
 import { Form } from "../views/loginView/form.js"
 import { Overlay } from "./loginView/overlay.js";
 
@@ -15,7 +16,6 @@ class SideBarComponentView {
   _token
 
   init(sideBarHandler, token) {
-    debugger
     this._token = token;
     sideBarHandler();
     this.addSideBarDelegationEventListener();
@@ -115,7 +115,7 @@ class SideBarComponentView {
 
   _handleSideBarRenderTableEvent(e) {
     const tableId = e.target.closest(".tables-list-box").dataset.id;
-    tableHeadProcessorView._activateTable(
+    importTableHeadProcessorView.object._activateTable(
       null,
       `.main-table-heading [data-id="${tableId}"]`,
       tableId
@@ -139,6 +139,7 @@ class SideBarComponentView {
     if (sidebarJournalContainer.classList.contains("tables-open")) {
       //let componentGlobal Keep state of its active status
       componentGlobalState.sideBarListActive = true;
+
 
       const currentTable =
         this._eventHandlers.tableControllers.controlGetTable();
@@ -308,7 +309,6 @@ class SideBarComponentView {
 
   render(dataObj) {
     const { username, journalName } = dataObj
-    console.log("the username", username)
     const markup = this._generateMarkup(username, journalName);
 
     this._parentElement.innerHTML = "";

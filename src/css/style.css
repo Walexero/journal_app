@@ -1094,6 +1094,8 @@ html {
 }
 
 .filter-pre-action--options {
+  height: 13rem;
+  overflow: scroll;
   width: 20rem !important;
 }
 
@@ -1627,6 +1629,10 @@ html {
 
 .row-option-tag {
   display: flex;
+}
+
+.row-option-tag .row-tag-tag,.tags-items .tag-tag{
+  word-break: break-all;
 }
 
 .tags-items-icon {

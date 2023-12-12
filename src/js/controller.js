@@ -492,7 +492,7 @@ const controlUpdateTableItem = function (
 
   if (!batchAction)
     queryObj = {
-      endpoint: submodelType ? API.APIEnum.ACTIVITIES.PATCHED : API.APIEnum.ACTIVITIES.PATCH(payload.itemId),
+      endpoint: API.APIEnum.ACTIVITIES.PATCH(payload.itemId),
       token: model.token.value,
       sec: null,
       queryData: apiPayload,
@@ -504,7 +504,6 @@ const controlUpdateTableItem = function (
       callBack: controlUpdateTableItemFallback.bind(null, { payload, filter, sort, updateUI, payloadType }),
       callBackParam: true
     }
-  // debugger;
 
   API.queryAPI(queryObj)
 };

@@ -95,7 +95,6 @@ class ComponentOptionsView {
         this._overlayCount,
         disableOverlayInterceptor
       );
-    console.log("this overlaycontaineer", this)
     this._overlayContainer.insertAdjacentElement("beforeend", overlay);
 
     const component = overlay.querySelector(componentObj.selector);
@@ -106,7 +105,6 @@ class ComponentOptionsView {
   }
 
   _componentRemover(componentObj, component = undefined, mutate = true) {
-    debugger
     if (componentObj.componentInput) {
       componentObj.component.textContent =
         componentObj.componentInput.textContent;
@@ -137,14 +135,7 @@ class ComponentOptionsView {
       if (componentObj.updateModel) {
         //update model gets called with the bounded updateObj
         componentObj.updateModel();
-        console.log("updated model tag obj")
       }
-
-      //logic to rerender the side-peek content
-      // if (componentObj.refreshCaller) {
-      // const updatedData = componentObj.getUpdatedData();
-      // componentObj.refreshCaller(updatedData);
-      // }
     }
 
     //reset overlayCount relative to the overlays on page

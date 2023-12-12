@@ -35,7 +35,7 @@ export const TABLE_DEFAULT_JOURNALS = [
   "Personal entries",
 ];
 
-export const FILTER_RULE_CONTAINER_TOP_DIFF = 225;
+export const FILTER_RULE_CONTAINER_TOP_DIFF = 135
 
 export const TABLE_ACTION_OPTIONS = {
   properties: [

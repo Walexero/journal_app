@@ -142,9 +142,11 @@ export default class TagEditComponent {
     const selectedColorIsChecked =
       colorContainer.querySelector(".color-row-icon");
 
+    const selectedColor = colorContainer.querySelector(".color").classList[1].trim()
+
     if (!selectedColorIsChecked) {
       //the color value is changed based on the API resolve value
-      this.updateTagAndNotifyCallers(null, this._selectColor.bind(this, allColorContainer, colorContainer));
+      this.updateTagAndNotifyCallers(null, this._selectColor.bind(this, allColorContainer, colorContainer), selectedColor);
     }
   }
 
@@ -213,21 +215,17 @@ export default class TagEditComponent {
     });
   }
 
-  updateTagAndNotifyCallers(deleteTag = undefined, eventCallBack = undefined) {
+  updateTagAndNotifyCallers(deleteTag = undefined, eventCallBack = undefined, selectedColor = undefined) {
     const cls = this;
     let cloneTagBeforeUpdate = null;
 
     //options item
-    const updateParentOptionItemTag = this._state.currentTarget
-      .querySelector(".tags-items")
-      .querySelector(`.${this._state.tagToEdit.color}`);
+    const updateParentOptionItemTag = this._tagItemSelector(this._state.currentTarget)
 
-    const updateParentOptionTag = this._state.currentTarget
-      .querySelector(".tags-available")
-      .querySelector(`.${this._state.tagToEdit.color}`);
+    const updateParentOptionTag = this._state.currentTarget.querySelector(".tags-available").querySelector(`[data-id="${this._state.tagToEdit.id}"]`)
+
 
     if (deleteTag) {
-      // this._deleteTag(itemId)
       this._deleteTag(this._state.tagToEdit.id, [
         updateParentOptionItemTag,
         updateParentOptionTag,
@@ -236,12 +234,8 @@ export default class TagEditComponent {
     }
 
     const tagInput = this._state.component.querySelector(".tag-edit");
-    const tagSelectedColor = Array.from(
-      this._state.component
-        .querySelector(".color-row-icon")
-        .closest(".colors")
-        .querySelector(".color").classList
-    ).find((color) => color.startsWith("color-"));
+    const tagSelectedColor = this._tagColorSelector(selectedColor)
+
 
     const tagInputChanged =
       tagInput.value.trim().toLowerCase() !==
@@ -276,13 +270,13 @@ export default class TagEditComponent {
 
       //format the update object
       const updateObj = {
-        tag: this._state.tagToEdit,
+        tag: this._createTagUpdateObj({ inputChanged: tagInputChanged, colorChanged: tagColorChanged, tagInput, tagColor: tagSelectedColor }),
         updateTag: true,
         tagBeforeUpdate: cloneTagBeforeUpdate,
       };
 
 
-      this._state.eventHandlers.tableItemControllers.controlUpdateTag(updateObj, "tagsValue", this._updateUI.bind(this, { eventCallBack, tagInput, tagSelectedColor, updateParentOptionItemTag, updateParentOptionItemTag }))
+      this._state.eventHandlers.tableItemControllers.controlUpdateTag(updateObj, "tagsValue", this._updateUI.bind(this, { eventCallBack, tagInput, tagSelectedColor, updateParentOptionItemTag, updateParentOptionTag }))
     }
   }
 
@@ -308,6 +302,36 @@ export default class TagEditComponent {
 
     //free mem
     options = {}
+  }
+
+  _createTagUpdateObj(dataObj) {
+    const updateObj = {
+      id: this._state.tagToEdit.id
+    }
+
+    if (dataObj.inputChanged)
+      updateObj.text = dataObj.tagInput.value.trim()
+
+    if (dataObj.colorChanged)
+      updateObj.color = dataObj.tagColor
+    else updateObj.color = this._state.tagToEdit.color
+
+    return updateObj
+  }
+
+  _tagItemSelector(container) {
+    return container
+      .querySelector(".tags-items").querySelector(`[data-id="${this._state.tagToEdit.id}"]`) ?? Array.from(container.querySelector(".tags-items").querySelectorAll(".tag-tag")).find(div => div.textContent.trim().toLowerCase() === this._state.tagToEdit.text.toLowerCase())
+  }
+
+  _tagColorSelector(selectedColor) {
+    return selectedColor ?? Array.from(
+      this._state.component
+        .querySelector(".color-row-icon")
+        .closest(".colors")
+        .querySelector(".color").classList
+    ).find((color) => color.startsWith("color-"));
+
   }
 
   //use for search sanitization

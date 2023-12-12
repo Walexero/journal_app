@@ -1,6 +1,7 @@
 import { importComponentOptionsView } from "./componentOptionsView.js";
 import { TABLE_NOT_FOUND_RESPONSE } from "../../config.js";
-import tableHeadProcessorView from "../tableHeadProcessorView.js";
+// import tableHeadProcessorView from "../tableHeadProcessorView.js";
+import { importTableHeadProcessorView } from "../tableHeadProcessorView.js";
 import { svgMarkup, matchStrategy } from "../../helpers.js";
 
 export default class TableViewOptionComponent {
@@ -156,12 +157,9 @@ export default class TableViewOptionComponent {
 
   _handleTableOptionsOption(e) {
     const renderViewOptions = e.target.closest(".table-view-options");
-    // const renderViewOptionsTable = renderViewOptions.closest(
-    //   ".table-list-content"
-    // );
 
     //offload event handling to head process
-    tableHeadProcessorView._renderAndListenForTableOptionsEvents(
+    importTableHeadProcessorView.object._renderAndListenForTableOptionsEvents(
       renderViewOptions,
       this.remove.bind(this)
     );
@@ -169,7 +167,7 @@ export default class TableViewOptionComponent {
 
   _handleTableActiveEvent(e) {
     const tableId = e.target.closest(".table-view-content").nextElementSibling.dataset.id;
-    tableHeadProcessorView._activateTable(
+    importTableHeadProcessorView.object._activateTable(
       null,
       `.main-table-heading [data-id="${tableId}"]`,
       tableId

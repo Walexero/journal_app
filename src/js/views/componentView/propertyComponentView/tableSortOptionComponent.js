@@ -61,10 +61,6 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
 
       this._state.property = this._getFunc("sort").property
 
-      // const filterRuleBoxRuleAdded = document.querySelector(".filter-added-rule");
-      // filterRuleBoxRuleAdded.textContent = this._setFilterRuleBoxAddedValue(filterRuleBoxRuleAdded)
-
-
       this._state.sortMethod = componentGlobalState.sortMethod = tableSortRuleComponent.prototype._querySort(this._state.property.text, this._getFunc("sort").type)
 
       const table = this._state.eventHandlers.tableControllers.controlGetTable(this._getFunc("sort").tableId)
@@ -172,7 +168,6 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
   _handleSortAddItem(e) {
     const tableSearchInput = document.querySelector(".search-input");
     if (tableSearchInput) tableSearchInput.value = "";
-
     this._state.eventHandlers.tableItemControllers.controlAddTableItem(
       {},
       null,
@@ -248,9 +243,11 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
     const sortActionContainer = document.querySelector(
       ".sort-action-container "
     );
-    delete this;
     this._state?.overlay?.remove();
-    this._state?.overlay?.remove();
+    // this._state?.overlay?.remove();
+
+    //unsubscribe from signal events
+    this._signals.unsubscribe(this)
     this._events.forEach((ev) =>
       this._state?.component?.removeEventListener(ev, cls._handleEvents, true)
     );
@@ -260,6 +257,7 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
 
     const fnActive = this._checkTableFuncActive("sort")
     if (fnActive) this._removeComponentTableFunc("sort")
-
+    this._state = {}
+    delete this;
   }
 }

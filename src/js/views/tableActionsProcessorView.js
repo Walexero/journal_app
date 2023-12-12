@@ -1,5 +1,4 @@
 import tableViewOptionComponent from "./componentView/tableViewOptionComponent.js";
-import tableHeadProcessorView from "./tableHeadProcessorView.js";
 import tableFilterOptionComponent from "./componentView/propertyComponentView/tableFilterOptionComponent.js";
 import tableSortOptionComponent from "./componentView/propertyComponentView/tableSortOptionComponent.js";
 import containerSidePeekComponentView from "./containerSidePeekComponentView.js";
@@ -9,7 +8,6 @@ import { importTableComponentView } from "./tableComponentView.js";
 import { matchStrategy } from "../helpers.js";
 import { TableActionOptionsComponent } from "./componentView/propertyComponentView/tableActionOptionsComponent.js";
 class TableActionsProcessorView {
-  _tableHeadProcessor = tableHeadProcessorView;
   _eventHandlers;
   _children = [];
 
@@ -136,7 +134,6 @@ class TableActionsProcessorView {
 
 
   _handleFilterOption(e, container, eventRouterComponent) {
-    debugger;
     const cls = this;
 
     const filterExists = document.querySelector(".filter-added-rule-box");
@@ -225,7 +222,6 @@ class TableActionsProcessorView {
   }
 
   _handleTableNewBtnEvent(e, eventRouterComponent) {
-    debugger;
     if (eventRouterComponent) eventRouterComponent()
 
     const sidePeekCallBack = (itemId) => {

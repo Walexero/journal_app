@@ -10,7 +10,8 @@ import {
 } from "../helpers.js";
 import { importSignals } from "../signals.js";
 import { componentGlobalState } from "./componentView/componentGlobalState.js";
-import tableHeadProcessorView from "./tableHeadProcessorView.js";
+// import tableHeadProcessorView from "./tableHeadProcessorView.js";
+import { importTableHeadProcessorView } from "./tableHeadProcessorView.js";
 
 import tableActionsProcessorView from "./tableActionsProcessorView.js";
 import tableBodyProcessorView from "./tableBodyProcessorView.js";
@@ -26,7 +27,7 @@ class TableComponentView {
   _currentTable;
   _currentTableItem;
   _currentTableHandler;
-  _tableHeadEventProcessor = tableHeadProcessorView;
+  _tableHeadEventProcessor = importTableHeadProcessorView.object ? importTableHeadProcessorView.object : (importTableHeadProcessorView.object = importTableHeadProcessorView.import());
   _tableActionsEventProcessor = tableActionsProcessorView;
   _tableBodyEventProcessor = tableBodyProcessorView;
   _bodyEventListenerActive = false;

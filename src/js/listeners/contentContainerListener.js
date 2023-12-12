@@ -9,14 +9,10 @@ class ContentContainerListener {
     this.journalInfoComponentView = journalInfoComponentView
     this.tableComponentView = tableComponentView
 
-    console.log("journal info", this.journalInfoComponentView)
-    console.log("table comp", this.tableComponentView)
-
     this.activateListener()
   }
 
   activateListener() {
-    console.log("the par el", this._parentElement)
     const cls = this
     this._events.forEach((ev) =>
       this._parentElement.addEventListener(ev, this._registerSubscribers.bind(cls))

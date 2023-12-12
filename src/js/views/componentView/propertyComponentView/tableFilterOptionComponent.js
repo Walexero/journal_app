@@ -274,7 +274,7 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
     if (this._state.children.length > 0) {
       this._state.children.forEach((child) => child.remove(false, true));
       this._state.children = [];
-      //   console.log("before remove",this._state.children)
+
     }
 
     if (!sliderConditional)
@@ -395,5 +395,8 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
     //unsubscribe from signal events
     this._signals.unsubscribe(this);
     componentGlobalState.filterMethod = null;
+
+    this._state = {}
+    delete this
   }
 }

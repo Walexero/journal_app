@@ -23,20 +23,20 @@ export default class TagOptionComponent {
     this._state.eventHandlers.tableItemControllers.controlAddTag(payload, refreshCallBack)
   }
 
-  _createTagForCurrentItem(tag, refreshCallBack) {
+  _createTagForCurrentItem(tag, refreshCallBack, tagInput) {
     const tagClass = Array.from(tag.classList).find((cls) =>
       cls.startsWith("color")
     );
     const tagColor = this._state.tagsColors.find(color => color.color_value === tagClass.trim()
     )
-    const tagText = tag.textContent.trim();
+    const tagText = tagInput ?? tag.textContent.trim()
+
     const tagObj = {
       color: tagClass,
       text: tagText,
       id: tag.dataset.id,
       tagColor
     };
-
 
     const createTagMarkup = this._generateTagAddMarkup(tagObj, true);
     if (!tagObj.id) {
@@ -55,6 +55,7 @@ export default class TagOptionComponent {
   }
 
   _generateTagAddMarkup(tag, addXmark = false) {
+    console.log('the tag', tag)
     return `
       <div class=" ${addXmark ? "tag-tag" : "row-tag-tag"} ${tag.color
       }" data-id=${tag.id}>
@@ -73,11 +74,17 @@ export default class TagOptionComponent {
   }
 
   _generateCreateOptionsTagMarkup(inputVal) {
+    let breakInputVal;
+
+    if (inputVal.length > 25 && !inputVal.includes(" ")) {
+      breakInputVal = inputVal.slice(0, 25) + "</br>" + inputVal.slice(25)
+    }
+    else breakInputVal = inputVal
     return `
       <div class="tag-create">
         Create 
         <div class="tag-tag ${this._getRandomColor()}">
-          ${formatTagRenderedText(inputVal)}
+          ${formatTagRenderedText(breakInputVal)}
         </div>
       </div>
     `;
@@ -340,6 +347,7 @@ export default class TagOptionComponent {
     const tagsAvailableContainer =
       e.currentTarget.querySelector(".tags-available");
     const inputContainer = e.currentTarget.querySelector(".tag-input-input");
+    const tagInputValue = inputContainer.value.trim()
 
     //guard clause against empty input val
     const inputValExists = inputContainer?.value.trim().length > 0;
@@ -351,7 +359,7 @@ export default class TagOptionComponent {
     const tagContainer = e.currentTarget.querySelector(".tag-create .tag-tag");
 
     const { createTagMarkup: createdTagItem, tagObj } =
-      this._createTagForCurrentItem(tagContainer, this._tagsOptionsMarkupReRender.bind(this, tagsAvailableContainer));
+      this._createTagForCurrentItem(tagContainer, this._tagsOptionsMarkupReRender.bind(this, tagsAvailableContainer), tagInputValue);
   }
 
   _tagsOptionsMarkupReRender(tagsAvailableContainer, createdTagItem) {

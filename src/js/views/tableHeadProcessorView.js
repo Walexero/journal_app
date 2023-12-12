@@ -12,7 +12,7 @@ class TableHeadProcessorView {
   _active = false;
   _eventHandlers;
   _currentTableSetter;
-  _sidebarComponentView = importSideBarComponentView.object
+  _sidebarComponentView = importSideBarComponentView.object //? importSideBarComponentView.object : (importSideBarComponentView.object = importSideBarComponentView.import())
 
   addHandlers(handlers, currentTableSetter) {
     this._eventHandlers = handlers.optionControllers;
@@ -102,7 +102,7 @@ class TableHeadProcessorView {
     currentTableSelector = false,
     tableToDisplayId = undefined
   ) {
-    debugger;
+
     const allTables = document.querySelectorAll(".table-journal");
 
     const currentTable = currentTableSelector
@@ -131,6 +131,7 @@ class TableHeadProcessorView {
         const sidebarJournalContainer = document.querySelector(
           ".nav-options-journal"
         );
+
         this._sidebarComponentView._renderSideBarList(null, sidebarJournalContainer);
       }
     }
@@ -144,7 +145,6 @@ class TableHeadProcessorView {
   }
 
   _updateUITableTitle(currentTable, titleValue) {
-    // const [_, journalId, journalIndex] = tableAttribs;
     const tableTitles = Array.from(
       document.querySelectorAll(`[data-id="${currentTable.dataset.id}"]`)
     );
@@ -169,4 +169,9 @@ class TableHeadProcessorView {
   }
 }
 
-export default new TableHeadProcessorView();
+// export default new TableHeadProcessorView();
+
+export const importTableHeadProcessorView = {
+  import: (() => new TableHeadProcessorView()),
+  object: null
+}

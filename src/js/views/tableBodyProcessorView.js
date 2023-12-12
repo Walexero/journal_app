@@ -3,7 +3,8 @@ import tagOptionComponent from "./componentView/tagsOptionComponent.js";
 import tableInputComponent from "./componentView/tableInputComponent.js";
 import { componentGlobalState } from "./componentView/componentGlobalState.js";
 import containerSidePeekComponentView from "./containerSidePeekComponentView.js";
-import alertComponent from "./componentView/alertComponent.js";
+// import alertComponent from "./componentView/alertComponent.js";
+import { Alert } from "../components/alerts.js";
 import { COPY_ALERT, TABLE, LAYOUT_BREAKPOINT } from "../config.js";
 import {
   importComponentOptionsView
@@ -115,7 +116,8 @@ class TableBodyProcessorView {
 
   matchEvent(e) {
     //if table item add checker before body event active
-    if (this._itemAddChecker(e)) this._handleItemAdd(e);
+    if (this._itemAddChecker(e))
+      this._handleItemAdd(e);
 
     //checkbox container related events
     const checkTarget = e.target.closest("[role=tablehead]");
@@ -154,7 +156,6 @@ class TableBodyProcessorView {
   }
 
   _handleItemAdd(e) {
-    console.log("added iteem add")
     //call controller to add new Item
     this._eventHandlers.tableItemControllers.controlAddTableItem();
   }
@@ -259,7 +260,8 @@ class TableBodyProcessorView {
 
   _handleDelegatedEvents(e) {
     //if table item add checker after body event active
-    if (this._itemAddChecker(e)) this._handleItemAdd(e);
+    if (this._itemAddChecker(e))
+      this._handleItemAdd(e);
 
     //hover handler
     if (this._itemHoverMatchStrategy(e)) this._handleItemHoverEvents(e);
@@ -316,11 +318,13 @@ class TableBodyProcessorView {
 
     const layoutBreakpointTrigger = window.matchMedia(LAYOUT_BREAKPOINT)
     if (layoutBreakpointTrigger.matches) {
+      const container = document.querySelector(".container")
       const sideBarComponentCloseIcon = document.querySelector(".sidebar-close")
-      sideBarComponentCloseIcon?.click()
+      if (!container.classList.contains("nav-hide"))
+        sideBarComponentCloseIcon?.click()
+
     }
 
-    // const currentTable = document.querySelector(".table-row-active");
     const cls = this;
     const itemId = e.target.closest(".row-actions-handler-container").dataset
       .id;
@@ -570,8 +574,6 @@ class TableBodyProcessorView {
 
     const tagContainer = clickedContainer.querySelector(".table-item-tags");
 
-    debugger;
-
     const getTableItemData =
       this._eventHandlers.tableItemControllers.controlGetTableItem(
         +cls._currentTable.id,
@@ -670,16 +672,7 @@ class TableBodyProcessorView {
     const copyContent = copyTriggerEl.previousElementSibling;
     navigator.clipboard.writeText(copyContent.textContent.trim());
 
-    const componentObj = {
-      container: "main",
-      insertPosition: "beforeend",
-      componentContainer: "null",
-      selector: ".alert-box",
-      alertMsg: COPY_ALERT,
-    };
-
-    const component = new alertComponent(componentObj);
-    component.render();
+    const component = new Alert(COPY_ALERT, null, "success").component();
   }
 
   _itemHoverMatchStrategy(e) {

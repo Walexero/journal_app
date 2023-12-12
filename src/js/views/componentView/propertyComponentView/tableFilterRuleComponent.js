@@ -250,10 +250,7 @@ export default class TableFilterRuleComponent {
       prepositionContainer.getBoundingClientRect();
 
     const componentObj = {
-      top:
-        this._state.property.text.toLowerCase() !== "tags"
-          ? `${parseInt(top) - FILTER_RULE_CONTAINER_TOP_DIFF}`
-          : `${parseInt(top) - 120}`,
+      top: `${parseInt(top) - FILTER_RULE_CONTAINER_TOP_DIFF}`,
       left,
       width,
       height,
