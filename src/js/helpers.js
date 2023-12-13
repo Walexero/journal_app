@@ -1,6 +1,5 @@
 import { LOCALE_TIME, TAG_TEXT_RENDER_LENGTH, JOURNAL_HEADING_NAME_LENGTH } from "./config.js";
 import icons from "url:../img/icons.svg";
-// import icons from "url:../icons.svg";
 import { TAGS_COLORS } from "./config.js";
 
 const pass = () => { };
@@ -300,7 +299,6 @@ export const formatAPITableItems = function (APIResp, type) {
 
 export const formatAPIResp = function (APIResp, type) {
   let formattedData;
-  console.log("APIResp before form", APIResp)
   if (type === "journal") {
     formattedData = {
       "id": APIResp.id,

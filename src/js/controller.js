@@ -784,12 +784,9 @@ const controlLoadUI = function () {
 const init = function (loadTemplate = true) {
   model.loadToken()
   if (model.token.value) {
-    syncComponentView = importSyncLocalStorageToAPI()
-    syncComponentView.component()
-
     if (loadTemplate) {
       controlAddTemplate("journal")
-      model.init(syncComponentView, init)
+      model.init(init)
     }
 
     if (!loadTemplate) controlLoadUI()

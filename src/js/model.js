@@ -633,7 +633,6 @@ export const duplicateTableItem = function (payload) {
 
 const persistData = () => {
   localStorage.setItem("userJournal", JSON.stringify(state));
-  console.log("saveed state", state)
 };
 
 export const persistToken = function () {
@@ -642,12 +641,10 @@ export const persistToken = function () {
 
 export const persistDiff = () => {
   localStorage.setItem("diffState", JSON.stringify(diff));
-  console.log("saveed diff", diff)
 };
 
 export const persistFunc = () => {
   localStorage.setItem("funcState", JSON.stringify(tableFunc));
-  console.log("saveed func", tableFunc)
 };
 
 const getPersistedFunc = () => {
@@ -756,41 +753,22 @@ const requestJournalData = function (callBack) {
 
 // const loadDataFromAPI = ()
 
-export const init = function (sync, controllerInit = undefined, loadController = false) {
-  // debugger
+export const init = function (controllerInit = undefined, loadController = false) {
   if (!loadController) {
 
-    if (sync) {
-      const dataLoadedFromDb = getPersistedData();
-      const diffLoadedData = getPersistedDiffData()
-
-
-      //add diff state
-      // const diffLocalState = diffLoadedData
-      // diffLoadedData.diffActive = true
+    const dataLoadedFromDb = getPersistedData();
+    if (dataLoadedFromDb) {
+      state = dataLoadedFromDb
       if (!token.value) loadToken()
-
-      //TODO: add prev against when local dt doesnt exist
-      if (diffLoadedData && diffLoadedData?.diffActive) {
-        //TODO: add check for diffactive state
-        sync.addModelData(dataLoadedFromDb, diffLoadedData, diff, persistDiff, token)
-        sync.startModelInit(init.bind(this, null,))
-      }
-      if (!diffLoadedData?.diffActive && dataLoadedFromDb || !dataLoadedFromDb) {
-        //FIXME: do not replace the whole state object only the required parts cause of the tags and tagscolor val
-        state = dataLoadedFromDb ?? state
-        const initCallBack = init.bind(null, null, controllerInit, true)
-        requestJournalData(initCallBack)
-      };
-    }
-
-    if (!sync) {
-      //create default tables
       const initCallBack = init.bind(null, controllerInit, true)
       requestJournalData(initCallBack)
 
-      //create ids for tags
-      state.tags.forEach((tag) => (tag.id = stringToHash(tag.text)));
+    };
+
+    if (!dataLoadedFromDb) {
+      //create default tables
+      const initCallBack = init.bind(null, controllerInit, true)
+      requestJournalData(initCallBack)
     }
   }
 
@@ -803,4 +781,3 @@ export const init = function (sync, controllerInit = undefined, loadController =
     controllerInit(false)
   }
 };
-// init();
