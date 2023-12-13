@@ -84,7 +84,6 @@ class JournalInfoComponentView {
   }
 
   _handleJournalNameChangeEvent(e) {
-    debugger
     const nameInputVal = e.target.textContent.trim();
     const payload = {
       name: nameInputVal,
@@ -98,7 +97,6 @@ class JournalInfoComponentView {
     const payload = {
       description: descInputVal,
     };
-    console.log("journal desc ev", this)
     this._eventHandlers.controlUpdateJournalInfo(payload);
   }
 

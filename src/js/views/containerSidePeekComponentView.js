@@ -398,7 +398,7 @@ export default class ContainerSidePeekComponentView {
       payload,
       null,
       null,
-      false
+      "title"
     );
   }
 
