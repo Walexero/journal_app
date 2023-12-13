@@ -33,6 +33,7 @@ export class ResetPasswordForm extends BaseForm {
             callBack: this._switchResetFormType.bind(cls),
             spinner: true,
             alert: true,
+            successAlert: true,
             type: "POST"
         }
         API.queryAPI(queryObj)
@@ -71,6 +72,7 @@ export class ResetPasswordForm extends BaseForm {
             callBack: this._removeResetForm.bind(this),
             spinner: true,
             alert: true,
+            successAlert: true,
             type: "POST"
         }
         API.queryAPI(queryObj)

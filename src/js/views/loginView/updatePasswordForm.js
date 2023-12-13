@@ -2,38 +2,39 @@ import { BaseForm } from "./baseForm.js";
 import { API } from "../../api.js";
 
 export class UpdatePasswordForm extends BaseForm {
-    constructor() {
-        super()
+  constructor() {
+    super()
+  }
+
+  _handleEvents(ev) {
+    if (this.activeFormErrors) this._clearErrorSignal()
+    if (ev.type === "submit") this._handleSubmit(ev)
+  }
+
+  _handleSubmit(ev) {
+    const payload = this.destructureFormData(this.createPayload(ev)?.body)
+
+    if (!payload) return
+
+    //query create endpoint
+    const queryObj = {
+      endpoint: API.APIEnum.USER.UPDATE_PWD,
+      token: this._token,
+      sec: null,
+      actionType: "updatePwd",
+      queryData: payload,
+      spinner: true,
+      alert: true,
+      successAlert: true,
+      callBack: this._renderFormErrors.bind(this),
+      callBackParam: true,
+      type: "PUT",
     }
+    API.queryAPI(queryObj)
+  }
 
-    _handleEvents(ev) {
-        if (this.activeFormErrors) this._clearErrorSignal()
-        if (ev.type === "submit") this._handleSubmit(ev)
-    }
-
-    _handleSubmit(ev) {
-        const payload = this.destructureFormData(this.createPayload(ev)?.body)
-
-        if (!payload) return
-
-        //query create endpoint
-        const queryObj = {
-            endpoint: API.APIEnum.USER.UPDATE_PWD,
-            token: this._token,
-            sec: null,
-            actionType: "updatePwd",
-            queryData: payload,
-            spinner: true,
-            alert: true,
-            callBack: this._renderFormErrors.bind(this),
-            callBackParam: true,
-            type: "PUT",
-        }
-        API.queryAPI(queryObj)
-    }
-
-    _generateMarkup() {
-        return `
+  _generateMarkup() {
+    return `
             <form action="">
               <div class="form-div">
                 <label for="old_password">Old Password</label>
@@ -50,9 +51,9 @@ export class UpdatePasswordForm extends BaseForm {
               <button class="form-submit" type="submit">Update Password</button>
             </form>   
         `
-    }
+  }
 
-    formType() {
-        return "updatePwd"
-    }
+  formType() {
+    return "updatePwd"
+  }
 }

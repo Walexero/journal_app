@@ -13,7 +13,7 @@ export class UpdateInfoForm extends BaseForm {
   }
 
   _handleSubmit(ev) {
-    const payload = this.destructureFormData(this.createPayload(ev).body)
+    const payload = this.destructureFormData(this.createPayload(ev)?.body)
 
     if (!payload) return
 
@@ -27,6 +27,7 @@ export class UpdateInfoForm extends BaseForm {
       callBack: this._updateInfoAPICallback.bind(this),
       spinner: true,
       alert: true,
+      successAlert: true,
       type: "PUT",
       callBackParam: true,
     }
@@ -34,7 +35,6 @@ export class UpdateInfoForm extends BaseForm {
   }
 
   _updateInfoAPICallback(returnData, requestState = false) {
-    debugger
     this._renderFormErrors(returnData, requestState)
 
     if (requestState) {

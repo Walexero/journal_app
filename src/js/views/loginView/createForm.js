@@ -24,6 +24,7 @@ export class CreateForm extends BaseForm {
       callBack: this._renderFormErrors.bind(this),
       spinner: true,
       alert: true,
+      successAlert: true,
       // type: "POST"
     }
     API.queryAPI(queryObj)

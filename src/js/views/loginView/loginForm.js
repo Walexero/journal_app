@@ -23,6 +23,7 @@ export class LoginForm extends BaseForm {
       callBack: this.loginWithToken.bind(this),
       spinner: true,
       alert: true,
+      successAlert: true
       // type: "POST"
     }
     API.queryAPI(queryObj)

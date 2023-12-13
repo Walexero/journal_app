@@ -13,7 +13,6 @@ export class BaseForm {
     _componentHandler = importComponentOptionsView.cls
     component() {
         const cls = this;
-        debugger
         this.componentWrapperEl = this._componentHandler.createHTMLElement(this._componentWrapper(this.formType()))
         this._component = this._componentHandler.createHTMLElement(this._generateMarkup())
 
@@ -56,15 +55,21 @@ export class BaseForm {
             return payload
         } catch (err) {
             new Alert(err, null, "error").component()
-        } finally { return payload }
+        } finally {
+            debugger;
+            return payload
+        }
     }
 
     destructureFormData(form) {
         const payload = {}
-        for (const [key, value] of form) {
-            payload[key] = value
+        if (form) {
+            for (const [key, value] of form) {
+                payload[key] = value
+            }
+            return payload;
         }
-        return payload;
+        return null
     }
 
     formValidator(data) {
