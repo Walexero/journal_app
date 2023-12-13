@@ -1,5 +1,6 @@
 import { LOCALE_TIME, TAG_TEXT_RENDER_LENGTH, JOURNAL_HEADING_NAME_LENGTH } from "./config.js";
-import icons from "url:../icons.svg";
+import icons from "url:../img/icons.svg";
+// import icons from "url:../icons.svg";
 import { TAGS_COLORS } from "./config.js";
 
 const pass = () => { };
