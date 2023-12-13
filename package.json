@@ -2,7 +2,7 @@
   "name": "journal",
   "version": "1.0.0",
   "description": "A journaling App",
-  "default": "index.js",
+  "default": "index.html",
   "scripts": {
     "start": "parcel index.html",
     "build": "parcel build index.html --dist-dir ./dist"
@@ -22,6 +22,5 @@
   },
   "@parcel/transformer-css": {
     "errorRecovery": true
-  },
-  "main": "index.js"
+  }
 }
