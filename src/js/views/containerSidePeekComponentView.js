@@ -17,25 +17,25 @@ export default class ContainerSidePeekComponentView {
 
   _generateInput(inputType, type, checkbox = false) {
     const checkboxMarkup = `
-  < div class="slide-action-item" >
-    <input
-      type="checkbox"
-      class="slide-action-items-checkbox"
-      ${type?.checked ? "checked" : ""}
-    />
-      </ >
-  `;
+      <div class="slide-action-item">
+        <input
+          type="checkbox"
+          class="slide-action-items-checkbox"
+          ${type?.checked ? "checked" : ""}
+        />
+      </div>
+    `;
 
-    const inputMarkup = `< div class="slide-${inputType}-input slide-input" placeholder = "List" contenteditable = "true" > ${type?.text ?? ""
-      }</ > `;
+    const inputMarkup = `<div class="slide-${inputType}-input slide-input" placeholder="List" contenteditable="true">${type?.text ?? ""
+      }</div>`;
 
-    const strikeThroughMarkup = `< s > ${inputMarkup}</s > `;
+    const strikeThroughMarkup = `<s>${inputMarkup}</s>`;
     return `
-  < li data - id="${type?.id ?? ""}" >
-    ${checkbox ? checkboxMarkup : ""}
+      <li data-id="${type?.id ?? ""}">
+        ${checkbox ? checkboxMarkup : ""}
         ${type?.checked ? strikeThroughMarkup : inputMarkup}
-      </li >
-  `;
+      </li>
+    `;
   }
 
   _generateInputContent(tableItem, inputType, checkbox = false) {
@@ -60,7 +60,7 @@ export default class ContainerSidePeekComponentView {
 
   _generateSlideContentProperties(tableItem) {
     return `
-  < div class="container-slide-content" >
+      <div class="container-slide-content">
         <div class="slide-intentions">
           <h1 class="slide-headings">Intentions</h1>
           <div class="slide-intentions-options slide-options">
@@ -94,73 +94,74 @@ export default class ContainerSidePeekComponentView {
             </ol>
           </div>
         </div>
-      </div >
-  `;
+      </div>
+    `;
   }
+
 
   _generateSlideContent(tableItem, tableItemTags) {
     return `
-  < div class="slide-title-box" >
-    <h1 class="slide-title">
-      <input
-        type="text"
-        placeholder="Untitled"
-        class="slide-title-input"
-        value="${tableItem.itemTitle ?? ""}"
+      <div class="slide-title-box">
+        <h1 class="slide-title">
+          <input
+            type="text"
+            placeholder="Untitled"
+            class="slide-title-input"
+            value="${tableItem.itemTitle ?? ""}"
           />
-    </h1>
-      </div >
-  <div class="slide-properties-box">
-    <div class="slide-properties">
-      <div class="slide-property-box">
-        <div class="slide-property slide-tag">
-          <div class="slide-property-content slide-tag-content hover">
-            <div class="slide-tag-icon">
-              ${svgMarkup("slide-icon", "list-icon")}
-            </div>
-            <div class="slide-tag-text--box">
-              <div class="slide-property-text slide-tag-text">Tags</div>
-            </div>
-          </div>
-          <div class="slide-tag-text--box">
-            <div class="slide-property-text slide-tag-text hover ${tableItemTags !== " Empty" ? "active" : ""
+        </h1>
+      </div>
+      <div class="slide-properties-box">
+        <div class="slide-properties">
+          <div class="slide-property-box">
+            <div class="slide-property slide-tag">
+              <div class="slide-property-content slide-tag-content hover">
+                <div class="slide-tag-icon">
+                  ${svgMarkup("slide-icon", "list-icon")}
+                </div>
+                <div class="slide-tag-text--box">
+                  <div class="slide-property-text slide-tag-text">Tags</div>
+                </div>
+              </div>
+              <div class="slide-tag-text--box">
+                <div class="slide-property-text slide-tag-text hover ${tableItemTags !== "Empty" ? "active" : ""
       }">${tableItemTags}</div>
-        </div>
-      </div>
-    </div>
-    <div class="slide-property-box">
-      <div class="slide-property slide-created">
-        <div class="slide-property-content slide-created-content hover">
-          <div class="slide-property-icon">
-            ${svgMarkup("slide-icon", "clock")}
+              </div>
+            </div>
           </div>
-          <div class="slide-created-text--box">
-            <div class="slide-property-text slide-created-text">Created</div>
-          </div>
-        </div>
-        <div class="slide-created-text--box">
-          <div class="slide-property-text slide-created-text ${tableItem.id ? " active" : ""
+          <div class="slide-property-box">
+            <div class="slide-property slide-created">
+              <div class="slide-property-content slide-created-content hover">
+                <div class="slide-property-icon">
+                  ${svgMarkup("slide-icon", "clock")}
+                </div>
+                <div class="slide-created-text--box">
+                  <div class="slide-property-text slide-created-text">Created</div>
+                </div>
+              </div>
+              <div class="slide-created-text--box">
+                <div class="slide-property-text slide-created-text ${tableItem.id ? "active" : ""
       }">${dateTimeFormat(tableItem.id ?? "Empty")}
-        </div>
-        <div class="row-actions-render">
-          <div class="row-actions-render-icon">
-            ${svgMarkup("row-icon", "copy")}
-          </div>
-          <div class="row-actions-tooltip">
-            <div class="tooltip-text">
-              Copy to Clipboard
+                </div>
+                <div class="row-actions-render">
+                      <div class="row-actions-render-icon">
+                        ${svgMarkup("row-icon", "copy")}
+                      </div>
+                      <div class="row-actions-tooltip">
+                        <div class="tooltip-text">
+                          Copy to Clipboard
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-          </div >
-        </div >
-      </div >
 
-  ${this._generateSlideContentProperties(tableItem)}
-`;
+     ${this._generateSlideContentProperties(tableItem)}
+    `;
   }
 
   _generateSlideTagsMarkup(tableItem) {
@@ -181,51 +182,33 @@ export default class ContainerSidePeekComponentView {
     const tableItemTags = this._generateSlideTagsMarkup(tableItem);
 
     return `
-  < div class="container-slide-template" >
-    <div class="container-slide">
-      <div class="slide-nav">
-        <div class="slide-nav-actions">
-          <div class="nav-nav-icon slide-nav-close hover">
-            ${svgMarkup("icon-md nav-icon nav-icon-active", "angles-right")}
+      <div class="container-slide-template">
+        <div class="container-slide">
+          <div class="slide-nav">
+            <div class="slide-nav-actions">
+              <div class="nav-nav-icon slide-nav-close hover">
+                ${svgMarkup("icon-md nav-icon nav-icon-active", "angles-right")}
+              </div>
+
+              <div class="nav-nav-icon slide-nav-next hover">
+                ${svgMarkup(`icon-md ${this._state.position === -1 || this._state.position === 0 || this._state.position === "only" ? "nav-icon-inactive" : "nav-icon-active"}`, "arrow-down")}
+              </div>
+              <div class="nav-nav-icon slide-nav-prev hover">
+                ${svgMarkup(`icon-md ${this._state.position === -2 || this._state.position === 1 || this._state.position === "only" ? "nav-icon-inactive" : "nav-icon-active"}`, "arrow-up")}
+              </div>
+            </div>
           </div>
 
-          <div class="nav-nav-icon slide-nav-next hover">
-            ${svgMarkup(
-      `icon-md ${this._state.position === -1 ||
-        this._state.position === 0 ||
-        this._state.position === "only"
-        ? "nav-icon-inactive"
-        : "nav-icon-active"
-      }`,
-      "arrow-down"
-    )}
-
-          </div>
-          <div class="nav-nav-icon slide-nav-prev hover">
-            ${svgMarkup(
-      `icon-md ${this._state.position === -2 ||
-        this._state.position === 1 ||
-        this._state.position === "only"
-        ? "nav-icon-inactive"
-        : "nav-icon-active"
-      }`,
-      "arrow-up"
-    )}
-
+          <div class="slide-content">
+            ${this._generateSlideContent(tableItem, tableItemTags)}
           </div>
         </div>
       </div>
-
-      <div class="slide-content">
-        ${this._generateSlideContent(tableItem, tableItemTags)}
-      </div>
-
-    </div>
-      </div >
-  `;
+    `;
   }
 
   render() {
+    debugger
     const cls = this;
     this._state.markup = this._generateMarkup(this._state.itemData);
 
