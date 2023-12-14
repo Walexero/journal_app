@@ -82,6 +82,7 @@ const controlRenderUpdatedTableHeads = (tableId) => {
 };
 
 const controlGetActiveTableFuncType = function (currentTable) {
+  let fnActive;
   const funcType = { sort: false, filter: false }
   const tableFunc = controlGetPersistedTableFunc(currentTable.id)
   if (tableFunc) {
