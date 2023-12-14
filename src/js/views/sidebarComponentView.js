@@ -6,6 +6,7 @@ import { svgMarkup, valueEclipser, matchStrategy, formatJournalHeadingName } fro
 import { importTableHeadProcessorView } from "./tableHeadProcessorView.js";
 import { Form } from "../views/loginView/form.js"
 import { Overlay } from "./loginView/overlay.js";
+import { API } from "../api";
 
 class SideBarComponentView {
   _parentElement = document.querySelector(".nav-sidebar");
@@ -49,6 +50,8 @@ class SideBarComponentView {
       if (matchStrategy(e, "update-user-info")) this._handleUpdateUserInfoEvent(e)
 
       if (matchStrategy(e, "update-user-pwd")) this._handleUpdateUserPasswordEvent(e)
+
+      if (matchStrategy(e, "nav-options-logout")) API.logoutUser()
     }
   }
 
@@ -290,12 +293,29 @@ class SideBarComponentView {
     `;
   }
 
+  _generateSideBarLogoutMarkup() {
+    return `
+    <div class="nav-option nav-options-logout">
+      <div class="nav-group">
+        <div class="nav-icon-text">
+          <div class="nav-options-journal-icon">
+            ${svgMarkup("icon", "logout")}
+          </div>
+          <div class="nav-options-text">Logout</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  }
+
   _generateMarkup(user, journal) {
     return `
         <div class="nav-sidebar-options">
             ${this._generateSideBarHeadingMarkup(user)}
             ${this._generateSideBarJournalMarkup(journal)}
             ${this._generateSideBarUserSettingsOption()}
+            ${this._generateSideBarLogoutMarkup()}
             </div>
             `;
   }

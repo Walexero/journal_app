@@ -213,8 +213,12 @@
         left: 25%;
     }
 
-    .row-tag-options {
+    /* .row-tag-options {
         margin-left: 3px;
-      }
+      } */
+
+    .row-tag-options {
+      margin-left: 73px;
+    }
 
 }

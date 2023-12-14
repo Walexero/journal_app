@@ -122,7 +122,7 @@ export class API {
             //if token expired render credeential issues msg and logout user
             if (queryObj.resStatus === 401) {
                 new Alert(HTTP_200_RESPONSE[queryObj.actionType](returnData), null, "success").component()
-                timeoutWithoutPromise(5, API.logoutUser)
+                timeoutWithoutPromise(2, API.logoutUser)
             }
         })
     }
