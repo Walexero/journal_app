@@ -566,7 +566,6 @@ class TableBodyProcessorView {
 
   _handleTagPropertyClickEvent(e, clickedContainer) {
     const cls = this;
-
     if (this._textInputActive) return;
 
     const itemId = clickedContainer.closest(".row-actions-handler-container")
@@ -574,9 +573,12 @@ class TableBodyProcessorView {
 
     const tagContainer = clickedContainer.querySelector(".table-item-tags");
 
+    const currentTable = this._eventHandlers.tableControllers.controlGetTable()
+
+
     const getTableItemData =
       this._eventHandlers.tableItemControllers.controlGetTableItem(
-        +cls._currentTable.id,
+        currentTable.id,
         +itemId
       );
 
@@ -584,7 +586,7 @@ class TableBodyProcessorView {
 
     //component code
     const updateObj = {
-      tableId: +cls._currentTable.id,
+      tableId: currentTable.id,
       itemId: +itemId,
     };
 

@@ -34,7 +34,6 @@ class TableComponentView {
   _token; //api token
 
   init(tableHandler, currentTableHandler, tables, currentTable) {
-
     //add handleer to set currentTable in the model
     this._currentTableHandler = currentTableHandler;
     tableHandler();

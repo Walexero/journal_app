@@ -414,6 +414,7 @@ const controlGetTableItem = function (
   position = undefined,
   tableLength
 ) {
+  debugger
   const table = model.getCurrentTable(tableId);
   const tableItem = model.getTableItem(table, itemId, position, tableLength);
   //returns an obj if position is supplied
