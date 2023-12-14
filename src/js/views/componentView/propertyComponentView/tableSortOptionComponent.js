@@ -95,7 +95,16 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
     if (signal) {
       if (this._removeSortRuleBoxStrategy(e)) this._handleRemoveRuleBoxEvent(e);
 
-      if (this._sortAddRuleBoxStrategy(e)) this._handleSortAddRuleBoxEvent(e);
+      if (this._sortAddRuleBoxStrategy(e)) {
+        //execute if click event is by user interaction
+        if (e.isTrusted)
+          this._handleSortAddRuleBoxEvent(e);
+
+        if (!e.isTrusted)
+          //remove the component but not its function is programmatically clicked
+          this.remove(true)
+      }
+
 
       if (this._sortItemAddMatchStrategy(e)) this._handleSortAddItem(e);
 
@@ -238,7 +247,7 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
     };
   }
 
-  remove() {
+  remove(persistFunc = false) {
     const cls = this;
     const sortActionContainer = document.querySelector(
       ".sort-action-container "
@@ -255,8 +264,10 @@ export default class TableSortOptionComponent extends propertyOptionsComponent {
     sortActionContainer?.remove();
     componentGlobalState.sortMethod = null;
 
-    const fnActive = this._checkTableFuncActive("sort")
-    if (fnActive) this._removeComponentTableFunc("sort")
+    if (!persistFunc) {
+      const fnActive = this._checkTableFuncActive("sort")
+      if (fnActive) this._removeComponentTableFunc("sort")
+    }
     this._state = {}
     delete this;
   }

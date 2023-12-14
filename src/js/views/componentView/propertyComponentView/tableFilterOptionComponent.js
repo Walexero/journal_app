@@ -92,8 +92,15 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
     if (signal) {
       if (this._filterAddItemChecker(e)) this._handleFilterAddItem(e);
 
-      if (this._filterAddRuleBoxStrategy(e))
-        this._handleFilterAddRuleBoxEvent(e);
+      if (this._filterAddRuleBoxStrategy(e)) {
+        //execute if click event is by user interaction
+        if (e.isTrusted)
+          this._handleFilterAddRuleBoxEvent(e);
+        if (!e.isTrusted)
+          //remove the component but not its function is programmatically clicked
+          this.remove(true)
+      }
+
 
       if (this._removeFilterAddRuleBoxStrategy(e))
         this._handleRemoveRuleBoxEvent(e);
@@ -378,7 +385,7 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
     return action;
   }
 
-  remove() {
+  remove(persistFunc = false) {
     const cls = this;
     const filterContainer = document.querySelector(".filter-action-container");
 
@@ -388,8 +395,10 @@ export default class TableFilterOptionComponent extends propertyOptionsComponent
     );
     filterContainer?.remove();
 
-    const fnActive = this._checkTableFuncActive("filter")
-    if (fnActive) this._removeComponentTableFunc("filter")
+    if (!persistFunc) {
+      const fnActive = this._checkTableFuncActive("filter")
+      if (fnActive) this._removeComponentTableFunc("filter")
+    }
 
 
     //unsubscribe from signal events

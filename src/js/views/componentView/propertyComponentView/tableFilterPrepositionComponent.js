@@ -42,6 +42,7 @@ export default class TableFilterPrepositionComponent {
   }
 
   render() {
+    debugger
     const cls = this;
 
     this._state.markup = this._generateMarkup(this._state.conditional);
@@ -80,6 +81,7 @@ export default class TableFilterPrepositionComponent {
   }
 
   _handlePrepositionSelectEvent(e) {
+    debugger
     const prepositionRemovesFilterInput = ["Is empty", "Is not empty"];
 
     const prepositionContainer = document.querySelector(

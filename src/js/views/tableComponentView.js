@@ -10,7 +10,6 @@ import {
 } from "../helpers.js";
 import { importSignals } from "../signals.js";
 import { componentGlobalState } from "./componentView/componentGlobalState.js";
-// import tableHeadProcessorView from "./tableHeadProcessorView.js";
 import { importTableHeadProcessorView } from "./tableHeadProcessorView.js";
 
 import tableActionsProcessorView from "./tableActionsProcessorView.js";
@@ -148,14 +147,19 @@ class TableComponentView {
   }
 
   _clearTableFunc() {
-    document.querySelector(".filter-action-container")?.remove()
-    document.querySelector(".sort-action-container")?.remove()
+    //programmatically click on the element to remove itself
+    document.querySelector(".filter-added-rule-box")?.click()
+    document.querySelector(".sort-added-rule-box")?.click()
+
+    //clear the componentGlobalState
+    componentGlobalState.sortMethod = null;
+    componentGlobalState.filterMethod = null;
+
   }
 
   _activateTableFunc(activeTableFunc) {
     const filter = activeTableFunc?.filter > 0
     const sort = activeTableFunc?.sort > 0
-
     if (filter) document.querySelector(".table-filter").click()
     if (sort) document.querySelector(".table-sort").click()
   }
