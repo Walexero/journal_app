@@ -133,7 +133,7 @@ export default class TableFilterRuleOptionActionComponent extends optionActionCo
       tagViewportHolder.getBoundingClientRect();
 
     const queryPositioner = window.matchMedia("(max-width: 500px)")
-    if (queryPositioner.matches) left = `${parseInt(left) - 150}`
+    if (queryPositioner.matches) left = `${parseInt(left) - 50}`
 
     const componentObj = {
       table: tagViewportHolder,

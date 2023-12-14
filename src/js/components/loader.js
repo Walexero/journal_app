@@ -10,7 +10,6 @@ export class Loader {
     }
 
     component() {
-        console.log("import compopt", importComponentOptionsView.cls)
         this._component = importComponentOptionsView.cls.createHTMLElement(this._generateMarkup())
 
 
@@ -22,7 +21,6 @@ export class Loader {
     }
 
     getComponent() {
-        console.log("the loader comp", this._component)
         return this._component;
     }
 

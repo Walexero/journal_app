@@ -56,7 +56,6 @@ export class BaseForm {
         } catch (err) {
             new Alert(err, null, "error").component()
         } finally {
-            debugger;
             return payload
         }
     }

@@ -67,6 +67,10 @@
     .outline-text{
         font-size: 1.5rem;
     }
+
+    .notification-render{
+        margin-left: -4rem;
+    }
 }  
 
 
@@ -96,6 +100,10 @@
 
     .alert{
         left: 36%;
+    }
+
+    .notification-render{
+        margin-left: -7.5rem;
     }
 
 }
@@ -158,6 +166,11 @@
         left: 33%;
     }
 
+    .notification-render{
+        margin-left: -9.2rem;
+    }
+
+
 }
 
 /* --------------------------- */
@@ -183,9 +196,14 @@
     .row-tag-popup{
         margin-left: -61px;
     }
+
     .row-tag-options {
         margin-left: 73px;
-      }
+    }
+
+    .notification-render{
+        margin-left: -9.6rem;
+    }
   
 }
 
@@ -216,5 +234,10 @@
     .alert{
         left: 25%;
     }
+
+    .notification-render{
+        margin-left: -11.5rem;
+    }
+
 
 }

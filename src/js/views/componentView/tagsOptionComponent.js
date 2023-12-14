@@ -38,11 +38,12 @@ export default class TagOptionComponent {
       tagColor
     };
 
+    //markup to be immediately returned to the caller
     const createTagMarkup = this._generateTagAddMarkup(tagObj, true);
+
     if (!tagObj.id) {
       const tagAPIRequestPayload = formatTagRequestBody(tagObj)
-
-      this._createAPITag(tagAPIRequestPayload, refreshCallBack.bind(null, createTagMarkup))
+      this._createAPITag(tagAPIRequestPayload, refreshCallBack.bind(null, tagObj))
     }
 
     return { createTagMarkup, tagObj };
@@ -55,7 +56,6 @@ export default class TagOptionComponent {
   }
 
   _generateTagAddMarkup(tag, addXmark = false) {
-    console.log('the tag', tag)
     return `
       <div class=" ${addXmark ? "tag-tag" : "row-tag-tag"} ${tag.color
       }" data-id=${tag.id}>
@@ -362,11 +362,10 @@ export default class TagOptionComponent {
       this._createTagForCurrentItem(tagContainer, this._tagsOptionsMarkupReRender.bind(this, tagsAvailableContainer), tagInputValue);
   }
 
-  _tagsOptionsMarkupReRender(tagsAvailableContainer, createdTagItem) {
-    this._tagItemAdder(createdTagItem);
-
-    //update the _tags obj with the newly created tag
-    // this._state.tags.push(tagObj);
+  _tagsOptionsMarkupReRender(tagsAvailableContainer, createdTagObj, createdTagObjAPIId) {
+    //create the created tag and add its id from the api resp
+    createdTagObj.id = createdTagObjAPIId
+    this._tagItemAdder(this._generateTagAddMarkup(createdTagObj, true));
 
     //render tags
     const tagsMarkup = this._generateTagsOptions(this._state.tags);
@@ -414,9 +413,6 @@ export default class TagOptionComponent {
     const addedTagItems = Array.from(tagItemsContainer.children)
       .map((tagItem) => tagItem.textContent.trim())
       .filter((tagItem) => tagItem.length > 0);
-
-    // const { createTagMarkup: createdItemTag, tagObj } =
-    // this._createTagForCurrentItem(tagToAdd);
 
     const { createTagMarkup: createdTagItem, tagObj } =
       this._createTagForCurrentItem(tagToAdd, this._tagsOptionsMarkupReRender.bind(this, tagsAvailableContainer));
@@ -498,7 +494,6 @@ export default class TagOptionComponent {
   }
 
   _handleUpdateModelIfFilterActive() {
-    // debugger;
     let updateModel;
     if (componentGlobalState.filterMethod) {
       updateModel = this._state.updateModel?.bind(

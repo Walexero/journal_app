@@ -75,7 +75,11 @@ class TableHeadProcessorView {
       this._active = true;
 
       //get position of the currentTable
-      const { top, left, width, height } = currentTable.getBoundingClientRect();
+      let { top, left, width, height } = currentTable.getBoundingClientRect();
+
+      const queryPositioner = window.matchMedia("(max-width: 500px)")
+      if (queryPositioner.matches) left = `${parseInt(left) - 180}`
+
 
       const componentObj = {
         top,

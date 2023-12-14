@@ -354,7 +354,9 @@ const controlAPIAddTagFallback = function (addTagParams, returnData, requestStat
   if (requestState) {
     const formattedData = formatAPISub(Array.isArray(returnData) ? returnData : [returnData], "apiTags")
     model.state.tags.push(...formattedData)
-    addTagParams.callBack()
+
+    //update the tagObj id with the id from the api created tag
+    addTagParams.callBack(formattedData[0].id)
   }
 
   //NOTE: Sync missing
