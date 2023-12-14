@@ -230,7 +230,6 @@ class SideBarComponentView {
   }
 
   _generateSideBarHeadingMarkup(username) {
-    console.log("the heading", username)
     return `
         <div class="nav-options-heading">
             <div class="options-heading-icon">${username[0]}</div>
