@@ -208,7 +208,6 @@ export default class ContainerSidePeekComponentView {
   }
 
   render() {
-    debugger
     const cls = this;
     this._state.markup = this._generateMarkup(this._state.itemData);
 
