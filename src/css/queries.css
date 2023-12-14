@@ -183,6 +183,10 @@
     .row-tag-popup{
         margin-left: -61px;
     }
+    .row-tag-options {
+        margin-left: 73px;
+      }
+  
 }
 
 /* --------------------------- */
@@ -211,14 +215,6 @@
 
     .alert{
         left: 25%;
-    }
-
-    /* .row-tag-options {
-        margin-left: 3px;
-      } */
-
-    .row-tag-options {
-      margin-left: 73px;
     }
 
 }

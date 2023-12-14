@@ -591,7 +591,7 @@ class TableBodyProcessorView {
     };
 
     const componentObj = {
-      top,
+      top: `${parseInt(top) - 80}`,
       left,
       width,
       height,

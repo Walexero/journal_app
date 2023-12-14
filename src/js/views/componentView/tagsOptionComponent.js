@@ -298,8 +298,8 @@ export default class TagOptionComponent {
     if (e.type === "click") {
       const matchStrategy =
         e.target.classList.contains("row-icon") ||
-        (e.target.classList.contains("svg-icon") &&
-          e.target.closest(".row-option-icon"));
+        //(e.target.classList.contains("svg-icon") &&
+        e.target.closest(".row-option-icon");
       return matchStrategy;
     }
   }
