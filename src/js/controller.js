@@ -568,12 +568,12 @@ const controlDeleteTag = function (tagId, callBack = undefined) {
 }
 
 const controlDeleteTableItemFallback = function (deleteTableItemParam, returnData, requestStatus = false) {
+  let tableItems;
   const currentTable = model.getCurrentTable();
 
   //NOTE: Sync missing
   if (requestStatus) {
     model.deleteTableItem(deleteTableItemParam.payload);
-
   }
   deleteTableItemParam.filter
     ? (tableItems = deleteTableItemParam.filter(currentTable.tableItems))
