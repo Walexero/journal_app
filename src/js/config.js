@@ -1,4 +1,4 @@
-export const BASE_API_URL = "http://0.0.0.0:9008/api/"//"https://journalhub.ddns.net/api/"
+export const BASE_API_URL = "https://journalhub.ddns.net/api/"//"http://0.0.0.0:9008/api/"
 export const subModelEndpoints = ["grateful-for", "happenings", "action-items", "intentions"];
 export const DEFAULT_JOURNAL_DESC = `
 Document your life - daily happenings, special occasions,
