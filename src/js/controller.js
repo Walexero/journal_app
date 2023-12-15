@@ -248,6 +248,25 @@ const controlAPIDeleteTableFallback = function (tableId, returnData, requestStat
     model.deleteJournal(tableId);
     const tableHeads = controlGetTableHeads();
     controlRenderUpdatedTableHeads(tableHeads[0][1]);
+
+    //update the tableFunc
+    delete model.tableFunc[tableId]
+    model.persistFunc()
+    const apiPayload = {
+      "journal_table_func": model.tableFunc
+    }
+
+    const queryObj = {
+      endpoint: API.APIEnum.JOURNAL.PATCH(model.state.id),
+      token: model.token.value,
+      sec: null,
+      queryData: apiPayload,
+      actionType: "updateJournal",
+      spinner: false,
+      alert: false,
+      type: "PATCH",
+    }
+    API.queryAPI(queryObj)
   }
 }
 

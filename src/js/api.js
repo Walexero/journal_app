@@ -140,7 +140,7 @@ export class API {
             if (!resContent.non_field_errors) data = API.destructureSuccessResponse(resContent, queryObj)
         } catch (err) {
             if (queryObj.loader) await queryObj.loader.remove()
-            if (queryObj.alert) await new Alert(!queryObj.successAlert ? "Request Failed Please try again later" : err.message ?? err, null, "error").component()
+            if (queryObj.alert) await new Alert(!queryObj.successAlert ? queryObj.actionType === "deleteTable" ? err.message : "Request Failed Please try again later" : err.message ?? err, null, "error").component()
             // if(queryObj.resStatus === 401) API.logoutUser()
 
         } finally {
