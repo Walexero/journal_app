@@ -674,7 +674,7 @@ class TableBodyProcessorView {
     const copyContent = copyTriggerEl.previousElementSibling;
     navigator.clipboard.writeText(copyContent.textContent.trim());
 
-    const component = new Alert(COPY_ALERT, null, "success").component();
+    new Alert(COPY_ALERT, null, "success").component();
   }
 
   _itemHoverMatchStrategy(e) {

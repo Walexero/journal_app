@@ -1,7 +1,7 @@
 import { importComponentOptionsView } from "./componentView/componentOptionsView.js";
 import tagOptionComponent from "./componentView/tagsOptionComponent.js";
 import { dateTimeFormat, svgMarkup } from "../helpers.js";
-import alertComponent from "./componentView/alertComponent.js";
+import { Alert } from "../components/alerts.js";
 import { COPY_ALERT } from "../config.js";
 import { componentGlobalState } from "./componentView/componentGlobalState.js";
 export default class ContainerSidePeekComponentView {
@@ -388,16 +388,7 @@ export default class ContainerSidePeekComponentView {
     ).previousElementSibling;
     navigator.clipboard.writeText(copyContent.textContent.trim());
 
-    const componentObj = {
-      container: "main",
-      insertPosition: "beforeend",
-      componentContainer: "null",
-      selector: ".alert-box",
-      alertMsg: COPY_ALERT,
-    };
-
-    const component = new alertComponent(componentObj);
-    component.render();
+    new Alert(COPY_ALERT, null, "success").component();
   }
 
   _handleTagAddEvent(e) {
